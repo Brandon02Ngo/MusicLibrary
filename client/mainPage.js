@@ -1,10 +1,14 @@
 const sql = require("msnodesqlv8");
 
-const connectionString = "server=tcp:music-lib-server5.database.windows.net,1433;Database=Music_Lib_DB;Trusted_Connection=Yes;Driver={SQL Server Native Client 11.0}";
-const query = "SELECT Cougar_ID FROM [User]";
+const connectionString = "DSN=NaimM";
+const query = "SELECT * FROM [User]"
 
 sql.query(connectionString, query, (err, rows) => {
-    console.log(rows);
+    if (err) {
+        console.error("Error:", err);
+    } else {
+        console.log("Connected to the database and got rows:", rows);
+    }
 });
 
 /*
