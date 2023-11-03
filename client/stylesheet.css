@@ -15,6 +15,11 @@ button {
     border: 1px solid black;
 }
 
+.home{
+    position: absolute;
+    top: 0;
+}
+
 /* username pop-up*/ 
 .modal_container {
     background-color: rgb(93, 93, 93);
