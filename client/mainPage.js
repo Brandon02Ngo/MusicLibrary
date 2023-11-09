@@ -31,9 +31,10 @@ const server = http.createServer((req, res) => {
                     sql.close();
                     return;
                 }
+                const artist = result.recordset.map((row) => row.ArtistName);
 
                 res.writeHead(200, {'Content-type': 'text/plain' });
-                res.end(JSON.stringify(result.recordset));
+                res.end(JSON.stringify(artist));
                 sql.close();
             });
         });
@@ -54,10 +55,7 @@ const httpServer = server.listen(port, () => {
   
 });
 
-httpServer.close(() => {
-    console.log(`Server on port ${port} is now closed`);
-  
-});
+
   
 
 /*
