@@ -10,6 +10,7 @@ const dbConfig = {
     port:1433
 
 };
+/*
 const server = http.createServer((req, res) => {
     const parsedUrl = url.parse(req.url, true);
 
@@ -31,7 +32,7 @@ const server = http.createServer((req, res) => {
                     sql.close();
                     return;
                 }
-                const artist = result.recordset.map((row) => row.ArtistName);
+                const artist = result.recordset.map((row) => row.First_Name);
 
                 res.writeHead(200, {'Content-type': 'text/plain' });
                 res.end(JSON.stringify(artist));
@@ -54,11 +55,11 @@ const httpServer = server.listen(port, () => {
     console.log(`Server is running on port ${port}`);
   
 });
-
+ */
 
   
 
-/*
+
 async function getUser() {
     let pool
     try {
@@ -76,5 +77,5 @@ async function getUser() {
 }
 
 getUser();
-*/
+
 
