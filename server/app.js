@@ -73,16 +73,22 @@ const server = http.createServer(async function(req, res) {                     
         let pool
         try {
             pool = await sql.connect(dbConfig);  // Use the existing variable
-            const result = await pool.request().query(`
-                SELECT Username FROM [MusicLibrary].[User] where Role_ID = 2;
-                SELECT Username FROM [MusicLibrary].[User] where Role_ID = 1;
-                SELECT Username FROM [MusicLibrary].[User] where Role_ID = 3;
-                `);
-            //console.log(result.recordset); // Assuming the data is an array of objects with a 'Username' property
+            const result1 = await pool.request().query("SELECT Top 6 Artist FROM [MusicLibrary].[Song];");
+            const result2 = await pool.request().query("SELECT TOP 6 Username FROM [MusicLibrary].[User] WHERE Role_ID = 1;");
+            const result3 = await pool.request().query("SELECT Username FROM [MusicLibrary].[User] WHERE Role_ID = 3;");
+            const result4 = await pool.request().query("SELECT Top 6 Audio_Data FROM [MusicLibrary].[Song];");
+
+            // Send audio data if available
+            // if (result4.recordset.length > 0) {
+            //     const audioDataList = result4.recordset.map(row => row.Audio_Data);
+            //     res.writeHead(200, { 'Content-Type': 'application/json' });
+            //     res.end(JSON.stringify({ audioDataList }));
+            //}
             res.end(JSON.stringify({
-                data1: result.recordsets[0], // Results of the first query
-                data2: result.recordsets[1], // Results of the second query
-                data3: result.recordsets[2] // Results of the third query
+                data1: result1.recordset,
+                data2: result2.recordset,
+                data3: result3.recordset,
+                data4: result4.recordset
             }));
         } catch (error) {
             console.error('Error fetching usernames:', error);
