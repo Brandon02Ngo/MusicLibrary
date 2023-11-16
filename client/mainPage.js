@@ -4,6 +4,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         
     // Loop through the array and create list items for each username
     x.data2.forEach(user => {
+
+        // Create a new A element
+        const anchorElementa = document.createElement('a');
+        anchorElementa.href = "playlist.html"; // Set the href attribute        
+
         // Create a new LI element
         const listItem = document.createElement('li');
         listItem.classList.add("song-item");
@@ -18,6 +23,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Create an H2 element for the artist name
         const artistName = document.createElement('h2');
+        artistName.classList.add("title");
         artistName.textContent = user["Username"];
 
         // Append the artist box, info, and name to the LI element
@@ -27,6 +33,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Append the LI element to the UL
         userList.appendChild(listItem);
+
+        // Append the anchor element to the UL
+        userList.appendChild(anchorElementa);
 
         });
     });
@@ -55,6 +64,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Create an H2 element for the artist name
         const artistname = document.createElement('h2');
+        artistname.classList.add("title");
         artistname.textContent = peeps["Artist"];
 
         // Append the artist box, info, and name to the LI element
