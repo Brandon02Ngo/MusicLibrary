@@ -15,6 +15,22 @@ button {
     border: 1px solid black;
 }
 
+:root{
+    /* COLORS */
+    --BGCOLOR: #352F44 /*#54585A linear-gradient(#0F0F0F, #28406e) #FFFBF5*/;
+    --BGCOLORSUB: #5C5470 /*#888B8D radial-gradient( #28406e,#0F0F0F)#F7EFE5*/;
+    --FONTCOLOR: /*#C8102E*/ #FAF0E6;
+    --COLORFALLBACK: #FFF;
+    --HOVERCOLOR: /*#960C22*/ #B9B4C7;
+    --TEXTSHADOW: -1px 0 #FFFFFF, 0 1px #FFFFFF, 1px 0 #FFFFFF, 0 -1px #FFFFFF;
+}
+
+body {
+    background-color: var(--BGCOLOR);
+    color: VAR(--FONTCOLOR);
+  }
+  
+
 .home{
     position: absolute;
     top: 0;

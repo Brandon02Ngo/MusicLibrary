@@ -1,3 +1,26 @@
+
+
+/* || RESET */
+
+* {
+  margin: 0;
+  padding: 0;
+  }
+  
+  
+  /* ||VARIABLES */
+  
+  :root{
+      /* COLORS */
+      --BGCOLOR: #352F44 /*#54585A linear-gradient(#0F0F0F, #28406e) #FFFBF5*/;
+      --BGCOLORSUB: #5C5470 /*#888B8D radial-gradient( #28406e,#0F0F0F)#F7EFE5*/;
+      --FONTCOLOR: /*#C8102E*/ #FAF0E6;
+      --COLORFALLBACK: #FFF;
+      --HOVERCOLOR: /*#960C22*/ #B9B4C7;
+      --TEXTSHADOW: -1px 0 #FFFFFF, 0 1px #FFFFFF, 1px 0 #FFFFFF, 0 -1px #FFFFFF;
+  }
+
+
 #songlist {
   list-style: none;
   padding: 0;
@@ -8,25 +31,25 @@ html {
   scroll-behavior: smooth;
 }
 
-/*the style used for the hyperlinks*/
+/* || HYPERLINKS */
 a {
-  color: #C8102E;
+  color: var(--FONTCOLOR);
   text-decoration: none;
 }
 a:visited {
-  color: #960C22;
+  color: var(--FONTCOLOR); 
 }
 a:hover, a:active {
-  color: #640817;
+  color: var(--HOVERCOLOR);
 }
 
-/*main body colors for the page*/
+/* || BODY */
 body {
-  background-color: #54585A;
-  color: #C8102E;
+  background-color: var(--BGCOLOR);
+  color: VAR(--FONTCOLOR);
 }
 
-/* for the sidebar and playlist in the side */
+/* || SIDEBAR */
 .side{
   margin: 0px;
   height: 100%;  /*Full-height: remove this if you want "auto" height */
@@ -35,36 +58,47 @@ body {
   z-index: 1; /* Stay on top */
   top: 0; /* Stay at the top */
   left: 0;
-  background-color: #888; /* Black */
-  border: 1px soilid #000;
+  background-color: var(--BGCOLORSUB); 
+  border-right: 2px solid grey;
   overflow-x: hidden; /* Disable horizontal scroll */
   padding-top: 20px;
 }
+
+
 .playlist{
   font-size: .5rem;
   
 }
+.profile{
+  display: block;
+  background-color: #FFF;
+  place-content: center;
+  width: 50px;
+  height: 50px;
+}
+
 
 /* position of the main page */
 main {
-  margin-left: 200px; /* Same as the width of the sidebar */
+  
   padding: 0px 10px;
 }
 
 /* font colors */
 .uhFont {
-  color: #C8102E;
-  text-shadow: -1px 0 #FFFFFF, 0 1px #FFFFFF, 1px 0 #FFFFFF, 0 -1px #FFFFFF;
+  color: var(--FONTCOLOR);
+  
 }
 
 /*For the search bar*/
 #searchbar {
   margin-top: 3%;
+  margin-bottom: 3%;
   margin-left: 1%; 
   padding: .8rem; 
   border-radius: .6rem; 
   width: 24rem;
-  color: #000;
+  color: var(--COLORFALLBACK);
 }
 
 .song-list {
@@ -74,7 +108,7 @@ main {
 
 .song-item {
   border: 1px solid #FFF9D9;
-  background-color: #888B8D;
+  background-color: var(--BGCOLORSUB);
   padding: 10px;
   margin: 10px;
   border-radius: 10px;

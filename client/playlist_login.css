@@ -2,13 +2,26 @@
 {
 
 }
+
+:root{
+  /* ||COLORS */
+  --BGCOLOR: #352F44 /*#54585A linear-gradient(#0F0F0F, #28406e) #FFFBF5*/;
+  --BGCOLORSUB: #5C5470 /*#888B8D radial-gradient( #28406e,#0F0F0F)#F7EFE5*/;
+  --FONTCOLOR: /*#C8102E*/ #FAF0E6;
+  --COLORFALLBACK: #FFF;
+  --HOVERCOLOR: /*#960C22*/ #B9B4C7;
+  --TEXTSHADOW: -1px 0 #FFFFFF, 0 1px #FFFFFF, 1px 0 #FFFFFF, 0 -1px #FFFFFF;
+  /* ||BORDER */
+  --GRIDBORDERS: #000 1px solid;
+}
+
 .textLogo
 {
   text-align: center;
 }
 .Tracks
 {
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: var(--BGCOLORSUB) /*(255, 255, 255, 0.15)*/;
   overflow: auto;
   scrollbar-color: white;
   scrollbar-width: thin;
@@ -64,7 +77,7 @@
 }
 body
 {
-  background-image: url("img/bg01.png");
+  background-color: var(--BGCOLOR);
 }
 p{
   font-family: sans-serif;
@@ -79,8 +92,9 @@ p{
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    background-color: #f9f9f9;
+    background-color:  var(--BGCOLORSUB)  /*#f9f9f9*/;
     margin-top: 70px;
+    color: var(--FONTCOLOR);
 }
 
 h2 {

@@ -16,11 +16,27 @@
            <li><a href="#">Settings</a></li>
        </ul>
        </div>
-   <div class = "Tracks"><p class = "tracklistTitle">TRACK LIST</p></div>
+   <div class = "Tracks" id = "TrackID"><p class = "tracklistTitle">TRACK LIST</p></div>
 
   </div>
-    <audio id="audio-player" controls>
+    <audio id="music" controls>  
     </audio>
+    <script type="text/javascript">
+      function addAudio() {
+          fileArray = ["test1.mp3", "test2.mp3", "test3.mp3", "test4.mp3", "test5.mp3", "test6.mp3","test7.mp3", "test8.mp3", "test9.mp3", "test10.mp3", "test11.mp3"]
+          var num = Math.floor(Math.random() * fileArray.length);
+          var x = document.getElementById("music");
+          x.innerHTML = "";
+          x.innerHTML += '<source src="music/' + fileArray[num] + '" type="audio/mpeg">';
+
+          x.play(); 
+      }
+      addAudio();
+      function addTrack(){
+        var x = document.getElementById("TrackID");
+
+      }
+  </script>
    <script src="script.js"></script>
   </body>
 </html>

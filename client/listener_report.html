@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Report</title>
+  <link rel="stylesheet" href="listener_report.css">
+  <link rel="icon" href="img/music_disc.png" type="image/x-icon">
+ <!--  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script> -->
+</head>
+
+<body>
+  <h1>Listener Data Report</h1>
+  <h2>Specify Your Date Range</h2>
+  <div>
+    <label for ="fromDate">From Date</label>
+    <input type="date" name="fromDate" id="fromDate" min="2023-01-01" required>
+  </div>
+  <div>
+    <label for ="toDate">To Date</label>
+    <input type="date" name="toDate" id="toDate" min="2023-01-01" required>
+  </div>
+
+  <h2>Rating</h2>
+  <div>
+    <label for="minimumRating">Min Rating</label>
+    <input type="range" name="minimumRating" id="minimumRating" min="0" max="5" value="0" oninput="updateValue(this.id, this.value)">
+    <span id="minimumRatingValue">0</span>
+  </div>
+
+  <div>
+    <label for="maximumRating">Max Rating</label>
+    <input type="range" name="maximumRating" id="maximumRating" min="0" max="5" value="5" oninput="updateValue(this.id, this.value)">
+    <span id="maximumRatingValue">5</span>
+  </div>
+
+  <h2>Display Playlists</h2>
+  <div>
+    <label for ="playlist">Playlist</label> 
+    <input type="checkbox" name="playlist" id="playlist">
+  </div>
+</body>
+
+
+<script>
+  /* Script for updating the number on the side of the slide */
+  function updateValue(sliderId, newValue) {
+      // Find the span element where you want to display the value
+      var valueSpan = document.getElementById(sliderId + "Value");
+
+      // Update the span element's text content with the current slider value
+      valueSpan.textContent = newValue;
+  }
+</script>
+</html>

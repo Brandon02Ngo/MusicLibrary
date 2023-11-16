@@ -1,0 +1,81 @@
+
+
+/* || RESET */
+
+* {
+margin: 0;
+padding: 0;
+}
+
+button{
+    font: inherit;
+}
+
+/* ||VARIABLES */
+
+:root{
+    /* ||COLORS */
+    --BGCOLOR: #352F44 /*#54585A linear-gradient(#0F0F0F, #28406e) #FFFBF5*/;
+    --BGCOLORSUB: #5C5470 /*#888B8D radial-gradient( #28406e,#0F0F0F)#F7EFE5*/;
+    --FONTCOLOR: /*#C8102E*/ #FAF0E6;
+    --COLORFALLBACK: #FFF;
+    --HOVERCOLOR: /*#960C22*/ #B9B4C7;
+    --TEXTSHADOW: -1px 0 #FFFFFF, 0 1px #FFFFFF, 1px 0 #FFFFFF, 0 -1px #FFFFFF;
+    /* ||BORDER */
+    --GRIDBORDERS: #000 1px solid;
+}
+
+/* ||PAGE GRID LAYOUT */
+.page {
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    grid-auto-rows: auto;
+    grid-template-areas: 
+        "nav head head head"
+        "nav main main main"
+        "foot main main main"
+        "foot main main main"
+        "foot main main main"
+        "foot main main main"
+        "foot main main main"
+        "foot main main main";
+
+    
+  }
+  
+header {
+    grid-area: head;
+    background-color: #8ca0ff;
+    display: grid;
+    place-content: center start;
+    border: var(--GRIDBORDERS);
+  }
+
+#searchbar {
+    margin-left: 5%; 
+    padding: .8rem; 
+    border-radius: .6rem; 
+    width: 24rem;
+    color: var(--COLORFALLBACK);
+  }
+
+nav {
+    grid-area: nav;
+    background-color: #ffa08c;
+    border: var(--GRIDBORDERS);
+  }
+  
+main {
+    grid-area: main;
+    background-color: #ffff64;
+    border: var(--GRIDBORDERS);
+  }
+  
+footer {
+    grid-area: foot;
+    background-color: #8cffa0;
+    border: var(--GRIDBORDERS);
+  }
