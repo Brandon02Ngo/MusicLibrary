@@ -73,7 +73,7 @@ const server = http.createServer(async function(req, res) {                     
         let pool
         try {
             pool = await sql.connect(dbConfig);  // Use the existing variable
-            const result1 = await pool.request().query("SELECT Top 6 Artist FROM [MusicLibrary].[Song];");
+            const result1 = await pool.request().query("SELECT Top 6 Artist,Audio_Data FROM [MusicLibrary].[Song];");
             const result2 = await pool.request().query("SELECT TOP 6 Username FROM [MusicLibrary].[User] WHERE Role_ID = 1;");
             const result3 = await pool.request().query("SELECT Username FROM [MusicLibrary].[User] WHERE Role_ID = 3;");
             const result4 = await pool.request().query("SELECT Top 6 Audio_Data FROM [MusicLibrary].[Song];");
