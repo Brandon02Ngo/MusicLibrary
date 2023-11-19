@@ -361,7 +361,43 @@ function authenticateSession(req, res, user) {
 
     // Cannot get user from session / session doesn't exist; send user to login page
     if (user.id === undefined) {
-        redirectToLoginPage(res);
+        // Serve login.html
+        const htmlPath = path.join(__dirname, '..', 'client', 'login.html');
+        fs.readFile(htmlPath, function (err, data) {
+            if (err) {
+                res.writeHead(404, { 'Content-Type': 'text/plain' });
+                res.end('File not found');
+            }
+            else {
+                res.writeHead(200, { 'Content-Type': 'text/html' });
+                res.write(data);
+
+                // Serve assosciated css file
+                const cssPath = path.join(__dirname, '..', 'client', 'playlist_login.css');
+                fs.readFile(cssPath, 'utf-8', function (err, cssData) {
+                    if (!err) {
+                        res.write('\n<style>\n' + cssData + '\n</style>');
+                    }
+                    else {
+                        console.error('Error reading CSS file:', err);
+                    }
+
+                    // Serve assosciated js file
+                    const jsPath = path.join(__dirname, '..', 'client', 'login.js');
+                    fs.readFile(jsPath, 'utf-8', function (err, jsData) {
+                        if (!err) {
+                            res.write('\n<script>\n' + jsData + '\n</script>');
+                        }
+                        else {
+                            console.error('Error reading js file:', err);
+                        }
+
+                        // End the response
+                        res.end();
+                    })
+                })
+            }
+        });
         return false;
     }
     
@@ -428,15 +464,43 @@ const server = http.createServer(async function(req, res) {                     
                     // This branch executes if userID is either null, undefined, 0, false, or an empty string (i.e. no records for given combination of username and password); need to redirect back to login page
                     else if (!userID) {
                         console.error('Authentication error. Please sign in with correct credentials');
-                        /*
+                        // Serve login.html
                         const htmlPath = path.join(__dirname, '..', 'client', 'login.html');
-                        const cssFileName = 'login.css';
-                        const jsFileName = 'login.js';
-                        const writeHeadParameters = [200, { 'Content-Type': 'text/html; charset=utf-8' }];
+                        fs.readFile(htmlPath, function (err, data) {
+                            if (err) {
+                                res.writeHead(404, { 'Content-Type': 'text/plain' });
+                                res.end('File not found');
+                            }
+                            else {
+                                res.writeHead(200, { 'Content-Type': 'text/html' });
+                                res.write(data);
 
-                        serveFile(res, 1, writeHeadParameters, htmlPath);
-                        */
-                        redirectToLoginPage(res);
+                                // Serve assosciated css file
+                                const cssPath = path.join(__dirname, '..', 'client', 'playlist_login.css');
+                                fs.readFile(cssPath, 'utf-8', function (err, cssData) {
+                                    if (!err) {
+                                        res.write('\n<style>\n' + cssData + '\n</style>');
+                                    }
+                                    else {
+                                        console.error('Error reading CSS file:', err);
+                                    }
+
+                                    // Serve assosciated js file
+                                    const jsPath = path.join(__dirname, '..', 'client', 'login.js');
+                                    fs.readFile(jsPath, 'utf-8', function (err, jsData) {
+                                        if (!err) {
+                                            res.write('\n<script>\n' + jsData + '\n</script>');
+                                        }
+                                        else {
+                                            console.error('Error reading js file:', err);
+                                        }
+
+                                        // End the response
+                                        res.end();
+                                    })
+                                })
+                            }
+                        });
                         return;
                     }
 
@@ -1827,10 +1891,43 @@ const server = http.createServer(async function(req, res) {                     
         }
 
         else if (fileName === '/login.html') {
-            const filePath = path.join(__dirname, '..', 'client', 'login.html');
-
             // Serve login.html
-            redirectToLoginPage(res);
+            const htmlPath = path.join(__dirname, '..', 'client', 'login.html');
+            fs.readFile(htmlPath, function (err, data) {
+                if (err) {
+                    res.writeHead(404, { 'Content-Type': 'text/plain' });
+                    res.end('File not found');
+                }
+                else {
+                    res.writeHead(200, { 'Content-Type': 'text/html' });
+                    res.write(data);
+
+                    // Serve assosciated css file
+                    const cssPath = path.join(__dirname, '..', 'client', 'playlist_login.css');
+                    fs.readFile(cssPath, 'utf-8', function (err, cssData) {
+                        if (!err) {
+                            res.write('\n<style>\n' + cssData + '\n</style>');
+                        }
+                        else {
+                            console.error('Error reading CSS file:', err);
+                        }
+
+                        // Serve assosciated js file
+                        const jsPath = path.join(__dirname, '..', 'client', 'login.js');
+                        fs.readFile(jsPath, 'utf-8', function (err, jsData) {
+                            if (!err) {
+                                res.write('\n<script>\n' + jsData + '\n</script>');
+                            }
+                            else {
+                                console.error('Error reading js file:', err);
+                            }
+
+                            // End the response
+                            res.end();
+                        })
+                    })
+                }
+            });
 
             // Connect to database
 
@@ -1855,7 +1952,43 @@ const server = http.createServer(async function(req, res) {                     
 
             var userID = user.id;
             // Serve login.html
-            redirectToLoginPage(res);
+            // Serve login.html
+            const htmlPath = path.join(__dirname, '..', 'client', 'login.html');
+            fs.readFile(htmlPath, function (err, data) {
+                if (err) {
+                    res.writeHead(404, { 'Content-Type': 'text/plain' });
+                    res.end('File not found');
+                }
+                else {
+                    res.writeHead(200, { 'Content-Type': 'text/html' });
+                    res.write(data);
+
+                    // Serve assosciated css file
+                    const cssPath = path.join(__dirname, '..', 'client', 'playlist_login.css');
+                    fs.readFile(cssPath, 'utf-8', function (err, cssData) {
+                        if (!err) {
+                            res.write('\n<style>\n' + cssData + '\n</style>');
+                        }
+                        else {
+                            console.error('Error reading CSS file:', err);
+                        }
+
+                        // Serve assosciated js file
+                        const jsPath = path.join(__dirname, '..', 'client', 'login.js');
+                        fs.readFile(jsPath, 'utf-8', function (err, jsData) {
+                            if (!err) {
+                                res.write('\n<script>\n' + jsData + '\n</script>');
+                            }
+                            else {
+                                console.error('Error reading js file:', err);
+                            }
+
+                            // End the response
+                            res.end();
+                        })
+                    })
+                }
+            });
 
             // Connect to database
 
@@ -2070,7 +2203,44 @@ const server = http.createServer(async function(req, res) {                     
             const writeHeadParameters = [200, { 'Content-Type': 'text/html; charset=utf-8' }];
 
             // Serve playlist.html
-            serveFile(res, 4, writeHeadParameters, playlistHtmlPath, playlistCssFileName, playlistJsFileName);
+            const htmlPath = path.join(__dirname, '..', 'client', 'playlist.html');
+            fs.readFile(htmlPath, function (err, data) {
+                if (err) {
+                    res.writeHead(404, { 'Content-Type': 'text/plain' });
+                    res.end('File not found');
+                }
+                else {
+                    res.writeHead(200, { 'Content-Type': 'text/html' });
+                    res.write(data);
+
+                    // Serve assosciated css file
+                    const cssPath = path.join(__dirname, '..', 'client', 'playlist_login.css');
+                    fs.readFile(cssPath, 'utf-8', function (err, cssData) {
+                        if (!err) {
+                            res.write('\n<style>\n' + cssData + '\n</style>');
+                        }
+                        else {
+                            console.error('Error reading CSS file:', err);
+                        }
+
+                        // Serve assosciated js file
+                        /*
+                        const jsPath = path.join(__dirname, '..', 'client', 'login.js');
+                        fs.readFile(jsPath, 'utf-8', function (err, jsData) {
+                            if (!err) {
+                                res.write('\n<script>\n' + jsData + '\n</script>');
+                            }
+                            else {
+                                console.error('Error reading js file:', err);
+                            }
+
+                            // End the response
+                        })
+                        */
+                        res.end();
+                    })
+                }
+            });
             
             // Connect to database
 
