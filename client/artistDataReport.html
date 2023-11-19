@@ -5,21 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Music Data Reporting</title>
     <style>
+        :root{
+            /* ||COLORS */
+            --BGCOLOR: #352F44 /*#54585A linear-gradient(#0F0F0F, #28406e) #FFFBF5*/;
+            --BGCOLORSUB: #5C5470 /*#888B8D radial-gradient( #28406e,#0F0F0F)#F7EFE5*/;
+            --FONTCOLOR: /*#C8102E*/ #FAF0E6;
+            --FONTCOLORSUB: #FFF;
+            --COLORFALLBACK: #000;
+            --HOVERCOLOR: /*#960C22*/ #B9B4C7;
+            --TEXTSHADOW: -1px 0 #FFFFFF, 0 1px #FFFFFF, 1px 0 #FFFFFF, 0 -1px #FFFFFF;
+            /* ||BORDER */
+            --GRIDBORDERS: #000 1px solid;
+        }
         body {
             font-family: 'League Gothic';font-size: 30; letter-spacing: 1px;
-            background-color: #000000;
+            background-color: var(--BGCOLOR);
         }
         h1 {
-            color: #C8102E;
+            color: var(--FONTCOLOR);
         }
         h2 {
-            color: #C8102E;
+            color: var(--FONTCOLOR);
         }
         h3 {
-            color: #F6BE00;
+            color: var(--FONTCOLOR);
         }
         form {
-            color: #F6BE00;
+            color: var(--FONTCOLORSUB);
         }
         div {
             color: #FFF9D9;
@@ -29,10 +41,15 @@
             background: #640817;
         }
         input {
-            color: beige;
-            background-color: #54585A; /* Change this to the shade of gray you prefer */
+            color: var(--FONTCOLORSUB);
+            background-color: var(--BGCOLORSUB); 
         }
         
+        select{
+            color: var(--FONTCOLORSUB);
+            background-color: var(--BGCOLORSUB);
+        }
+
         #albumSection {
             display: none;
         }
