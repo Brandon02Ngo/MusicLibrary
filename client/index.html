@@ -26,11 +26,11 @@
     <a href= "login.html">
       <button>Login</button>
     </a>
-    <a href= "administration_page/index.html">
+    <a href= "admin.html">
       <button>Admin</button>
     </a>
-    <a href= "listener_report.html">
-      <button>Listener Report</button>
+    <a href= "settings_page/index.html">
+      <button>Settings</button>
     </a>
     <a href= "artistDataReport.html">
       <button>Data Report</button>
@@ -87,6 +87,7 @@
       </li>
     </a>
       
+    <a href="playlist.html">
       <li class="song-item">
         <div class="song-box"></div>
         <div class="song-info">
@@ -96,13 +97,14 @@
           <p> Views: 4322 </p>
         </div>
       </li>
+    </a>
     </ul>
 
   <hr> <!--horizontal line-->
 
   <h1 class="uhFont">New Releases</h1>
-  <a href="playlist.html">
     <ul id="new-releases" class="song-list">
+      <a href="playlist.html">
       <li class="song-item">
         <div class="NR-box"></div>
         <div class="song-info">
@@ -111,22 +113,23 @@
           </h2>
         </div>
       </li>
+    </a>
     </ul>
-  </a>
 
   <hr> <!--horizontal line-->
   <h1 class="uhFont"> Recommended Artist </h1>
   <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
-  <script src="mainPage.js"></script>
-  <a href="playlist.html">
+  <script src="mainPage.js">
+  </script>
   <ul id="Recommended" class="song-list">
-    <li class="song-item">
-      <div class="Rec-box"></div>
-      <div class="song-info">
-        <h2 class = "title">Wolfgang</h2>
-      </div>
-    </li>
+    <a href="playlist.html" data-Audio_Data ="Audiodata">
+      <li class="song-item">
+        <div class="Rec-box"></div>
+        <div class="song-info">
+          <h2 class = "title">Wolfgang</h2>
+        </div>
+      </li>
+    </a>
   </ul> 
-</a>
   </body>
   </html>
