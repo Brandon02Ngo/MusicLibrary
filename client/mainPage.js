@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         });
     });
+
     fetch("http://localhost:3000/").then(y => y.json()).then( y => {
         const userlist = document.getElementById('new-releases');
         
@@ -59,7 +60,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Create an H2 element for the artist name
         const artistname = document.createElement('h2');
-        artistname.textContent = peeps["Artist"];
+        artistname.textContent = peeps["Title"];
 
         // Create a new A element
         const anchorElement = document.createElement('a');
@@ -85,21 +86,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 });
 
-
-// const ctx = new AudioContext();
-
-// // Fetch audio data from the server
-// fetch('http://localhost:8080')
-//   .then(response => response.json())
-//   .then(audioDataList => {
-//     audioDataList.forEach(audioData => {
-//       ctx.decodeAudioData(audioData).then(buffer => {
-//         const audio = new AudioBufferSourceNode(ctx, { buffer });
-//         audio.connect(ctx.destination);
-//         audio.start();
-//       });
-//     });
-//   })
-//   .catch(error => console.error('Error fetching and decoding audio:', error));
 
 
