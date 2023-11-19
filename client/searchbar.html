@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Report</title>
+  <link rel="icon" href="img/music_disc.png" type="image/x-icon">
+  <style>
+/* || RESET */
+* {
+  margin: 5 px;
+  padding: 5 px;
+}
+    
+button{
+  font: inherit;
+}
+    
+/* ||VARIABLES */
+:root{
+  /* ||COLORS */
+  --BGCOLOR: #352F44 /*#54585A linear-gradient(#0F0F0F, #28406e) #FFFBF5*/;
+  --BGCOLORSUB: #5C5470 /*#888B8D radial-gradient( #28406e,#0F0F0F)#F7EFE5*/;
+  --FONTCOLOR: /*#C8102E*/ #FAF0E6;
+  --FONTCOLORSUB: #FFF;
+  --COLORFALLBACK: #000;
+  --HOVERCOLOR: /*#960C22*/ #B9B4C7;
+  --TEXTSHADOW: -1px 0 #FFFFFF, 0 1px #FFFFFF, 1px 0 #FFFFFF, 0 -1px #FFFFFF;
+  /* ||BORDER */
+  --GRIDBORDERS: #000 1px solid;
+}
+
+body{
+  background-color: var(--BGCOLOR);
+  color: var(--FONTCOLOR);
+}
+
+.search-wrapper{
+    display:flex;
+    flex-direction: column;
+    gap: .25rem;
+    font-size: 2rem;
+}
+
+input{
+    font-size: 1rem;
+}
+
+.song-cards{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: .25rem;
+    margin-top: 1rem;
+}
+
+.card{
+    border: var(--GRIDBORDERS);
+    background-color: var(--BGCOLORSUB);
+    padding: .5rem;
+}
+
+.card > .header{
+    margin-bottom: .25rem;
+}
+
+.card > .body{
+    font-size: .8rem;
+    color: var(--FONTCOLORSUB);
+}
+
+.hide{
+    display: none;
+}
+</style>
+
+
+</head>
+
+
+<body>
+    <div class="search-wrapper">
+        <label for="Search"> Song Search </label>
+        <input type="search" id="search" data-search></div>
+    <div class="song-cards" data-song-cards-container></div>
+    <template data-song-template>
+        <div class="card">
+            <div class="header" song-name></div>
+            <div class="body" song-artist></div>
+            <div class="rating" song-artist></div>
+        </div>
+    </template>
+</body>
+
+<script>
+
+</script>
+
+<script defer>
+const userCardTemplate = document.querySelector("[data-song-template]");
+const userCardContainer = document.querySelector("[data-song-cards-container]");
+const searchInput = document.querySelector("[data-search]");
+
+song = [];
+let dataReceived = false;
+
+//Updates whenevr ther is any change to the searchbar and compares to the card values
+searchInput.addEventListener("input", e => {
+    const value = e.target.value.toLowerCase();
+    song.forEach(user => {
+        const isVisible = user.songName.toLowerCase().includes(value) || user.songArtist.toLowerCase().includes(value);
+        user.element.classList.toggle("hide", !isVisible);
+    })
+});
+
+document.getElementById('search').addEventListener('keypress', async function(event) {
+    event.preventDefault(); // Prevent the default form submission
+    try {
+        if (!dataReceived) {
+            const response = await fetch('/getSearchbar', {
+                method: 'POST'
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json(); // Assuming response is JSON
+        }
+        song = data.map(user => {
+            const card = userCardTemplate.content.cloneNode(true).children[0];
+            const header = card.querySelector("[song-name]");
+            const body = card.querySelector("[song-artist]");
+            header.textContent = user.Title;
+            body.textContent = user.Artist;
+            userCardContainer.append(card);
+            return { songName: user.Title, songArtist: user.Artist, element: card}
+        })
+    }
+    catch (error) {
+        console.error('Error fetching data:', error);
+    }
+});
+</script>
+</html>

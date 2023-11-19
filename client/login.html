@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <meta charset="utf-8">
+<link rel="stylesheet" href="playlist_login.css">
 <title>COOG MUSIC</title>
 <body>
   <div>
@@ -19,14 +20,17 @@
     <div>
     <nav class="navbar">
         <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">About</a></li>
-            <li><a href="#">Settings</a></li>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="profile.html">Profile</a></li>
+            <li><a href="musicUpload.html">Upload</a></li>
+            <li><a href="playlist.html">Playlist</a></li>
+            <li><a href="artistDataReport.html">Report Sheet</a></li>
+
         </ul>
         </div>
     <div class="login-container">
        <h2>Login</h2>
-       <form id="login-form" method="post" action="/login/landing">
+       <form id="login-form" method="POST" action="/login/landing">
            <label for="username">CougarID</label>
            <input type="text" id="username" name="username" required>
 

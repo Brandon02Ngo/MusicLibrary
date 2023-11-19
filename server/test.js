@@ -969,13 +969,52 @@ const server = http.createServer(async function(req, res) {                     
             res.end();
         }
 
-        else if(fileName === '/listenerDataReport') {
-            // Data parsing
-            let body = '';
-            req.on('data', (data) => {
-                body += data.toString();
-            });
+        else if (fileName === '/getSearchbar') {
+            console.log("Im Here");
+            sql.connect(dbConfig, (err) => {
+                // Database connection error handler
+                if (err) {
+                    handleDatabaseError(res, err);
+                    return;                    
+                }
 
+                const request = new sql.Request();
+
+                // Defining SELECT query to pass back to html
+                var query = `
+                SELECT 
+                Title, Artist
+                FROM MusicLibrary.[Song] 
+                FOR JSON AUTO`;
+
+                // Process query result and store it to use as a response
+                request.query(query, (err, result) =>  {
+                    if (err) {                                                   // Database query error handler
+                        console.error('Database query error:', err);
+                        sql.close();
+                        res.writeHead(500, { 'Content-Type': 'text/plain' });
+                        res.end('Database query error');
+                        return;
+                    }
+                    //console.log(result);
+                    const rows = result.recordset[0];
+                    //console.log(rows);
+                    const jsonData = JSON.stringify(rows);
+                    res.writeHead(200, {
+                        'Content-Type': 'application/json',
+                        'Content-Length': Buffer.byteLength(jsonData, 'utf8'), //remove row below if needed
+                        /* "Access-Control-Allow-Origin": "*" */
+                    });
+
+                    console.log(jsonData);
+                    res.end(jsonData);
+                })
+            })
+            return;
+        }
+
+        else if(fileName === '/listenerDataReport') {
+            console.log('In listener report');
             // Attempts to authenticate a user's session; if not authentic (session doesn't match server memory, or session doesn't exist) then user is sent to login page
             // Also retrieves userID if session in cookie matches session in memory
             const user = { id: undefined };
@@ -1004,7 +1043,7 @@ const server = http.createServer(async function(req, res) {                     
                 const minRating = fields.minimumRating[0];
                 const maxRating = fields.maximumRating[0];
                 const minListens = fields.minimumListens[0];
-                const genre = fields.genre[0];
+                let genre = fields.genre[0];
 
                 if (genre === 'ALL') {
                     genre = '%'
@@ -1078,12 +1117,6 @@ const server = http.createServer(async function(req, res) {                     
         }
 
         else if(fileName === '/artistDataReport') {
-            // Data parsing
-            let body = '';
-            req.on('data', (data) => {
-                body += data.toString();
-            });
-
             // Attempts to authenticate a user's session; if not authentic (session doesn't match server memory, or session doesn't exist) then user is sent to login page
             // Also retrieves userID if session in cookie matches session in memory
             const user = { id: undefined };
@@ -1660,6 +1693,66 @@ const server = http.createServer(async function(req, res) {                     
             })
         }
 
+        else if (fileName === '/login/searchbar.html') {
+            const user = { id: undefined };
+            let certified = authenticateSession(req, res, user);
+        
+            if (!certified) {
+                return;
+            }
+        
+            var userID = user.id;
+            
+            const htmlPath = path.join(__dirname, '..', 'client', 'searchbar.html');
+            fs.readFile(htmlPath, function (err, data) {
+                if (err) {
+                    res.writeHead(404, { 'Content-Type': 'text/plain' });
+                    res.end('File not found');
+                }
+                else {
+                    res.writeHead(200, { 'Content-Type': 'text/html' });
+                    res.write(data);
+                    res.end();
+                }
+            });
+        
+            return; // Return to avoid further processing for this route
+        }
+
+        else if (fileName === '/login/listener_report.html') {
+            const user = { id: undefined };
+            let certified = authenticateSession(req, res, user);
+
+            if (!certified) {
+                return;
+            }
+
+            var userID = user.id;
+            
+            getUserRole(userID, (err, roleName) => {
+                // Database connection error handler
+                if (err) {
+                    handleDatabaseError(res, err);
+                    return;                    
+                }
+
+                // Serve listener_report.html
+                const htmlPath = path.join(__dirname, '..', 'client', 'listener_report.html');
+                fs.readFile(htmlPath, function(err, data) {
+                    if (err) {
+                        res.writeHead(404, {'Content-Type': 'text/plain'});
+                        res.end('File not found');
+                    }
+                    else {
+                        res.writeHead(200, {'Content-Type': 'text/html'});
+                        res.write(data);
+                        res.end();
+                    }
+                });
+            })
+            return; // Return to avoid further processing for this route
+        }
+
         else if (fileName === '/login/artistDataReport.html') {
             const user = { id: undefined };
             let certified = authenticateSession(req, res, user);
@@ -1727,7 +1820,7 @@ const server = http.createServer(async function(req, res) {                     
                 const artistDataReportHtmlPath = path.join(__dirname, '..', 'client', 'artistDataReport.html');
                 const writeHeadParameters = [200, { 'Content-Type': 'text/html; charset=utf-8' }];
 
-                // Serve playlist.html
+                // Serve artistDataReport.html
                 serveFile(res, 1, writeHeadParameters, artistDataReportHtmlPath);
             })
             return; // Return to avoid further processing for this route
