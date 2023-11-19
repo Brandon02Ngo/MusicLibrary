@@ -1,134 +1,131 @@
 #songlist {
-  list-style: none;
-  padding: 0;
-}
-
-html {
-  font-size: 1.5em;
-  scroll-behavior: smooth;
-}
-
-/*the style used for the hyperlinks*/
-a {
-  color: #C8102E;
-  text-decoration: none;
-}
-a:visited {
-  color: #960C22;
-}
-a:hover, a:active {
-  color: #640817;
-}
-
-/*main body colors for the page*/
-body {
-  background-color: #54585A;
-  color: #C8102E;
-}
-
-/* for the sidebar and playlist in the side */
-.side{
-  margin: 0px;
-  height: 100%;  /*Full-height: remove this if you want "auto" height */
-  width: 200px; /* Set the width of the sidebar */
-  position: fixed; /* Fixed Sidebar (stay in place on scroll) */
-  z-index: 1; /* Stay on top */
-  top: 0; /* Stay at the top */
-  left: 0;
-  background-color: #888; /* Black */
-  border: 1px soilid #000;
-  overflow-x: hidden; /* Disable horizontal scroll */
-  padding-top: 20px;
-}
-.playlist{
-  font-size: .5rem;
+    list-style: none;
+    padding: 0;
+  }
   
-}
-
-/* position of the main page */
-main {
-  margin-left: 200px; /* Same as the width of the sidebar */
-  padding: 0px 10px;
-}
-
-/* font colors */
-.uhFont {
-  color: #C8102E;
-  text-shadow: -1px 0 #FFFFFF, 0 1px #FFFFFF, 1px 0 #FFFFFF, 0 -1px #FFFFFF;
-}
-
-/*For the search bar*/
-#searchbar {
-  margin-top: 3%;
-  margin-left: 1%; 
-  padding: .8rem; 
-  border-radius: .6rem; 
-  width: 24rem;
-  color: #000;
-}
-
-.song-list {
-  display: flex;
-  /* flex for horizontal list */
-}
-
-.song-item {
-  border: 1px solid #FFF9D9;
-  background-color: #888B8D;
-  padding: 10px;
-  margin: 10px;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.song-box {
-  width: 100px;
-  height: 100px;
-  background-color: black;
-  margin-right: 10px;
-  border-radius: 7px;
-}
-
-.song-info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin-left: 0px;
-  /*The info of the song is outside the box rather that in.*/
-  padding: 0px;
-  font-size: 12px;
-
-}
-
-.song-info p {
-  margin: 3px;
-}
-
-#new-releases {
-  list-style: none;
-  padding: 0px;
-}
-
-.NR-box {
-  width: 100px;
-  height: 100px;
-  background-color: pink;
-  margin-right: 10px;
-  border-radius: 7px;
-}
-
-#Recommended {
-  list-style: none;
-  padding: 0px;
-}
-
-.Rec-box {
-  width: 100px;
-  height: 100px;
-  background-color: green;
-  border-radius: 50%;
-  margin-right: 10px;
-}
-
-
-
+  html {
+    font-size: 1.5em;
+    scroll-behavior: smooth;
+  }
+  
+  /*the style used for the hyperlinks*/
+  a {
+    color: #C8102E;
+    text-decoration: none;
+  }
+  a:visited {
+    color: #960C22;
+  }
+  a:hover, a:active {
+    color: #640817;
+  }
+  
+  /*main body colors for the page*/
+  body {
+    background-color: #54585A;
+    color: #C8102E;
+  }
+  
+  /* for the sidebar and playlist in the side */
+  .side{
+    margin: 0px;
+    height: 100%;  /*Full-height: remove this if you want "auto" height */
+    width: 200px; /* Set the width of the sidebar */
+    position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+    z-index: 1; /* Stay on top */
+    top: 0; /* Stay at the top */
+    left: 0;
+    background-color: #888; /* Black */
+    border: 1px soilid #000;
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding-top: 20px;
+  }
+  .playlist{
+    font-size: .5rem;
+    
+  }
+  
+  /* position of the main page */
+  main {
+    margin-left: 200px; /* Same as the width of the sidebar */
+    padding: 0px 10px;
+  }
+  
+  /* font colors */
+  .uhFont {
+    color: #C8102E;
+    text-shadow: -1px 0 #FFFFFF, 0 1px #FFFFFF, 1px 0 #FFFFFF, 0 -1px #FFFFFF;
+  }
+  
+  /*For the search bar*/
+  #searchbar {
+    margin-top: 3%;
+    margin-left: 1%; 
+    padding: .8rem; 
+    border-radius: .6rem; 
+    width: 24rem;
+    color: #000;
+  }
+  
+  .song-list {
+    display: flex;
+    /* flex for horizontal list */
+  }
+  
+  .song-item {
+    border: 1px solid #FFF9D9;
+    background-color: #888B8D;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .song-box {
+    width: 100px;
+    height: 100px;
+    background-color: black;
+    margin-right: 10px;
+    border-radius: 7px;
+  }
+  
+  .song-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 0px;
+    /*The info of the song is outside the box rather that in.*/
+    padding: 0px;
+    font-size: 12px;
+  
+  }
+  
+  .song-info p {
+    margin: 3px;
+  }
+  
+  #new-releases {
+    list-style: none;
+    padding: 0px;
+  }
+  
+  .NR-box {
+    width: 100px;
+    height: 100px;
+    background-color: pink;
+    margin-right: 10px;
+    border-radius: 7px;
+  }
+  
+  #Recommended {
+    list-style: none;
+    padding: 0px;
+  }
+  
+  .Rec-box {
+    width: 100px;
+    height: 100px;
+    background-color: green;
+    border-radius: 50%;
+    margin-right: 10px;
+  }

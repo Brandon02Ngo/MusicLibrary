@@ -44,7 +44,7 @@
 
 <body>
     <h1>Music Upload</h1>
-    <form id="selection" name="selectionForm" method="post" action="/selectionForm/process">
+    <form id="selection" name="selectionForm">
         <h3>Select Upload Type</h3>
         <div>
             <label for="album">Album</label>
@@ -56,7 +56,7 @@
         </div>
     </form>
 
-    <form id="albumSelected" name="albumForm" method="post" action="/albumForm/process">
+    <form id="albumSelected" name="albumForm" method="post" action="/artistDataEntry/album" enctype="multipart/form-data">
         <div id="albumSection">
             <h1>Enter Album Information</h1>
             <h3>Please Input Number of Songs and Click Add Song Fields Button</h3>
@@ -66,10 +66,17 @@
             </div>
             
             <div>
-                <label for="albumGenre">Genre</label>
-                <input type="text" id="albumGenre" name="albumGenre" placeholder="Album Genre" required>
+                <label for="albumGenre">Album Genre</label>
+                <select name="albumGenre" id="albumGenre" required>
+                    <option value="Classical">Classical</option>
+                    <option value="Country">Country</option>
+                    <option value="Electronic">Electronic</option>
+                    <option value="Jazz">Jazz</option>
+                    <option value="Pop">Pop</option>
+                    <option value="Rock">Rock</option>
+                    <option value="Sounds">Sounds</option>
+                </select>
             </div>
-    
             
             <div>
                 <label for="albumSongs">Number of Songs</label>
@@ -78,7 +85,7 @@
     
             <div>
                 <label for="albumCover">Cover</label>
-                <input type="file" id="albumCover" name="albumCover">
+                <input type="file" id="albumCover" name="albumCover" accept=".jpg">
             </div>
 
             <div id="songInputs"></div>
@@ -91,7 +98,7 @@
         </div>
     </form>
 
-    <form id="singleSelected" name="singleForm" method="post" action="/singleForm/process">
+    <form id="singleSelected" name="singleForm" method="post" action="/artistDataEntry/single" enctype="multipart/form-data">
         <div id="singleSection">
             <h1>Enter Single Information</h1>
     
@@ -99,32 +106,32 @@
                 <label for="singleTitle">Title</label>
                 <input type="text" id="singleTitle" name="singleTitle" placeholder="Single Title" required>
             </div>
-            
+
             <div>
-                <label for="singleGenre">Genre</label>
-                <input type="text" id="singleGenre" name="singleGenre" placeholder="Single Genre" required>
+                <label for="singleGenre">Single Genre</label>
+                <select name="singleGenre" id="singleGenre" required>
+                    <option value="Classical">Classical</option>
+                    <option value="Country">Country</option>
+                    <option value="Electronic">Electronic</option>
+                    <option value="Jazz">Jazz</option>
+                    <option value="Pop">Pop</option>
+                    <option value="Rock">Rock</option>
+                    <option value="Sounds">Sounds</option>
+                </select>
             </div>
-    
+
             <div>
                 <label for="singleCover">Cover</label>
-                <input type="file" id="singleCover" name="singleCover">
+                <input type="file" id="singleCover" name="singleCover" accept=".jpg">
             </div>
     
             <div>
                 <label for="singleFile">File</label>
-                <input type="file" id="singleFile" name="singleFile" required>
+                <input type="file" id="singleFile" name="singleFile" accept=".mp3" required>
             </div>
             <button type="submit" id="submit">Submit</button>
         </div>
     </form>
-
-    <div class="home">
-        <a href = "index.html">
-            <button>
-                Home
-            </button>
-        </a>
-    </div>
 
     <script>
         // Will either show data for Album Upload or Single Upload depending on radio button selection
@@ -196,6 +203,7 @@
             const fileInput = document.createElement("input");
             fileInput.type = "file";
             fileInput.name = `songFile${albumSize}`;
+            fileInput.accept = ".mp3";
             fileInput.required = true;
             // Apply margins using CSS
             songDiv.style.margin = "10px";

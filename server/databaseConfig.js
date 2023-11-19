@@ -3,6 +3,7 @@ const dbConfig = {
     password: 'coogs@CS',
     server: 'ec2-18-188-254-236.us-east-2.compute.amazonaws.com',
     database: 'MusicLibraryDatabase',
+
     pool: {
         max: 10,                        // Max connections at any given time
         min: 0,                         // Min connections

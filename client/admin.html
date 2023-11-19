@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--<link href="admin.css" rel="stylesheet"/>-->
+    <style>
+        /*Styling */
+        :root{
+            /* COLORS */
+            --BGCOLOR: #352F44 /*#54585A linear-gradient(#0F0F0F, #28406e) #FFFBF5*/;
+            --BGCOLORSUB: #5C5470 /*#888B8D radial-gradient( #28406e,#0F0F0F)#F7EFE5*/;
+            --FONTCOLOR: /*#C8102E*/ #FAF0E6;
+            --COLORFALLBACK: #FFF;
+            --HOVERCOLOR: /*#960C22*/ #B9B4C7;
+            --TEXTSHADOW: -1px 0 #FFFFFF, 0 1px #FFFFFF, 1px 0 #FFFFFF, 0 -1px #FFFFFF;
+        }
+
+        html {
+            height: 100%;
+            max-width: 100%;
+        }
+
+        main {
+            margin-top: 2%;
+            max-width: 100%;
+            height: 100%;
+        }
+
+        main p {
+            font-size: large;
+        }
+
+        body {
+            background-color: var(--BGCOLOR);
+            height: 100%;
+            font-size: large;
+            color: var(--FONTCOLOR);
+            max-width: 100%;
+        }
+
+        body p {
+            font-size: large;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .admin_options_dropdown button {
+            font-size: x-large;
+        }
+
+        .show_users p {
+            white-space: pre-line;
+        }
+
+        .show_users {
+            background-color: /* rgb(219, 217, 217) */ var(--BGCOLORSUB);
+            position: absolute; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            top: 0;
+            left: 0;
+            bottom: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            right: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            height: 80%;
+            max-width: 70%;
+            display: block; /*credit: byksi on https://stackoverflow.com/questions/20124635/display-one-element-per-line-with-css-and-outer-text*/
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            align-content: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3 ease;
+            pointer-events: none;
+            /* Joseph Silber and john Smith on:
+            https://stackoverflow.com/questions/14402038/how-to-position-a-container-in-the-middle-of-the-screen */
+            /*margin-left: auto;*/
+            /*margin-right: auto;*/
+            margin: auto; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+        }
+
+        .show_users.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .ask_confirmation_to_delete {
+            background-color: /* rgb(219, 217, 217) */ var(--BGCOLORSUB);
+            position: absolute; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            top: 0;
+            left: 0;
+            bottom: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            right: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            height: 50%;
+            width: 50%;
+            display: block; /*credit: byksi on https://stackoverflow.com/questions/20124635/display-one-element-per-line-with-css-and-outer-text*/
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            align-content: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3 ease;
+            pointer-events: none;
+            /* Joseph Silber and john Smith on:
+            https://stackoverflow.com/questions/14402038/how-to-position-a-container-in-the-middle-of-the-screen */
+            /*margin-left: auto;*/
+            /*margin-right: auto;*/
+            margin: auto; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+        }
+
+        .ask_confirmation_to_delete.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .deletion_result {
+            background-color: /* rgb(219, 217, 217) */ var(--BGCOLORSUB);
+            position: absolute; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            top: 0;
+            left: 0;
+            bottom: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            right: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            height: 50%;
+            width: 50%;
+            display: block; /*credit: byksi on https://stackoverflow.com/questions/20124635/display-one-element-per-line-with-css-and-outer-text*/
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            align-content: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3 ease;
+            pointer-events: none;
+            /* Joseph Silber and john Smith on:
+            https://stackoverflow.com/questions/14402038/how-to-position-a-container-in-the-middle-of-the-screen */
+            /*margin-left: auto;*/
+            /*margin-right: auto;*/
+            margin: auto; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+        }
+
+        .deletion_result.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /*code for dropdown button css from tutorial at https://www.youtube.com/watch?v=VQWu4e6agPc&t=76s*/
+        /* and from https://www.youtube.com/watch?v=VQWu4e6agPc&t=76s*/
+        .admin_options_dropdown {
+            display: inline-block;
+        }
+
+        .admin_options_dropdown button {
+            background-color: rgb(223, 223, 223);
+            color: black;
+            cursor: pointer;
+        }
+
+        .admin_options_dropdown .dropdown_menu_btn {
+            display: block;
+            color: black;
+            text-decoration: none;
+        }
+
+        .admin_options_dropdown .dropdown_content {
+            display: none;
+            background-color: rgba(211, 211, 214, 0.822);
+            position: absolute;
+            min-width: 100px;
+            box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.671);
+        }
+
+        .admin_options_dropdown:hover .dropdown_content{
+            display: block;
+        }
+
+        .admin_options_dropdown:hover button{
+            background-color: rgb(175, 174, 174);
+        }
+
+        .admin_options_dropdown .dropdown_menu_btn:hover{
+            background-color: rgba(184, 182, 182, 0.801);
+        }
+
+        .admin_options_dropdown .dropdown_content button {
+            border: none;
+            display: inline-block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .home{
+            position: absolute;
+            top: 0;
+        }
+
+        .div_table_of_users {
+            /*border: 1px solid rgb(0, 0, 0);*/
+            align-items: center;
+            align-content: center;
+            text-align: center;
+            align-self:center;
+            display: inline-block;
+            width: 100%;
+        }
+
+        #table_of_users_and_roles {
+            border: 1px solid black;
+            background-color: rgb(197, 194, 194);
+            color: black;
+            border-collapse: collapse;
+            width: 90%;
+            align-self: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #table_of_users_and_roles td {
+            border: 1px solid gray;
+            padding-left: 1%;
+            padding-right: 1%;
+            padding-top: .25%;
+            padding-bottom: .25%;
+            margin-top: .5%;
+            margin-bottom: .5%;
+
+        }
+
+        #table_of_users_and_roles th {
+            border: 1px solid black;
+        }
+
+
+        .create_reports_section p {
+            white-space: pre-line;
+        }
+
+        .create_reports_section {
+            background-color:/* rgb(219, 217, 217);*/var(--BGCOLORSUB);
+            position: absolute; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            top: 0;
+            left: 0;
+            bottom: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            right: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            height: 60%;
+            width: 60%;
+            display: block; /*credit: byksi on https://stackoverflow.com/questions/20124635/display-one-element-per-line-with-css-and-outer-text*/
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            align-content: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3 ease;
+            pointer-events: none;
+            /* Joseph Silber and john Smith on:
+            https://stackoverflow.com/questions/14402038/how-to-position-a-container-in-the-middle-of-the-screen */
+            /*margin-left: auto;*/
+            /*margin-right: auto;*/
+            margin: auto; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+        }
+
+        .create_reports_section.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #data_report_table {
+            border-collapse: collapse;
+            border: 1px solid rgb(0, 0, 0);
+            padding: 1%;
+            width: 100%;
+        }
+
+        #data_report_table thead {
+            background-color:/* rgb(247, 247, 247);*/var(--BGCOLORSUB);
+            border-collapse: collapse;
+            border: 1px solid black;
+            padding: 1%;
+            text-align: center;
+        }
+
+        #data_report_table th {
+            padding-left: 1%;
+            padding-right: 1%;
+            padding-top: .5%;
+            padding-bottom: .5%;
+            text-align: center;
+            border: 1px solid black;
+        }
+        #data_report_table td {
+            padding: 0.75%;
+            text-align: center;
+            border: 1px solid black;
+        }
+
+        .report_data {
+            text-align: center;
+            align-content: center;
+            max-width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+            font-size: large;
+        }
+
+        .report_data p {
+            font-size: x-large;
+        }
+
+
+    </style>
+    <title>Admin</title>
+</head>
+
+<body>
+    <div>
+        <a class ="home" href = "index.html">
+            <button>
+                Home
+            </button>
+        </a>
+    </div>
+    <main>
+    <h1> Administration </h1>
+    <!--adapted/extracted from: https://www.w3schools.com/howto/howto_css_dropdown.asp-->
+    <!-- and from https://www.youtube.com/watch?v=VQWu4e6agPc&t=76s-->
+
+    <div class="admin_options_dropdown">
+        <button > Actions </button>
+        <div class = "dropdown_content">
+            <button class="dropdown_menu_btn" id = "delete_users_btn"> Delete User </button>
+            <button class="dropdown_menu_btn" id = "create_report_btn"> Create Reports </button>
+        </div>
+        
+    </div>
+    <div class="show_users" id ="show_users_id">
+        <h3> Users in Coog Music: </h3>
+        <p> Select the user you want to delete.</p>
+        <div class="div_table_of_users">
+            <table id="table_of_users_and_roles">
+                <thead>
+                    <tr>
+                        <th> Usernames </th>
+                        <th> Roles </th>
+                        <th> Delete </th>
+                    </tr>
+                </thead>
+                <form id = "users_to_be_marked_for_deletion_form">
+                <tbody id ="usernames_and_roles_table">
+        
+                </tbody>
+                <button id="user_to_delete_button"> Delete </button>
+                </form>
+            </table>
+        </div>
+        <!--<button id = "delete_user_button"> Delete User </button>-->
+        <button id ="clear_screen"> Close </button>
+    </div>
+    <div class="ask_confirmation_to_delete" id ="ask_confirmation_to_delete_id">
+        <h3> Are you sure that you want to delete this user? </h3>
+        <button id ="yes_delete_button"> Yes, proceed to delete </button>
+        <button id = "no_delete_return_button"> No, return</button>
+    </div>
+    <div class="deletion_result" id ="deletion_result_id">
+        <h3> The user's account has been deleted. </h3>
+        <button id = "deletion_result_close_button"> Close </button>
+    </div>
+
+
+    <div class="create_reports_section" id ="create_reports_section_id">
+        <h3> Most Famous Artists </h3>
+        <form name="user_parameters_for_admin_report" id = "user_parameters_for_admin_report_id" method="POST" action="/adminDataReport">
+            <label> Choose the number of most-famous artists to include in report </label>
+            <input id="number_of_artists_to_include_id" min="1" max="10" step="1" type="range" name="number_of_artists_to_include" value="number_of_artists_to_include"/>
+            <p> <output id="value"></output> artists. </p>
+            <label> Check to include Artist's city: </label>
+            <input id="city_checkbox_id" type="checkbox" name="city" value="city"/>
+            <br>
+            <br>
+            <label> Check to include the name of Artist's most famous song: </label>
+            <input id="song_checkbox_id" type="checkbox" name ="show_most_famous_song_name" value="show_most_famous_song_name"/>
+            <br>
+            <p> Change the selection below if you wish to search for a specific genre only: </p>
+            <label for="genre0"> All Genres </label>
+            <input type="radio" id="genre0" name ="genre" value="All Genres"/>
+            <label for="genre1"> Jazz </label>
+            <input type="radio" id="genre1" name ="genre" value="Jazz"/>
+            <label for="genre2"> Country </label>
+            <input type="radio" id="genre2" name ="genre" value="Country"/>
+            <label for="genre3"> Electronic </label>
+            <input type="radio" id="genre3" name ="genre" value="Electronic"/>
+            <br>
+            <!--<input type="submit" value="Submit" id = "create_report_button">-->
+        <button type="submit" > Submit </button>
+        </form>
+
+        <button id ="close_reports_section"> Close </button>
+    </div>
+    <div class="report_data" id="class_report_data_id">
+        <p id = "n-artist"> </p>
+        <!-- dynamically generated table -->
+        <table id = "data_report_table">
+            <thead id ="data_report_table_headers">
+            </thead>
+            <tbody id ="data_report_table_body">
+        
+            </tbody>
+        </table>
+    </div>
+
+    <!--<script src="admin.js"></script>-->
+    <script>
+
+        // show users
+        const opens_show_users = document.getElementById("delete_users_btn");
+        const show_users = document.getElementById("show_users_id");
+        const close_show_users = document.getElementById("clear_screen");
+
+        opens_show_users.addEventListener("click", () => {
+            show_users.classList.add("show");
+        });
+
+        close_show_users.addEventListener("click", () => {
+            show_users.classList.remove("show");
+        });
+
+
+
+        // ask confirmation to delete
+        //const opens_confirmation_to_delete = document.getElementById("delete_user_button");
+        const confirmation_to_delete = document.getElementById("ask_confirmation_to_delete_id");
+        const close_confirmation_to_delete = document.getElementById("no_delete_return_button");
+
+        //opens_confirmation_to_delete.addEventListener("click", () => {
+        //    confirmation_to_delete.classList.add("show");
+        //});
+
+        close_confirmation_to_delete.addEventListener("click", () => {
+            confirmation_to_delete.classList.remove("show");
+        });
+
+        // show deletion result
+        const opens_deletion_result = document.getElementById("yes_delete_button");
+        const deletion_result = document.getElementById("deletion_result_id");
+        const closes_deletion_result = document.getElementById("deletion_result_close_button");
+
+        opens_deletion_result.addEventListener("click", () => {
+            deletion_result.classList.add("show");
+        });
+
+        closes_deletion_result.addEventListener("click", () => {
+            deletion_result.classList.remove("show");
+            confirmation_to_delete.classList.remove("show");
+            show_users.classList.remove("show");
+        });
+
+        // update the data in HTML from data in database
+        async function logJSON(){
+            const response = await fetch('http://localhost:8080/get_usernames');
+            const data = await response.json();
+            console.log(data);
+            //const html_element = document.getElementById("usernames_and_roles_table");
+            
+                var target = document.getElementById("usernames_and_roles_table");
+                var output = "";
+                //console.log(data);
+                
+                for (var row of data){
+                    output += `
+                        <tr>
+                            <td> <label for ="${row.Cougar_ID}" > ${row.Username} </label> </td>
+                            <td> <label for ="${row.Cougar_ID}" > ${row.Role_Name} </label> </td>
+                            <td> <input type="checkbox" id="${row.Cougar_ID}" name="unique_id" value="${row.Cougar_ID}" /> </td>
+                        </tr> 
+                    `;
+                    //console.log(row.Username);
+                    //console.log(row.Role_Name);
+                    //console.log(row.Cougar_ID);
+                };
+                target.innerHTML = output
+            
+            /*
+            info = "";
+            for (row of data){
+                info += `
+                    <tr>
+                        <td> '${row.Username}' </td>
+                        <td> '${row.Role_Name}' </td>
+                    </tr> 
+                `
+            }
+            html_element.innerHTML(info);
+            */
+        }
+
+        logJSON();
+
+        //const button = document.querySelectorAll("#user_to_delete_button");
+        //button.addEventListener('click', (event) => {
+        //    let checkboxes = document.
+        //})
+
+        // get the desired password from the client-side
+        // credit: Coding Shiksha youtube channel video at: https://www.youtube.com/watch?v=S944-epyYuI
+        const button = document.querySelector("#user_to_delete_button");
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            if (confirm('Please click OK to confirm deletion.') == false ){
+                return;
+            }
+            let checkboxes = document.querySelectorAll('input[name="unique_id"]:checked');
+            let output = [];
+
+            checkboxes.forEach((checkbox) => {
+                output.push(checkbox.value);
+            });
+            //console.log('output is:');
+            //console.log(output);
+
+            // mark the users for deletion
+            // this function requires that the JSON server be running
+            // there will be a for loop here
+            var data_object = [];
+            try{
+            for (let n =0;n<output.length;n++){
+                async function delete_user(){
+                    // credit: https://stackoverflow.com/questions/59554421/how-perform-patch-request-from-html-form-using-nodejs
+                    var cougar_id_to_be_deleted = output[n]; // from session
+                    var url = "http://localhost:8080/delete_user/" + cougar_id_to_be_deleted; // no need to convert cougar_id_to_be_deleted to a string because it is string already
+                    const response = await fetch(url, {
+                        method: "PATCH",
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        // body with necessary data
+                        body: JSON.stringify({
+                            target_cougar_id_to_delete: cougar_id_to_be_deleted,
+                        })
+                    });
+                    
+                    //console.log(response[0]);
+                    const data = await response.json();
+                    console.log(data);
+                };
+
+                delete_user();
+            }
+            }
+            catch {
+                alert('There was an error when trying to delete users. Please try again.')
+            }
+            alert('Operation completed. Please refresh page to see changes.')
+
+
+
+            // need to send desired_password and cougar_id_from_client_side to the server-side
+        });
+        // finished getting the desired password from the client-side
+
+
+
+
+        //////// create reports
+        // show create reports section
+        const opens_create_reports_section = document.getElementById("create_report_btn");
+        const create_reports_section = document.getElementById("create_reports_section_id");
+        const close_create_reports_section = document.getElementById("close_reports_section");
+
+        opens_create_reports_section.addEventListener("click", () => {
+            show_users.classList.remove("show");
+            create_reports_section.classList.add("show");
+        });
+
+        close_create_reports_section.addEventListener("click", () => {
+            create_reports_section.classList.remove("show");
+        });
+
+        // show the number of the current selections of number of artist to include in the report
+        // credit: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/range
+        const number_of_artists_current_selection = document.querySelector("#value");
+        const input = document.querySelector("#number_of_artists_to_include_id");
+        number_of_artists_current_selection.textContent = input.value;
+        input.addEventListener("input", (event) => {
+            value.textContent = event.target.value;
+        });
+
+
+        var data_for_report;
+        // get the desired password from the client-side
+        // credit: Coding Shiksha youtube channel video at: https://www.youtube.com/watch?v=S944-epyYuI
+        const report_submit_form_button = document.querySelector("#create_report_button");
+        const report_submit_form_button_element = document.getElementById("create_report_button")
+        report_submit_form_button_element.addEventListener("click", () => {
+            create_reports_section.classList.remove("show");
+        });
+        report_submit_form_button.addEventListener('click', (event) => {
+            event.preventDefault();
+            //var data_for_report;
+
+            // get the value from the range
+            // credit: j08691 at https://stackoverflow.com/questions/29103818/how-can-i-retrieve-and-display-slider-range-value
+            let number_of_artists_for_query = document.getElementById("number_of_artists_to_include_id").value;
+            console.log("number_of_artists_for_query is:");
+            console.log(number_of_artists_for_query);
+
+            // get the value for the city's checkbox
+            // credit: Agostino on https://stackoverflow.com/questions/9887360/how-can-i-check-if-a-checkbox-is-checked
+            let include_city_checkbox = document.getElementById("city_checkbox_id");
+            if (include_city_checkbox.checked){
+                console.log("include city")
+            }
+            else {
+                console.log("do not include city")
+            }
+
+            // get the value for the artist's most famous song checkbox
+            let include_song_name_checkbox = document.getElementById("song_checkbox_id");
+            if (include_song_name_checkbox.checked){
+                console.log("include song name")
+            }
+            else {
+                console.log("do not include song name")
+            }
+
+            // get the value for the gernre-specific query (this object might not be submitted
+            // if no genre is selected, so, before getting the selection, ask if the object
+            // exists)
+            let genre_selected = document.querySelector('input[name="genre"]:checked').value;    
+            console.log('genre selected is:')
+            console.log(genre_selected);
+            var genre_boolean = 1;
+            if (genre_selected === 'All Genres'){
+                genre_boolean = 0;
+            }
+
+            // build the query string
+            //var query = "";
+            //query += "SELECT * FROM [music_library].[Roles]"; // for testing purposes
+            // need:
+            var number = document.getElementById("number_of_artists_to_include_id").value;// number of artists the user wants to see (between 1 and 10)
+            console.log('number is:')
+            console.log(number);
+            var query;
+            if (genre_selected ==='All Genres') { 
+                query = `WITH
+                table1
+                AS
+                
+                (
+                    SELECT
+                        [Created_By] AS Artist_ID,
+                        [Title] AS Song_Name,
+                        SUM([Listens]) AS total_listens
+                    FROM
+                        [MusicLibrary].[Song],
+                        [MusicLibrary].[User_Song_Listens]
+                    WHERE 
+                    [MusicLibrary].[Song].[Song_ID] = [MusicLibrary].[User_Song_Listens].[Song_ID]
+                    GROUP BY 
+                    [Created_By], 
+                    [Title]   
+            
+                )
+            /*,table3 AS(*/
+            
+            SELECT * FROM (
+            SELECT t2.*
+            FROM table1 RIGHT JOIN (
+            SELECT Artist_ID, Song_Name, MAX(total_listens) AS max_listens
+                FROM table1
+                GROUP BY table1.Artist_ID, table1.Song_Name
+            ) AS t2 ON table1.Artist_ID = t2.Artist_ID AND table1.Song_Name=t2.Song_Name
+            ) AS table_a/*;*/
+            
+            JOIN (
+                SELECT most_famous_artist_table.*, other_details.Username, other_details.City, other_details.State, other_details.user_since FROM (
+                    SELECT TOP ${number}
+                        [Created_By] AS 'user_ids', SUM([Listens]) AS 'total_listens_for_artist'
+                    FROM [MusicLibrary].[Song], [MusicLibrary].[User_Song_Listens]
+                    WHERE  [MusicLibrary].[Song].[Song_ID] =  [MusicLibrary].[User_Song_Listens].[Song_ID]
+                    GROUP BY [Created_By]) /*ORDER BY [Listens] DESC*/
+                AS most_famous_artist_table 
+                JOIN (
+                SELECT [MusicLibrary].[User].[Cougar_ID] AS 'id',[Username],[City], [State],[Created_At] as 'user_since'
+                FROM [MusicLibrary].[User], [MusicLibrary].[Artist]
+                WHERE [MusicLibrary].[User].[Cougar_ID] = [MusicLibrary].[Artist].[Cougar_ID]
+                ) AS other_details ON most_famous_artist_table.user_ids = other_details.id
+            ) AS extra_table ON extra_table.user_ids=table_a.Artist_ID ORDER BY total_listens_for_artist;`;
+            }
+            else {
+            query = `WITH
+            table1
+            AS
+            
+            (
+                SELECT
+                    [Created_By] AS Artist_ID,
+                    [Title] AS Song_Name,
+                    SUM([Listens]) AS total_listens
+                FROM
+                    [MusicLibrary].[Song],
+                    [MusicLibrary].[User_Song_Listens]
+                WHERE 
+                [MusicLibrary].[Song].[Song_ID] = [MusicLibrary].[User_Song_Listens].[Song_ID]
+                    AND [Genre] = '${genre_selected}'
+                GROUP BY 
+                [Created_By], 
+                [Title]   
+
+            )
+        /*,table3 AS(*/
+
+        SELECT * FROM (
+        SELECT t2.*
+        FROM table1 RIGHT JOIN (
+        SELECT Artist_ID, Song_Name, MAX(total_listens) AS max_listens
+            FROM table1
+            GROUP BY table1.Artist_ID, table1.Song_Name
+        ) AS t2 ON table1.Artist_ID = t2.Artist_ID AND table1.Song_Name=t2.Song_Name
+        ) AS table_a/*;*/
+
+        JOIN (
+            SELECT most_famous_artist_table.*, other_details.Username, other_details.City, other_details.State, other_details.user_since FROM (
+                SELECT TOP ${number}
+                    [Created_By] AS 'user_ids', SUM([Listens]) AS 'total_listens_for_artist'
+                FROM [MusicLibrary].[Song], [MusicLibrary].[User_Song_Listens]
+                WHERE  [MusicLibrary].[Song].[Song_ID] =  [MusicLibrary].[User_Song_Listens].[Song_ID]
+                    AND [Song].[Genre] = '${genre_selected}'
+                GROUP BY [Created_By]) /*ORDER BY [Listens] DESC*/
+            AS most_famous_artist_table 
+            JOIN (
+            SELECT [MusicLibrary].[User].[Cougar_ID] AS 'id',[Username],[City], [State],[Created_At] as 'user_since'
+            FROM [MusicLibrary].[User], [MusicLibrary].[Artist]
+            WHERE [MusicLibrary].[User].[Cougar_ID] = [MusicLibrary].[Artist].[Cougar_ID]
+            ) AS other_details ON most_famous_artist_table.user_ids = other_details.id
+        ) AS extra_table ON extra_table.user_ids=table_a.Artist_ID ORDER BY total_listens_for_artist;`;
+            }
+            console.log("input query received");
+            //console.log("Query to run is:")
+            //console.log(query);
+            // ask the api to make the query for you and to give you the result
+            // (send the query in a json format such as:
+            // { "query_to_run" = "string_of_the_query_to_run_with_variables_and_everything"}
+            // )
+            //
+            try{
+                console.log("entered try:")
+                async function run_report_query(){
+                    // credit: https://stackoverflow.com/questions/59554421/how-perform-patch-request-from-html-form-using-nodejs
+                    var url = "http://localhost:8080/adminDataReport";
+                    console.log("url is")
+                    console.log(url)
+                    var response_from_fetch;
+                    try{
+                        response_from_fetch = await fetch(url, {
+                        method: "POST",
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }/*,
+                        // body with the query
+                        body: JSON.stringify({
+                            statement_for_generic_query: query,
+                        })*/
+                    });
+                    }
+                    catch {
+                        console.log("something went wrong in fetch function")
+                    }
+                    console.log("finished response")
+                    //console.log(response);
+                    //console.log(response[0]);
+                    data_for_report = await response_from_fetch.json();
+                    console.log("reponse JSON is:")
+                    console.log(data_for_report);
+                };
+                try {
+                    run_report_query().then(() => {
+                        //alert('SQL Query for report ran successfully.')
+
+                        // generate the html for the div
+                        console.log('writing html')
+                        var target_html = document.getElementById("data_report_table_body");
+                        var n_artists_html = document.getElementById("n-artist");
+                        var n_artists = "";
+                        var headers_target_html = document.getElementById("data_report_table_headers");
+                        var data_to_write = ""; //= ""
+                        //const html_element = document.getElementById("usernames_and_roles_table");
+
+                        //var target = document.getElementById("name_of_current_user");
+                        //var second_target = document.getElementById("change_my_username");
+                        //var output = "";
+
+                        const array_of_headers = ['Username','City','State','Most Famous Song','Total Listens for Artist','User Since'];
+                        var include = [true,false,true,false,true,true]
+                        // if city is marked, mark it to true
+                        if (include_city_checkbox.checked){
+                            include[1] = true;
+                            console.log(include.at[1])
+                        }
+                        // if song_name is marked, mark it to true
+                        if (include_song_name_checkbox.checked){
+                            include[3] = true;
+                            console.log(include.at[3])
+                        }
+                        var headers_html = "";
+                        var ind = 0;
+                        for (const mark of include){
+                            console.log(ind)
+                            console.log(array_of_headers[ind])
+                            if (mark === true){
+                            headers_html += `<th> ${array_of_headers[ind]} </th>`
+                            }
+                            ind = ind + 1;
+                        };
+                        console.log(headers_html)
+
+
+                        for (var row of data_for_report){
+                            data_to_write += `<tr>`;
+                            data_to_write += `<td> ${row.Username} </td>`;
+                            // if city will be included, add it to the html:
+                            if (include_city_checkbox.checked){
+                                data_to_write += `<td> ${row.City} </td>`;
+                            }
+                            data_to_write += `<td> ${row.State} </td>`;
+                            // if song name will be included, add it to the html:
+                            if (include_song_name_checkbox.checked){
+                                data_to_write += `<td> ${row.Song_Name} </td>`;
+                            }
+                            data_to_write += `<td> ${row.total_listens_for_artist} </td>`;
+                            data_to_write += `<td> ${row.user_since.slice(0,10)} </td>`;
+                            //console.log(row.Username);
+                            //console.log(row.Role_Name);
+                            data_to_write += `</tr>`;
+                        };
+
+                        headers_target_html.innerHTML = headers_html;
+                        target_html.innerHTML = data_to_write;
+                        n_artists += `The ${number} most listened-to artists in Coog Music are:`;
+                        n_artists_html.innerHTML = n_artists;
+
+
+                    });
+                }
+                finally {
+
+                }
+                /*
+                info = "";
+                for (row of data){
+                    info += `
+                        <tr>
+                            <td> '${row.Username}' </td>
+                            <td> '${row.Role_Name}' </td>
+                        </tr> 
+                    `
+                }
+                */
+            
+                //html_element.innerHTML(info);
+
+                //};
+            }
+            catch {
+                alert('There was an error when trying to run the SQL query for the report.')
+            };
+
+
+            
+        });
+        // finished reading form, running the query for the result, and getting the result from api*/
+
+
+
+
+
+    </script>
+    </main>
+</body>
+
+</html>
