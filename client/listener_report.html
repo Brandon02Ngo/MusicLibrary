@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Report</title>
+  <link rel="stylesheet" href="listener_report.css">
+  <link rel="icon" href="img/music_disc.png" type="image/x-icon">
+  <style>
+/* || RESET */
+* {
+  margin: 5 px;
+  padding: 5 px;
+}
+    
+button{
+  font: inherit;
+}
+    
+/* ||VARIABLES */
+:root{
+  /* ||COLORS */
+  --BGCOLOR: #352F44 /*#54585A linear-gradient(#0F0F0F, #28406e) #FFFBF5*/;
+  --BGCOLORSUB: #5C5470 /*#888B8D radial-gradient( #28406e,#0F0F0F)#F7EFE5*/;
+  --FONTCOLOR: /*#C8102E*/ #FAF0E6;
+  --FONTCOLORSUB: #FFF;
+  --COLORFALLBACK: #000;
+  --HOVERCOLOR: /*#960C22*/ #B9B4C7;
+  --TEXTSHADOW: -1px 0 #FFFFFF, 0 1px #FFFFFF, 1px 0 #FFFFFF, 0 -1px #FFFFFF;
+  /* ||BORDER */
+  --GRIDBORDERS: #000 1px solid;
+}
+
+body{
+  background-color: var(--BGCOLOR);
+  color: var(--FONTCOLOR);
+}
+  </style>
+</head>
+
+<body>
+  <h1>Listener Data Report</h1>
+  <form id="reportListen" name="reportForm" method="post" action="/listenerDataReport"></form>
+  <h2>Specify Your Date Range</h2>
+  <div>
+    <label for ="fromDate">From Date</label>
+    <input type="date" name="fromDate" id="fromDate" min="2023-01-01" required>
+  </div>
+  <div>
+    <label for ="toDate">To Date</label>
+    <input type="date" name="toDate" id="toDate" min="2023-01-01" required>
+  </div>
+
+  <h2>Rating Range</h2>
+  <div>
+    <label for="minimumRating">Min Rating</label>
+    <input type="range" name="minimumRating" id="minimumRating" min="0" max="5" value="0" oninput="updateValue(this.id, this.value)">
+    <span id="minimumRatingValue">0</span>
+  </div>
+
+  <div>
+    <label for="maximumRating">Max Rating</label>
+    <input type="range" name="maximumRating" id="maximumRating" min="0" max="5" value="5" oninput="updateValue(this.id, this.value)">
+    <span id="maximumRatingValue">5</span>
+  </div>
+
+  <h2>Minimum Listens</h2>
+  <div>
+    <label for="minimumListens">Min Listens</label>
+    <input type="range" name="minimumListens" id="minimumListens" min="0" max="1000" value="0" oninput="updateValue(this.id, this.value)">
+    <span id="minimumListensValue">0</span>
+  </div>
+
+  <div>
+    <h3>Enter Desired Genre</h3>
+    <label for="genre">Genre</label>
+    <select name="genre" id="genre">
+      <option value="ALL">All Genres</option>
+      <option value="Classical">Classical</option>
+      <option value="Country">Country</option>
+      <option value="Electronic">Electronic</option>
+      <option value="Jazz">Jazz</option>
+      <option value="Pop">Pop</option>
+      <option value="Rock">Rock</option>
+      <option value="Sounds">Sounds</option>
+    </select>
+    <button type="submit" id="submit">Submit</button>
+</div>
+
+</div>
+</body>
+
+
+<script>
+  function updateValue(sliderId, newValue) {
+  // Find the span element where you want to display the value
+    var valueSpan = document.getElementById(sliderId + "Value");
+
+    // Update the span element's text content with the current slider value
+    valueSpan.textContent = newValue;
+  }
+
+  // Ensures valid dates and sliders
+  function validateForm() {
+    var fromDate = document.getElementById('fromDate').value;
+    var toDate = document.getElementById('toDate').value;
+
+    // Convert date strings to Date objects for comparison
+    var fromDateObj = new Date(fromDate);
+    var toDateObj = new Date(toDate);
+
+    // Check if fromDate is after toDate
+    if (fromDateObj > toDateObj) {
+      // Show an error message
+      alert('From Date cannot be after To Date');
+      return false; // Prevent form submission
+    }
+
+    var minRating = parseInt(document.getElementById('minimumRating').value);
+    var maxRating = parseInt(document.getElementById('maximumRating').value);
+    
+    //Gets the minimum amount of listens
+    var minListens = parseInt(document.getElementById('minimumListens').value);
+    
+  }
+</script>
+
+<script>
+const showPlaylist = document.getElementById("playlist");
+const selectedGenre = document.getElementById("genre");
+</script>
+
+<script>  
+document.getElementById('reportListen').addEventListener('submit', async function(event) {
+  event.preventDefault(); // Prevent the default form submission
+
+  if (validateForm()) {
+    try {
+      const formData = new FormData(this); // Collect form data
+      const response = await fetch('/listenerDataReport', {
+      method: 'POST',
+      body: formData // Pass form data in the fetch request
+      });
+      
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json(); // Assuming response is JSON
+      renderGrid(data); // Function to render grid, pass 'data' received from the server
+    }
+    catch (error) {
+      console.error('Error fetching data:', error);
+    }
+    }
+
+    else {
+      console.log('Form is not valid');
+    }
+});
+</script>
+</html>

@@ -371,7 +371,7 @@
 
     <div class="create_reports_section" id ="create_reports_section_id">
         <h3> Most Famous Artists </h3>
-        <form name="user_parameters_for_admin_report" id = "user_parameters_for_admin_report_id" method="POST" action="/adminDataReport">
+        <form name="user_parameters_for_admin_report" id = "user_parameters_for_admin_report_id" method="POST" action="/adminDataReport" enctype="application/x-www-form-urlencoded">
             <label> Choose the number of most-famous artists to include in report </label>
             <input id="number_of_artists_to_include_id" min="1" max="10" step="1" type="range" name="number_of_artists_to_include" value="number_of_artists_to_include"/>
             <p> <output id="value"></output> artists. </p>
@@ -384,7 +384,7 @@
             <br>
             <p> Change the selection below if you wish to search for a specific genre only: </p>
             <label for="genre0"> All Genres </label>
-            <input type="radio" id="genre0" name ="genre" value="All Genres"/>
+            <input type="radio" id="genre0" name ="genre" value="AllGenres"/>
             <label for="genre1"> Jazz </label>
             <input type="radio" id="genre1" name ="genre" value="Jazz"/>
             <label for="genre2"> Country </label>
@@ -392,8 +392,8 @@
             <label for="genre3"> Electronic </label>
             <input type="radio" id="genre3" name ="genre" value="Electronic"/>
             <br>
-            <!--<input type="submit" value="Submit" id = "create_report_button">-->
-        <button type="submit" > Submit </button>
+            <!--<input type="submit" value="Submit">-->
+            <button type="submit" id = "create_report_button" > Submit </button>
         </form>
 
         <button id ="close_reports_section"> Close </button>
@@ -458,7 +458,7 @@
 
         // update the data in HTML from data in database
         async function logJSON(){
-            const response = await fetch('http://localhost:8080/get_usernames');
+            const response = await fetch('http://localhost:8080/adminGetUsernames');
             const data = await response.json();
             console.log(data);
             //const html_element = document.getElementById("usernames_and_roles_table");
@@ -516,43 +516,52 @@
             checkboxes.forEach((checkbox) => {
                 output.push(checkbox.value);
             });
-            //console.log('output is:');
-            //console.log(output);
+            console.log('output of users to be deleted is:');
+            console.log(output);
 
             // mark the users for deletion
             // this function requires that the JSON server be running
             // there will be a for loop here
             var data_object = [];
+            var success = false; // credit for success implementation: khelwood, at https://stackoverflow.com/questions/30019453/java-run-code-only-if-no-exception-is-thrown-in-try-and-catch-block
+            console.log('sucess')
+            console.log(success)
             try{
-            for (let n =0;n<output.length;n++){
-                async function delete_user(){
-                    // credit: https://stackoverflow.com/questions/59554421/how-perform-patch-request-from-html-form-using-nodejs
-                    var cougar_id_to_be_deleted = output[n]; // from session
-                    var url = "http://localhost:8080/delete_user/" + cougar_id_to_be_deleted; // no need to convert cougar_id_to_be_deleted to a string because it is string already
-                    const response = await fetch(url, {
-                        method: "PATCH",
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        // body with necessary data
-                        body: JSON.stringify({
-                            target_cougar_id_to_delete: cougar_id_to_be_deleted,
-                        })
-                    });
-                    
-                    //console.log(response[0]);
-                    const data = await response.json();
-                    console.log(data);
-                };
+                for (let n =0;n<output.length;n++){
+                    async function delete_user(){
+                        // credit: https://stackoverflow.com/questions/59554421/how-perform-patch-request-from-html-form-using-nodejs
+                        var cougar_id_to_be_deleted = output[n]; // from session
+                        var url = "http://localhost:8080/adminDeleteUser" ; // no need to convert cougar_id_to_be_deleted to a string because it is string already
+                        const response = await fetch(url, {
+                            method: "POST",
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            // body with necessary data
+                            body: JSON.stringify({
+                                target_cougar_id_to_delete: cougar_id_to_be_deleted,
+                            })
+                        });
+                        
+                        //console.log(response[0]);
+                        const data = await response.json();
+                        console.log(data);
+                    };
 
-                delete_user();
-            }
+                    delete_user();
+                }
+                success = true;
+                console.log()
+                console.log('sucess')
+                console.log(success)
             }
             catch {
                 alert('There was an error when trying to delete users. Please try again.')
+                return;
             }
-            alert('Operation completed. Please refresh page to see changes.')
-
+            if (success) {
+                alert('Operation completed. Please refresh page to see changes.')
+            }
 
 
             // need to send desired_password and cougar_id_from_client_side to the server-side
@@ -592,11 +601,12 @@
         // credit: Coding Shiksha youtube channel video at: https://www.youtube.com/watch?v=S944-epyYuI
         const report_submit_form_button = document.querySelector("#create_report_button");
         const report_submit_form_button_element = document.getElementById("create_report_button")
-        report_submit_form_button_element.addEventListener("click", () => {
-            create_reports_section.classList.remove("show");
-        });
-        report_submit_form_button.addEventListener('click', (event) => {
+        //report_submit_form_button_element.addEventListener("click", () => {
+        //    create_reports_section.classList.remove("show");
+        //});
+        report_submit_form_button_element.addEventListener('click', (event) => {
             event.preventDefault();
+            create_reports_section.classList.remove("show");
             //var data_for_report;
 
             // get the value from the range
@@ -604,24 +614,31 @@
             let number_of_artists_for_query = document.getElementById("number_of_artists_to_include_id").value;
             console.log("number_of_artists_for_query is:");
             console.log(number_of_artists_for_query);
+            var number_of_artist_selected = Number(number_of_artists_for_query); //https://www.freecodecamp.org/news/how-to-convert-a-string-to-a-number-in-javascript/
 
             // get the value for the city's checkbox
             // credit: Agostino on https://stackoverflow.com/questions/9887360/how-can-i-check-if-a-checkbox-is-checked
             let include_city_checkbox = document.getElementById("city_checkbox_id");
+            var include_city;
             if (include_city_checkbox.checked){
                 console.log("include city")
+                include_city = true;
             }
             else {
                 console.log("do not include city")
+                include_city = false;
             }
 
             // get the value for the artist's most famous song checkbox
             let include_song_name_checkbox = document.getElementById("song_checkbox_id");
+            var include_song_name;
             if (include_song_name_checkbox.checked){
                 console.log("include song name")
+                include_song_name = true;
             }
             else {
                 console.log("do not include song name")
+                include_song_name = false;
             }
 
             // get the value for the gernre-specific query (this object might not be submitted
@@ -737,7 +754,7 @@
             ) AS other_details ON most_famous_artist_table.user_ids = other_details.id
         ) AS extra_table ON extra_table.user_ids=table_a.Artist_ID ORDER BY total_listens_for_artist;`;
             }
-            console.log("input query received");
+            //console.log("input query received");
             //console.log("Query to run is:")
             //console.log(query);
             // ask the api to make the query for you and to give you the result
@@ -745,6 +762,7 @@
             // { "query_to_run" = "string_of_the_query_to_run_with_variables_and_everything"}
             // )
             //
+            
             try{
                 console.log("entered try:")
                 async function run_report_query(){
@@ -754,28 +772,45 @@
                     console.log(url)
                     var response_from_fetch;
                     try{
+                        const myData = new URLSearchParams();
+                        myData.set("number_of_artist",number_of_artist_selected);
+                        myData.set("include_city",include_city);
+                        myData.set("include_most_famous_song",include_song_name);
+                        myData.set("genre_selected",genre_selected);
                         response_from_fetch = await fetch(url, {
                         method: "POST",
                         headers: {
-                            'Content-Type': 'application/json'
-                        }/*,
+                            "Content-Type": "application/json"
+                        },
                         // body with the query
                         body: JSON.stringify({
-                            statement_for_generic_query: query,
-                        })*/
-                    });
+                            number_of_artists:7,
+                            include_city:true,
+                            include_most_famous_song_name:true,
+                            genre_selected:"All Genres"
+                        })
+                        /*body: myData*/
+                        });//.then(response_from_fetch => {
+                          //  if (!response_from_fetch.ok) {
+                          //      throw new Error(response_from_fetch.status);
+                          //  }
+                        //}).then(response_from_fetch => response_from_fetch.json()); 
+                        
                     }
                     catch {
-                        console.log("something went wrong in fetch function")
+                        console.log("something went wrong in fetch function fro adminDataReport")
                     }
                     console.log("finished response")
                     //console.log(response);
                     //console.log(response[0]);
                     data_for_report = await response_from_fetch.json();
-                    console.log("reponse JSON is:")
+                    console.log("reponse in JSON for adminDataReport is:")
                     console.log(data_for_report);
                 };
                 try {
+                    // parse the data?
+
+                    
                     run_report_query().then(() => {
                         //alert('SQL Query for report ran successfully.')
 
@@ -843,6 +878,7 @@
 
 
                     });
+                    
                 }
                 finally {
 
@@ -862,10 +898,12 @@
                 //html_element.innerHTML(info);
 
                 //};
+                
             }
             catch {
                 alert('There was an error when trying to run the SQL query for the report.')
             };
+            
 
 
             

@@ -7,6 +7,7 @@ const path = require('path');                                                   
 const sql = require('mssql');                                                      // Used to connect to our Database
 const events = require('events');                                                  // Used to create-, fire-, and listen for- our own events (i.e. user likes a song, etc.)
 const queryString = require('querystring');                                        // Used to parse strinfs into JavaScript objects
+const { getReqData } = require("./utils_json.js");                                 // Helper function for Axel's features
 
 
 // Here you can include any other built in / user modules as well (think #include <...>)
@@ -385,6 +386,17 @@ const server = http.createServer(async function(req, res) {                     
     const reqUrl = new URL(req.url, baseURL);
 
     var fileName = reqUrl.pathname;
+
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Request-Method", "*");
+    res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET, PUT, GET, DELETE, PATCH");
+    res.setHeader("Access-Control-Allow-Headers", "*");
+
+    if (req.method === 'OPTIONS'){
+        res.writeHead(200);
+        res.end();
+        return;
+    }
     
     if (req.method === 'POST') {
         console.log('File path for POST request:', fileName);
@@ -957,6 +969,114 @@ const server = http.createServer(async function(req, res) {                     
             res.end();
         }
 
+        else if(fileName === '/listenerDataReport') {
+            // Data parsing
+            let body = '';
+            req.on('data', (data) => {
+                body += data.toString();
+            });
+
+            // Attempts to authenticate a user's session; if not authentic (session doesn't match server memory, or session doesn't exist) then user is sent to login page
+            // Also retrieves userID if session in cookie matches session in memory
+            const user = { id: undefined };
+            let certified = authenticateSession(req, res, user);
+
+            if (!certified) {
+                return;
+            }
+
+            var userID = user.id;
+
+            // Data Validation 
+            const form = new formidable.IncomingForm();
+            console.log(form);
+            form.parse(req, (err, fields) => {
+                if (err) {
+                    console.error('Error parsing form:', err);
+                    res.writeHead(500, { 'Content-Type': 'text/plain' });
+                    res.end('Internal Server Error');
+                    return;
+                }
+                // Access form fields
+
+                const fromDate = fields.fromDate[0];
+                const toDate = fields.toDate[0];
+                const minRating = fields.minimumRating[0];
+                const maxRating = fields.maximumRating[0];
+                const minListens = fields.minimumListens[0];
+                const genre = fields.genre[0];
+
+                if (genre === 'ALL') {
+                    genre = '%'
+                }
+
+                console.log('fromDate', fromDate);
+                console.log('toDate', toDate);
+                console.log('userID', userID);
+                console.log('minRating', minRating);
+                console.log('maxRating', maxRating);
+                console.log('minListens', minListens);
+                console.log('genre', genre);
+
+                sql.connect(dbConfig, (err) => {
+                    // Database connection error handler
+                    if (err) {
+                        handleDatabaseError(res, err);
+                        return;                    
+                    }
+
+                    const request = new sql.Request();
+                    
+                    // const query = `SELECT A.Title, A.Times_Played, A.Rating, A.Genre FROM MusicLibrary.[Song] A;`;
+
+                    
+                    // Defining SELECT query to pass back to html form to display as a grid
+                    const query = 
+                    `SELECT A.Song_ID, A.Cougar_ID, C.Genre, A.Listens, B.Rating
+                    FROM MusicLibrary.[User_Song_Listens] A, MusicLibrary.[User_Song_Rating] B, MusicLibrary.[Song] C
+                    WHERE A.Cougar_ID = 9
+                    AND A.Cougar_ID = B.Cougar_ID
+                    AND A.Song_ID = B.Song_ID
+                    AND A.Song_ID = C.Song_ID
+                    AND A.Listens >= @minListens
+                    AND B.Rating BETWEEN @minRating AND @maxRating
+                    AND C.Created_At BETWEEN CONVERT(datetime2, @fromDate) AND CONVERT(datetime2, @toDate)
+                    AND C.Genre LIKE @genre
+                    ORDER BY B.Rating DESC, A.Listens DESC;`
+
+                    // Set parameters for the query
+                    request.input('artistID', sql.Int, userID);
+                    request.input('genre', sql.VarChar, genre);
+                    request.input('minRating', sql.Int, minRating);
+                    request.input('maxRating', sql.Int, maxRating);
+                    request.input('minListens', sql.Int, minListens);
+                    request.input('fromDate', sql.DateTime2, fromDate);
+                    request.input('toDate', sql.DateTime2, toDate);
+
+                    // Process query result and store it to use as a response
+                    request.query(query, (err, result) =>  {
+                        if (err) {                                                   // Database query error handler
+                            console.error('Database query error:', err);
+                            sql.close();
+                            res.writeHead(500, { 'Content-Type': 'text/plain' });
+                            res.end('Database query error');
+                            return;
+                        }
+                        // Collects rows of data and stores it as JSON to send back to the client
+                        const rows = result.recordset;
+                        const jsonData = JSON.stringify(rows);
+                        res.writeHead(200, {
+                            'Content-Type': 'application/json',
+                            'Content-Length': Buffer.byteLength(jsonData, 'utf8')
+                        });
+
+                        console.log(jsonData);
+                        res.end(jsonData);
+                    })
+                })
+            })
+        }
+
         else if(fileName === '/artistDataReport') {
             // Data parsing
             let body = '';
@@ -1084,62 +1204,355 @@ const server = http.createServer(async function(req, res) {                     
 
         else if(fileName === '/adminDataReport') {
             // Data parsing
-            let body = '';
-            req.on('data', (data) => {
-                body += data.toString();
-            });
 
-            // Attempts to authenticate a user's session; if not authentic (session doesn't match server memory, or session doesn't exist) then user is sent to login page
-            // Also retrieves userID if session in cookie matches session in memory
-            const user = { id: undefined };
-            let certified = authenticateSession(req, res, user);
+            const data_from_server = await getReqData(req);
+            const data_from_server_json = JSON.parse(data_from_server);
+            console.log(typeof(data_from_server));
+            console.log(typeof(data_from_server_json));
+            console.log('data_from_server_json:')
+            console.log(data_from_server_json);
 
-            if (!certified) {
+            var number_of_artists_to_include = data_from_server_json.number_of_artists;
+            var include_city = data_from_server_json.include_city;
+            var include_name_of_song = data_from_server_json.include_most_famous_song_name;
+            var genre_selected = data_from_server_json.genre_selected;
+            console.log(number_of_artists_to_include);
+            console.log(include_city); // boolean (will always include)
+            console.log(include_name_of_song); // boolean (will always include)
+            console.log(genre_selected);
+
+
+
+            sql.connect(dbConfig, (err) => {
+                // Database connection error handler
+                if (err) {
+                    handleDatabaseError(res, err);
+                    return;                    
+                }
+
+                const request = new sql.Request();
+                
+                var query;
+                if (genre_selected ==='All Genres') { 
+                    query = `WITH
+                            table1
+                            AS
+                            
+                            (
+                                SELECT
+                                    [Created_By] AS Artist_ID,
+                                    [Title] AS Song_Name,
+                                    SUM([Listens]) AS total_listens
+                                FROM
+                                    [MusicLibrary].[Song],
+                                    [MusicLibrary].[User_Song_Listens]
+                                WHERE 
+                                [MusicLibrary].[Song].[Song_ID] = [MusicLibrary].[User_Song_Listens].[Song_ID]
+                                GROUP BY 
+                                [Created_By], 
+                                [Title]   
+                        
+                            )
+                        /*,table3 AS(*/
+                        
+                        SELECT * FROM (
+                        SELECT t2.*
+                        FROM table1 RIGHT JOIN (
+                        SELECT Artist_ID, Song_Name, MAX(total_listens) AS max_listens
+                            FROM table1
+                            GROUP BY table1.Artist_ID, table1.Song_Name
+                        ) AS t2 ON table1.Artist_ID = t2.Artist_ID AND table1.Song_Name=t2.Song_Name
+                        ) AS table_a/*;*/
+                        
+                        JOIN (
+                            SELECT most_famous_artist_table.*, other_details.Username, other_details.City, other_details.State, other_details.user_since FROM (
+                                SELECT TOP ${number_of_artists_to_include}
+                                    [Created_By] AS 'user_ids', SUM([Listens]) AS 'total_listens_for_artist'
+                                FROM [MusicLibrary].[Song], [MusicLibrary].[User_Song_Listens]
+                                WHERE  [MusicLibrary].[Song].[Song_ID] =  [MusicLibrary].[User_Song_Listens].[Song_ID]
+                                GROUP BY [Created_By]) /*ORDER BY [Listens] DESC*/
+                            AS most_famous_artist_table 
+                            JOIN (
+                            SELECT [MusicLibrary].[User].[Cougar_ID] AS 'id',[Username],[City], [State],[Created_At] as 'user_since'
+                            FROM [MusicLibrary].[User], [MusicLibrary].[Artist]
+                            WHERE [MusicLibrary].[User].[Cougar_ID] = [MusicLibrary].[Artist].[Cougar_ID]
+                            ) AS other_details ON most_famous_artist_table.user_ids = other_details.id
+                        ) AS extra_table ON extra_table.user_ids=table_a.Artist_ID ORDER BY total_listens_for_artist;`;
+                }
+                else {
+                query = `WITH
+                        table1
+                        AS
+                        
+                        (
+                            SELECT
+                                [Created_By] AS Artist_ID,
+                                [Title] AS Song_Name,
+                                SUM([Listens]) AS total_listens
+                            FROM
+                                [MusicLibrary].[Song],
+                                [MusicLibrary].[User_Song_Listens]
+                            WHERE 
+                            [MusicLibrary].[Song].[Song_ID] = [MusicLibrary].[User_Song_Listens].[Song_ID]
+                                AND [Genre] = '${genre_selected}'
+                            GROUP BY 
+                            [Created_By], 
+                            [Title]   
+            
+                        )
+                    /*,table3 AS(*/
+            
+                    SELECT * FROM (
+                    SELECT t2.*
+                    FROM table1 RIGHT JOIN (
+                    SELECT Artist_ID, Song_Name, MAX(total_listens) AS max_listens
+                        FROM table1
+                        GROUP BY table1.Artist_ID, table1.Song_Name
+                    ) AS t2 ON table1.Artist_ID = t2.Artist_ID AND table1.Song_Name=t2.Song_Name
+                    ) AS table_a/*;*/
+            
+                    JOIN (
+                        SELECT most_famous_artist_table.*, other_details.Username, other_details.City, other_details.State, other_details.user_since FROM (
+                            SELECT TOP ${number_of_artists_to_include}
+                                [Created_By] AS 'user_ids', SUM([Listens]) AS 'total_listens_for_artist'
+                            FROM [MusicLibrary].[Song], [MusicLibrary].[User_Song_Listens]
+                            WHERE  [MusicLibrary].[Song].[Song_ID] =  [MusicLibrary].[User_Song_Listens].[Song_ID]
+                                AND [Song].[Genre] = '${genre_selected}'
+                            GROUP BY [Created_By]) /*ORDER BY [Listens] DESC*/
+                        AS most_famous_artist_table 
+                        JOIN (
+                        SELECT [MusicLibrary].[User].[Cougar_ID] AS 'id',[Username],[City], [State],[Created_At] as 'user_since'
+                        FROM [MusicLibrary].[User], [MusicLibrary].[Artist]
+                        WHERE [MusicLibrary].[User].[Cougar_ID] = [MusicLibrary].[Artist].[Cougar_ID]
+                        ) AS other_details ON most_famous_artist_table.user_ids = other_details.id
+                    ) AS extra_table ON extra_table.user_ids=table_a.Artist_ID ORDER BY total_listens_for_artist;`;
+                }
+
+                // Process query result and store it to use as a response
+                request.query(query, (err, result) =>  {
+                    if (err) {                                                   // Database query error handler
+                        console.error('Database query error:', err);
+                        sql.close();
+                        res.writeHead(500, { 'Content-Type': 'text/plain' });
+                        res.end('Database query error');
+                        return;
+                    }
+                    // Collects rows of data and stores it as JSON to send back to the client
+                    console.log(result);
+                    const rows = result.recordset;
+                    console.log(rows);
+                    const jsonData = JSON.stringify(rows);
+                    res.writeHead(200, {
+                        'Content-Type': 'application/json',
+                        'Content-Length': Buffer.byteLength(jsonData, 'utf8'), //remove row below if needed
+                        "Access-Control-Allow-Origin": "*"
+                    });
+
+                    console.log(jsonData);
+                    res.end(jsonData);
+                })
+            })
+            
+            return;
+            
+            
+        }
+
+        else if(fileName === '/adminDeleteUser') {
+            // Data parsing
+
+            const data_from_server = await getReqData(req);
+            const data_from_server_json = JSON.parse(data_from_server);
+            console.log(typeof(data_from_server));
+            console.log(typeof(data_from_server_json));
+            console.log('data_from_server_json:')
+            console.log(data_from_server_json);
+            var target_cougar_id_to_delete = data_from_server_json.target_cougar_id_to_delete;
+
+            sql.connect(dbConfig, (err) => {
+                // Database connection error handler
+                if (err) {
+                    handleDatabaseError(res, err);
+                    return;                    
+                }
+
+                const request = new sql.Request();
+                
+                var query=`UPDATE [MusicLibrary].[User] 
+                SET [Marked_For_Deletion] = 1 WHERE [Cougar_ID] = ${target_cougar_id_to_delete};`;
+
+                // Process query result and store it to use as a response
+                request.query(query, (err, result) =>  {
+                    if (err) {                                                   // Database query error handler
+                        console.error('Database query error:', err);
+                        sql.close();
+                        res.writeHead(500, { 'Content-Type': 'text/plain' });
+                        res.end('Database query error');
+                        return;
+                    }
+                    // Collects rows of data and stores it as JSON to send back to the client
+                    console.log(result);
+                    const rows = result.rowsAffected;
+                    console.log(rows);
+                    const jsonData = JSON.stringify(rows);
+                    res.writeHead(200, {
+                        'Content-Type': 'application/json',
+                        /*'Content-Length': Buffer.byteLength(jsonData, 'utf8'),*/ //remove row below if needed
+                        "Access-Control-Allow-Origin": "*"
+                    });
+                    console.log('response sent:')
+                    console.log(jsonData);
+                    res.end(jsonData);
+                })
+            })
+            
+           return;
+            
+            
+        }
+
+        else if(fileName === '/updateMyUsername') {
+            // Data parsing
+
+            const userCookie = req.headers.cookie;
+
+            var user_id = getIdFromCookie(userCookie);
+            var userID;
+            if (!(user_id == undefined)){
+                userID = user_id;
+            }
+            else {
+                console.log('Axel code could not get the user id from the cookie')
                 return;
             }
 
-            var userID = user.id;
+            const data_from_server = await getReqData(req);
+            const data_from_server_json = JSON.parse(data_from_server);
+            console.log(typeof(data_from_server));
+            console.log(typeof(data_from_server_json));
+            console.log('data_from_server_json:')
+            console.log(data_from_server_json);
+            var new_username = data_from_server_json.desired_new_username;
 
-            // Data Validation 
-            const form = new formidable.IncomingForm();
-            console.log(form);
-            form.parse(req, (err, fields) => {
-                
+            sql.connect(dbConfig, (err) => {
+                // Database connection error handler
                 if (err) {
-                    console.error('Error parsing form:', err);
-                    res.writeHead(500, { 'Content-Type': 'text/plain' });
-                    res.end('Internal Server Error');
-                    return;
-                }
-                // Access form fields
-                console.log('Fields are:')
-                console.log(fields)
-                const number_of_artists_to_include = fields.number_of_artists_to_include;
-                
-                var city = false;
-                if (fields.city){
-                    city = true; // if city will be included
-                }
-                
-                const genre = fields.genre;
-
-                var show_name_of_most_famous_song = false;
-                if (fields.show_name_of_most_famous_song){
-                    show_name_of_most_famous_song = true;
+                    handleDatabaseError(res, err);
+                    return;                    
                 }
 
-                console.log(number_of_artists_to_include);
-                console.log(city);
-                console.log(genre);
-                console.log(show_name_of_most_famous_song);
+                const request = new sql.Request();
+
+                var query=`UPDATE [MusicLibrary].[User] 
+                SET [Username] = '${new_username}' WHERE [Cougar_ID] = ${userID};`;
+
+                // Process query result and store it to use as a response
+                request.query(query, (err, result) =>  {
+                    if (err) {                                                   // Database query error handler
+                        console.error('Database query error:', err);
+                        sql.close();
+                        res.writeHead(500, { 'Content-Type': 'text/plain' });
+                        res.end('Database query error');
+                        return;
+                    }
+                    // Collects rows of data and stores it as JSON to send back to the client
+                    console.log('results for username update:')
+                    console.log(result);
+                    const rows = result.rowsAffected;
+                    console.log(rows);
+                    const jsonData = JSON.stringify(rows);
+                    res.writeHead(200, {
+                        'Content-Type': 'application/json',
+                        /*'Content-Length': Buffer.byteLength(jsonData, 'utf8'),*/
+                        "Access-Control-Allow-Origin": "*"
+                    });
+                    console.log('response sent for username update:')
+                    console.log(jsonData);
+                    res.end(jsonData);
+                })
             })
+            
+           return;
+            
+            
         }
+
+        else if(fileName === '/updateMyPassword') {
+            // Data parsing
+
+            const userCookie = req.headers.cookie;
+
+            var user_id = getIdFromCookie(userCookie);
+            var userID;
+            if (!(user_id == undefined)){
+                userID = user_id;
+            }
+            else {
+                console.log('Axel code could not get the user id from the cookie')
+                return;
+            }
+
+            const data_from_server = await getReqData(req);
+            const data_from_server_json = JSON.parse(data_from_server);
+            console.log(typeof(data_from_server));
+            console.log(typeof(data_from_server_json));
+            console.log('data_from_server_json:')
+            console.log(data_from_server_json);
+            var desired_password = data_from_server_json.desired_new_password;
+
+            sql.connect(dbConfig, (err) => {
+                // Database connection error handler
+                if (err) {
+                    handleDatabaseError(res, err);
+                    return;                    
+                }
+
+                const request = new sql.Request();
+
+                var query=`UPDATE [MusicLibrary].[User] 
+                SET [Pass] = '${desired_password}' WHERE [Cougar_ID] = ${userID};`;
+
+                // Process query result and store it to use as a response
+                request.query(query, (err, result) =>  {
+                    if (err) {                                                   // Database query error handler
+                        console.error('Database query error:', err);
+                        sql.close();
+                        res.writeHead(500, { 'Content-Type': 'text/plain' });
+                        res.end('Database query error');
+                        return;
+                    }
+                    // Collects rows of data and stores it as JSON to send back to the client
+                    console.log('results for username update:')
+                    console.log(result);
+                    const rows = result.rowsAffected;
+                    console.log(rows);
+                    const jsonData = JSON.stringify(rows);
+                    res.writeHead(200, {
+                        'Content-Type': 'application/json',
+                        /*'Content-Length': Buffer.byteLength(jsonData, 'utf8'),*/ //remove row below if needed
+                        "Access-Control-Allow-Origin": "*"
+                    });
+                    console.log('response sent for password update:')
+                    console.log(jsonData);
+                    res.end(jsonData);
+                })
+            })
+            
+           return;
+            
+            
+        }
+
+        
 
         // No file exists for this POST method
         else {
             res.writeHead(404, {'Content-Type': 'text/plain'});
             res.end('Not Found');
         }
+
+
+
     }
 
     // We can create functions / modules outside of this app for better organization maybe
@@ -1584,7 +1997,7 @@ const server = http.createServer(async function(req, res) {                     
             const writeHeadParameters = [200, { 'Content-Type': 'text/html; charset=utf-8' }];
 
             // Serve profile.html
-            serveFile(res, 4, writeHeadParameters, profileHtmlPath, profileCssFileName, profileJsFileName);
+            serveFile(res, 1, writeHeadParameters, profileHtmlPath)//, profileCssFileName, profileJsFileName);
 
             // Connect to database
 
@@ -1596,6 +2009,180 @@ const server = http.createServer(async function(req, res) {                     
 
             return; // Return to avoid further processing for this route
         }
+
+
+        // GETs added by Axel on Nov 18 2023 at night
+        else if (fileName === '/profileGetCurrentUser') {
+
+            const userCookie = req.headers.cookie;
+
+            var user_id = getIdFromCookie(userCookie);
+            var current_cougar_id;
+            if (!(user_id == undefined)){
+                current_cougar_id = user_id;
+            
+
+                // Connect to the database
+                sql.connect(dbConfig, (err) => {
+                    // Database connection error handler
+                    if (err) {
+                        handleDatabaseError(res, err);
+                        return;                    
+                    }
+
+                    const request = new sql.Request();
+                    
+                    var query = `
+                    SELECT [Username]
+                    FROM [MusicLibrary].[User]
+                    WHERE [MusicLibrary].[User].[Cougar_ID] = ${current_cougar_id} 
+                    AND [MusicLibrary].[User].[Marked_For_Deletion] = 0`;
+
+                    // Process query result and store it to use as a response
+                    request.query(query, (err, result) =>  {
+                        if (err) {                                                   // Database query error handler
+                            console.error('Database query error:', err);
+                            sql.close();
+                            res.writeHead(500, { 'Content-Type': 'text/plain' });
+                            res.end('Database query error');
+                            return;
+                        }
+                        // Collects rows of data and stores it as JSON to send back to the client
+                        console.log(result);
+                        var rows;
+                        if (result.recordset[0]){
+                            rows = result.recordset;
+                        }
+                        else {
+                            rows = {};
+                        }
+                        console.log(rows);
+                        const jsonData = JSON.stringify(rows);
+                        res.writeHead(200, {
+                            'Content-Type': 'application/json',
+                            /*'Content-Length': Buffer.byteLength(jsonData, 'utf8'),*/ //remove row below if needed
+                            "Access-Control-Allow-Origin": "*"
+                        });
+
+                        console.log(jsonData);
+                        res.end(jsonData);
+                    })
+                })
+            }
+            else {
+                console.log('Error: Axel code could not get user id from the cookie')
+            }
+
+            return; // Return to avoid further processing for this route
+
+        }
+
+
+        else if (fileName === '/profileGetCurrentUserCougarID') {
+
+            const userCookie = req.headers.cookie;
+
+            var user_id = getIdFromCookie(userCookie);
+            var userID;
+            if (!(user_id == undefined)){
+                userID = user_id;
+            }
+            else {
+                console.log('Axel code could not get the user id from the cookie')
+                return;
+            }
+
+            var data = {current_cougar_id: userID}
+
+            console.log(data)
+            const jsonData = JSON.stringify(data);
+            res.writeHead(200, {
+                'Content-Type': 'application/json',
+                /*'Content-Length': Buffer.byteLength(jsonData, 'utf8'),*/ //remove row below if needed
+                "Access-Control-Allow-Origin": "*"
+            });
+
+            console.log(jsonData);
+            res.end(jsonData);
+
+            return; // Return to avoid further processing for this route
+
+        }
+
+        // Raphael: I have added this route "/login/admin.html", however, I believe the routing you already had 
+        // above is preferred since from what I saw you're doing user authentication there (which I do not have in
+        // the "/login/admin.html" route below) and you're serving the file too. If all is good with the route you
+        // had above for the admin page, feel free to delete this block below:
+        // else if (fileName === '/login/admin.html') {
+        //  // some_code
+        //  // some_code
+        //  }
+        else if (fileName === '/login/admin.html') {
+            const adminPageHtmlPath = path.join(__dirname, '..', 'client', 'admin.html');
+            const adminCssFileName = 'admin.css';
+            const adminJsFileName = 'admin.js';
+            const writeHeadParameters = [200, { 'Content-Type': 'text/html; charset=utf-8' }];
+
+            // Serve admin.html
+            serveFile(res, 1, writeHeadParameters, adminPageHtmlPath)//, adminCssFileName, adminJsFileName);
+            
+            // Connect to database
+
+            // Do user account authentication to ensure they have access to see report (if they are an artist and the report is for their music)/ playlist (if hidden but they are the owner), etc.
+
+            // If no access, close connection and output appropriate message to them
+
+            // Else, do a request.query('SELECT thing_1, thing_2, etc., FROM table_1, table_2, WHERE conditions', ...) to pull rows of data. Next, find out how to modify page to showcase data pulled (may need to use fs object)
+
+            return; // Return to avoid further processing for this route
+        }
+
+        else if (fileName === '/adminGetUsernames') {
+
+            // Connect to the database
+            sql.connect(dbConfig, (err) => {
+                // Database connection error handler
+                if (err) {
+                    handleDatabaseError(res, err);
+                    return;                    
+                }
+
+                const request = new sql.Request();
+
+                var query = `
+                SELECT [Cougar_ID], [Username], [Role_Name]
+                FROM [MusicLibrary].[User], [MusicLibrary].[Roles] 
+                WHERE [MusicLibrary].[User].[Marked_For_Deletion] = 0 
+                AND [MusicLibrary].[User].[Role_ID] = [MusicLibrary].[Roles].[Role_ID]`;
+
+                // Process query result and store it to use as a response
+                request.query(query, (err, result) =>  {
+                    if (err) {                                                   // Database query error handler
+                        console.error('Database query error:', err);
+                        sql.close();
+                        res.writeHead(500, { 'Content-Type': 'text/plain' });
+                        res.end('Database query error');
+                        return;
+                    }
+                    // Collects rows of data and stores it as JSON to send back to the client
+                    console.log(result);
+                    const rows = result.recordset;
+                    console.log(rows);
+                    const jsonData = JSON.stringify(rows);
+                    res.writeHead(200, {
+                        'Content-Type': 'application/json',
+                        'Content-Length': Buffer.byteLength(jsonData, 'utf8'), //remove row below if needed
+                        "Access-Control-Allow-Origin": "*"
+                    });
+
+                    console.log(jsonData);
+                    res.end(jsonData);
+                })
+            })
+
+            return; // Return to avoid further processing for this route
+        }
+
         // No file exists for this GET method
         else {
             res.writeHead(404, {'Content-Type': 'text/plain'});
