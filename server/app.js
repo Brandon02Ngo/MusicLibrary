@@ -30,43 +30,6 @@ const server = http.createServer(async function(req, res) {                     
         return;
     }
 
-    // This is from client submitting data to the database 
-    if (req.method === 'POST') {
-
-        // This is if it is the same file as this
-        if (fileName === 'musicUpload.html') {
-            // Data parsing
-            // Data buffer will incrementally collect data sent via request
-            let body = '';
-            req.on('data', (data) => {
-                body += data;
-            });
-
-            sql.connect(dbConfig, (err) => {
-                if (err) {                                                       // Database connection error handler
-                    console.error('Database connection error:', err);
-                    res.writeHead(500, { 'Content-Type': 'text/plain' });
-                    res.end('Database connection error');
-                    return;                    
-                }
-
-                const request = new sql.Request();
-                request.query(/* INSERT INTO table_name VALUES(val1, val2, etc.) */'Select 1', (err, result) =>  {
-                    if (err) {                                                   // Database query error handler
-                        console.error('Database query error:', err);
-                        sql.close();
-                        res.writeHead(500, { 'Content-Type': 'text/plain' });
-                        res.end('Database query error');
-                        return;
-                    }
-
-                    // Process query result and close
-                    sql.close();
-                })
-            })
-        }
-    }
-
     // Unsure if best way to go about this, but I know each page will have different queries so need to know name of page here (held in file name)
     // We can create functions / modules outside of this app for better organization maybe
     else if (req.method === 'GET') {
@@ -78,12 +41,6 @@ const server = http.createServer(async function(req, res) {                     
             const result3 = await pool.request().query("SELECT Username FROM [MusicLibrary].[User] WHERE Role_ID = 3;");
             const result4 = await pool.request().query("SELECT Top 6 Audio_Data FROM [MusicLibrary].[Song];");
 
-            // Send audio data if available
-            // if (result4.recordset.length > 0) {
-            //     const audioDataList = result4.recordset.map(row => row.Audio_Data);
-            //     res.writeHead(200, { 'Content-Type': 'application/json' });
-            //     res.end(JSON.stringify({ audioDataList }));
-            //}
             res.end(JSON.stringify({
                 data1: result1.recordset,
                 data2: result2.recordset,

@@ -86,5 +86,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 });
 
+// On the source page (e.g., index.html)
+document.addEventListener('DOMContentLoaded', function() {
+    // Find all elements with the class 'song-box'
+    const songCode = document.querySelectorAll('.song-code');
+  
+    // Attach a click event listener to each song box
+    songCode.forEach(box => {
+      box.addEventListener('click', function(event) {
+        // Prevent the default behavior of the link
+        event.preventDefault();
+  
+        // Retrieve the audio data from the data attribute
+        const audioCode = box.dataset.audioCode;
+  
+        // Navigate to the playlist page and pass the audio data as a parameter
+        window.location.href = `audioPlay.js?audioCode=${encodeURIComponent(audioCode)}`;
+      });
+    });
+  });
+  
 
 

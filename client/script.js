@@ -52,3 +52,14 @@ open_contact_us_modal_btn.addEventListener("click", () => {
 close_contact_us_modal_btn.addEventListener("click", () => {
     modal_container_id_contact_us.classList.remove("show");
 });
+
+const urlParams = new URLSearchParams(window.location.search);
+const audioDataString = urlParams.get('audioData');
+
+const binaryAudioData = atob(audioDataString);
+
+const audioElement = document.createElement('audio');
+audioElement.src = `data:audio/mpeg;base64,${btoa(binaryAudioData)}`;
+document.body.appendChild(audioElement); // Append the audio element to the body or another container
+
+audioElement.play();
