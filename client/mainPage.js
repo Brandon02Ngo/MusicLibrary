@@ -1,14 +1,9 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    fetch("http://localhost:8080/").then(x => x.json()).then( x => {
+    fetch("http://localhost:3000/").then(x => x.json()).then( x => {
         const userList = document.getElementById('Recommended');
         
     // Loop through the array and create list items for each username
     x.data2.forEach(user => {
-
-        // Create a new A element
-        const anchorElementa = document.createElement('a');
-        anchorElementa.href = "playlist.html"; // Set the href attribute        
-
         // Create a new LI element
         const listItem = document.createElement('li');
         listItem.classList.add("song-item");
@@ -23,37 +18,37 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Create an H2 element for the artist name
         const artistName = document.createElement('h2');
-        artistName.classList.add("title");
         artistName.textContent = user["Username"];
 
+        // Create a new A element
+        const anchorElementRec = document.createElement('a');
+        anchorElementRec.href = "playlist.html"; // Set the href attribute
+
+        //Anchor the artist Name
+        anchorElementRec.appendChild(artistName);
+
+        //assign the name to each box with the anchor
+        artistInfo.appendChild(anchorElementRec);
+
         // Append the artist box, info, and name to the LI element
-        artistInfo.appendChild(artistName);
         listItem.appendChild(artistBox);
         listItem.appendChild(artistInfo);
 
         // Append the LI element to the UL
         userList.appendChild(listItem);
 
-        // Append the anchor element to the UL
-        userList.appendChild(anchorElementa);
-
         });
     });
-    fetch("http://localhost:8080/").then(y => y.json()).then( y => {
+    fetch("http://localhost:3000/").then(y => y.json()).then( y => {
         const userlist = document.getElementById('new-releases');
         
     // Loop through the array and create list items for each username
     y.data1.forEach(peeps => {
 
-        // Create a new A element
-        const anchorElement = document.createElement('a');
-        anchorElement.href = "playlist.html"; // Set the href attribute
-
-
         // Create a new LI element
         const listitem = document.createElement('li');
         listitem.classList.add("song-item");
-    
+
         // Create a new LI element
         const artistbox = document.createElement('div');
         artistbox.classList.add("NR-box");
@@ -64,23 +59,32 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Create an H2 element for the artist name
         const artistname = document.createElement('h2');
-        artistname.classList.add("title");
         artistname.textContent = peeps["Artist"];
 
+        // Create a new A element
+        const anchorElement = document.createElement('a');
+        anchorElement.href = "playlist.html"; // Set the href attribute
+
+        //Store the audio data as a variable within the box.
+        anchorElement.dataset.Audio_Data = JSON.stringify(peeps['Audio_Data']);
+
+        // Append the artist name to the anchor element
+        anchorElement.appendChild(artistname);
+
+        // Append the anchor element to the artist info
+        artistinfo.appendChild(anchorElement);
+
         // Append the artist box, info, and name to the LI element
-        artistinfo.appendChild(artistname);
         listitem.appendChild(artistbox);
         listitem.appendChild(artistinfo);
 
         // Append the LI element to the UL
         userlist.appendChild(listitem);
 
-        // Append the anchor element to the UL
-        userlist.appendChild(anchorElement);
-
         });
     });
 });
+
 
 // const ctx = new AudioContext();
 
