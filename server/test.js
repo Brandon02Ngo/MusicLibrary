@@ -2197,11 +2197,6 @@ const server = http.createServer(async function(req, res) {                     
         }
         
         else if (fileName === '/login/playlist.html') {
-            const playlistHtmlPath = path.join(__dirname, '..', 'client', 'playlist.html');
-            const playlistCssFileName = 'playlist.css';
-            const playlistJsFileName = 'playlist.js';
-            const writeHeadParameters = [200, { 'Content-Type': 'text/html; charset=utf-8' }];
-
             // Serve playlist.html
             const htmlPath = path.join(__dirname, '..', 'client', 'playlist.html');
             fs.readFile(htmlPath, function (err, data) {
@@ -2224,8 +2219,8 @@ const server = http.createServer(async function(req, res) {                     
                         }
 
                         // Serve assosciated js file
-                        /*
-                        const jsPath = path.join(__dirname, '..', 'client', 'login.js');
+                        
+                        const jsPath = path.join(__dirname, '..', 'client', 'playlist.js');
                         fs.readFile(jsPath, 'utf-8', function (err, jsData) {
                             if (!err) {
                                 res.write('\n<script>\n' + jsData + '\n</script>');
@@ -2236,7 +2231,7 @@ const server = http.createServer(async function(req, res) {                     
 
                             // End the response
                         })
-                        */
+                        
                         res.end();
                     })
                 }

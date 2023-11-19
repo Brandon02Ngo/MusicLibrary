@@ -2,7 +2,9 @@
 <html lang="en" dir="ltr">
   <head>
     <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
-    <title>USERS PLAYLIST</title>
+    <script src="jquery-3.7.1.min.js"></script>
+    <script src="playlist.js"></script>
+    <title>my playlist</title>
     <link rel="stylesheet" href="playlist_login.css">
   </head>
   <body>
@@ -16,15 +18,15 @@
              <li><a href="musicUpload.html">Upload</a></li>
              <li><a href="playlist.html">Playlist</a></li>
              <li><a href="artistDataReport.html">Report Sheet</a></li>
-
          </ul>
          </div>
        </div>
-   <div class = "Tracks"><p class = "tracklistTitle">TRACK LIST</p></div>
-
+   <!--div class = "Tracks"><p class = "tracklistTitle">TRACK LIST</p></div-->
   </div>
-    <audio id="audio-player" controls>
-    </audio>
-   <script src="script.js"></script>
+    <center>
+    <audio id="audio-player"></audio>
+    <button onclick="playAudio()" type="button">Play</button>
+    <button onclick="pauseAudio()" type="button">Pause Audio</button>
+    </center>
   </body>
 </html>
