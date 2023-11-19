@@ -32,9 +32,8 @@
             color: beige;
             background-color: #54585A; /* Change this to the shade of gray you prefer */
         }
-
-        /* Hides both sections on initial page load */
-        #albumSection, #singleSection {
+        
+        #albumSection {
             display: none;
         }
     </style>
@@ -42,15 +41,15 @@
 <body>
     <div>
         <h1>Music Data Reporting</h1>
-        <form id="report">
+        <form id="report" name="reportForm" method="post" action="/artistDataReport">
             <h2>Specify Your Date Range</h2>
             <div>
                 <label for ="fromDate">From Date</label>
-                <input type="date" name="fromDate" id="fromDate" min="2023-01-01" required>
+                <input type="date" name="fromDate" id="fromDate" min="2020-01-01" required>
             </div>
             <div>
                 <label for ="toDate">To Date</label>
-                <input type="date" name="toDate" id="toDate" min="2023-01-01" required>
+                <input type="date" name="toDate" id="toDate" min="2020-01-01" required>
             </div>
 
             <h2>Display By</h2>
@@ -68,6 +67,13 @@
                 <input type="radio" name="selection" id="allAlbums" value="allAlbums" required>
                 <label for="specifiedAlbum">Specified Album</label>
                 <input type="radio" name="selection" id="specifiedAlbum" value="specifiedAlbum" required>
+            </div>
+
+            <div id="albumSection">
+                <div>
+                    <label for="albumTitle">Title</label>
+                    <input type="text" id="albumTitle" name="albumTitle" placeholder="Album Title" required>
+                </div>
             </div>
 
             <div>
@@ -156,16 +162,36 @@
                     <span id="maximumListensValue">1000</span>
                 </div>
             </div>
-            <button type="submit">Submit</button>
+            <button type="submit" id="submit">Submit</button>
         </form>
     </div>
-    <div>
-        <a href = "index.html">
-            <button>
-                Home
-            </button>
-        </a>
-    </div>
+
+    <div id="gridContainer">Results</div>
+
+    <script>
+        // Will allow the artist to specify a specific album
+        const albumSection = document.getElementById("albumSection");
+
+        const allAlbumsRadio = document.getElementById("allAlbums");
+        const specifiedAlbumRadio = document.getElementById("specifiedAlbum");
+        const albumTitleInput = document.getElementById("albumTitle");
+
+        // Hides or shows the div for allowing an album title to be searched and modifies 'requirement' accordingly
+        allAlbumsRadio.addEventListener("change", function() {
+            if (allAlbumsRadio.checked) {
+                albumSection.style.display = "none";
+                albumTitleInput.removeAttribute("required");
+            }
+        });
+
+        specifiedAlbumRadio.addEventListener("change", function() {
+            if (specifiedAlbumRadio.checked) {
+                albumSection.style.display = "block";
+                albumTitleInput.setAttribute("required", true);
+            }
+        });
+    </script>
+
     <script>
         function updateValue(sliderId, newValue) {
             // Find the span element where you want to display the value
@@ -174,6 +200,115 @@
             // Update the span element's text content with the current slider value
             valueSpan.textContent = newValue;
         }
+
+        // Ensures valid dates and sliders
+        function validateForm() {
+            var fromDate = document.getElementById('fromDate').value;
+            var toDate = document.getElementById('toDate').value;
+
+            // Convert date strings to Date objects for comparison
+            var fromDateObj = new Date(fromDate);
+            var toDateObj = new Date(toDate);
+
+            // Check if fromDate is after toDate
+            if (fromDateObj > toDateObj) {
+                // Show an error message
+                alert('From Date cannot be after To Date');
+                return false; // Prevent form submission
+            }
+
+            var minRating = parseInt(document.getElementById('minimumRating').value);
+            var maxRating = parseInt(document.getElementById('maximumRating').value);
+            
+            // Check if maxRating < minRating
+            if (maxRating < minRating) {
+                // Show an error message
+                alert('Min Rating cannot exceed Max Rating');
+                return false; // Prevent form submission
+            }
+
+            var minListens = parseInt(document.getElementById('minimumListens').value);
+            var maxListens = parseInt(document.getElementById('maximumListens').value);
+
+            // Check if maxListens < minListens
+            if (maxListens < minListens) {
+                // Show an error message
+                alert('Min Listens cannot exceed Max Listens');
+                return false; // Prevent form submission
+            }
+            return true; // Allow form submission
+        }
+
+        document.getElementById('report').onsubmit = validateForm;
+    </script>
+
+    <script>
+        function renderGrid(data) {
+            // Assuming 'data' is an array of objects with properties Title, Times_Played, Rating, Genre
+
+            // Reference the container where you want to render the grid (replace 'gridContainer' with your actual container ID)
+            const gridContainer = document.getElementById('gridContainer');
+
+            // Create a table element
+            const table = document.createElement('table');
+            table.classList.add('grid-table'); // Optional: Add CSS class for styling
+
+            // Create table header row
+            const headerRow = document.createElement('tr');
+            for (const key in data[0]) {
+                if (Object.prototype.hasOwnProperty.call(data[0], key)) {
+                    const th = document.createElement('th');
+                    th.textContent = key;
+                    headerRow.appendChild(th);
+                }
+            }
+            table.appendChild(headerRow);
+
+            // Create table rows with data
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                for (const key in item) {
+                    if (Object.prototype.hasOwnProperty.call(item, key)) {
+                        const td = document.createElement('td');
+                        td.textContent = item[key];
+                        row.appendChild(td);
+                    }
+                }
+                table.appendChild(row);
+            });
+
+            // Append the table to the container
+            gridContainer.innerHTML = ''; // Clear previous content
+            gridContainer.appendChild(table);
+        }
+
+        document.getElementById('report').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            if (validateForm()) {
+                try {
+                    const formData = new FormData(this); // Collect form data
+                    const response = await fetch('/artistDataReport', {
+                        method: 'POST',
+                        body: formData // Pass form data in the fetch request
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const data = await response.json(); // Assuming response is JSON
+                    renderGrid(data); // Function to render grid, pass 'data' received from the server
+                }
+                catch (error) {
+                    console.error('Error fetching data:', error);
+                }
+            }
+
+            else {
+                console.log('Form is not valid');
+            }
+        });
     </script>
 </body>
 </html>
