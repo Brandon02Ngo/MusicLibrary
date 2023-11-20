@@ -1,27 +1,10 @@
-.container
-{
-
-}
-
-:root{
-  /* ||COLORS */
-  --BGCOLOR: #352F44 /*#54585A linear-gradient(#0F0F0F, #28406e) #FFFBF5*/;
-  --BGCOLORSUB: #5C5470 /*#888B8D radial-gradient( #28406e,#0F0F0F)#F7EFE5*/;
-  --FONTCOLOR: /*#C8102E*/ #FAF0E6;
-  --COLORFALLBACK: #FFF;
-  --HOVERCOLOR: /*#960C22*/ #B9B4C7;
-  --TEXTSHADOW: -1px 0 #FFFFFF, 0 1px #FFFFFF, 1px 0 #FFFFFF, 0 -1px #FFFFFF;
-  /* ||BORDER */
-  --GRIDBORDERS: #000 1px solid;
-}
-
 .textLogo
 {
   text-align: center;
 }
 .Tracks
 {
-  background-color: var(--BGCOLORSUB) /*(255, 255, 255, 0.15)*/;
+  background-color: rgba(255, 255, 255, 0.15);
   overflow: auto;
   scrollbar-color: white;
   scrollbar-width: thin;
@@ -77,13 +60,20 @@
 }
 body
 {
-  background-color: var(--BGCOLOR);
+  background-image: url("img/bg01.png");
 }
 p{
   font-family: sans-serif;
   font-weight: bold;
   color: white;
   text-shadow: 1px 1px 2px pink
+}
+.popup {
+      background: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      width: 300px;
+      text-align: center;
 }
 .login-container {
     width: 300px;
@@ -92,9 +82,8 @@ p{
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    background-color:  var(--BGCOLORSUB)  /*#f9f9f9*/;
+    background-color: #f9f9f9;
     margin-top: 70px;
-    color: var(--FONTCOLOR);
 }
 
 h2 {
@@ -120,4 +109,9 @@ input[type="submit"] {
 
 input[type="submit"]:hover {
     background-color: #0056b3;
+}
+div
+{
+  overflow: auto;
+  text-align:justify;
 }
