@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    fetch("http://localhost:3000/").then(x => x.json()).then( x => {
+    fetch('http://localhost:8080/',{method: 'GET'}).then(x => x.json()).then( x => {
         const userList = document.getElementById('Recommended');
         
     // Loop through the array and create list items for each username
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    fetch("http://localhost:3000/").then(y => y.json()).then( y => {
+    fetch('http://localhost:8080/',{method: 'GET'}).then(y => y.json()).then( y => {
         const userlist = document.getElementById('new-releases');
         
     // Loop through the array and create list items for each username
@@ -87,24 +87,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // On the source page (e.g., index.html)
-document.addEventListener('DOMContentLoaded', function() {
-    // Find all elements with the class 'song-box'
-    const songCode = document.querySelectorAll('.song-code');
+// document.addEventListener('DOMContentLoaded', function() {
+//     // Find all elements with the class 'song-box'
+//     const songCode = document.querySelectorAll('.song-code');
   
-    // Attach a click event listener to each song box
-    songCode.forEach(box => {
-      box.addEventListener('click', function(event) {
-        // Prevent the default behavior of the link
-        event.preventDefault();
+//     // Attach a click event listener to each song box
+//     songCode.forEach(box => {
+//       box.addEventListener('click', function(event) {
+//         // Prevent the default behavior of the link
+//         event.preventDefault();
   
-        // Retrieve the audio data from the data attribute
-        const audioCode = box.dataset.audioCode;
+//         // Retrieve the audio data from the data attribute
+//         const audioCode = box.dataset.audioCode;
   
-        // Navigate to the playlist page and pass the audio data as a parameter
-        window.location.href = `audioPlay.js?audioCode=${encodeURIComponent(audioCode)}`;
-      });
-    });
-  });
+//         // Navigate to the playlist page and pass the audio data as a parameter
+//         window.location.href = `audioPlay.js?audioCode=${encodeURIComponent(audioCode)}`;
+//       });
+//     });
+//   });
   
-
+//'/mainPagelist'
 
