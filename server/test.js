@@ -420,6 +420,8 @@ const server = http.createServer(async function(req, res) {                     
     const protocol = req.socket.encrypted ? 'https' : 'http';
     const baseURL = protocol + '://' + req.headers.host + '/';
     const reqUrl = new URL(req.url, baseURL);
+    const parsedUrl = url.parse(req.url, true)
+    const filename = path.basename(parsedUrl.pathname)
 
     var fileName = reqUrl.pathname;
 
@@ -2441,31 +2443,52 @@ const server = http.createServer(async function(req, res) {                     
             return; // Return to avoid further processing for this route
         }
 
-        else if (req.method === 'GET') {
-            let pool
-            try {
-                pool = await sql.connect(dbConfig);  // Use the existing variable
-                const result1 = await pool.request().query("SELECT Top 6 Title,Audio_Data FROM [MusicLibrary].[Song];");
-                const result2 = await pool.request().query("SELECT TOP 6 Username FROM [MusicLibrary].[User] WHERE Role_ID = 1;");
-                const result3 = await pool.request().query("SELECT Username FROM [MusicLibrary].[User] WHERE Role_ID = 3;");
-                const result4 = await pool.request().query("SELECT Top 6 Audio_Data FROM [MusicLibrary].[Song];");
-    
-                res.end(JSON.stringify({
-                    data1: result1.recordset,
-                    data2: result2.recordset,
-                    data3: result3.recordset,
-                    data4: result4.recordset
-                }));
-            } catch (error) {
-                console.error('Error fetching usernames:', error);
-                return [];
-            } finally {
-                if (pool) {
-                    pool.close();
+        else if (fileName === '/getDatafromDB') {
+            console.log('Received request for /getDatafromDB');
+            sql.connect(dbConfig, function (err) {
+                if (err) {
+                    console.error('Error connecting to the database:', err);
+                    res.writeHead(500, { 'Content-Type': 'text/plain' });
+                    res.end('Internal Server Error');
+                    return;
                 }
-            }
+        
+                const handleQuery = (query, callback) => {
+                    queryDatabase(query, (err, result) => {
+                        if (err) {
+                            console.error(`Error executing query: ${query}`, err);
+                            res.writeHead(500, { 'Content-Type': 'text/plain' });
+                            res.end('Internal Server Error');
+                            sql.close();
+                        } else if (result && result.recordset) {
+                            callback(result.recordset);
+                        } else {
+                            console.error(`Unexpected result for query: ${query}`);
+                            res.writeHead(500, { 'Content-Type': 'text/plain' });
+                            res.end('Internal Server Error');
+                            sql.close();
+                        }
+                    });
+                };
+        
+                handleQuery("SELECT Top 6 Title,Audio_Data FROM [MusicLibrary].[Song];", data1 => {
+                    handleQuery("SELECT TOP 6 Username FROM [MusicLibrary].[User] WHERE Role_ID = 1;", data2 => {
+                        handleQuery("SELECT Username FROM [MusicLibrary].[User] WHERE Role_ID = 3;", data3 => {
+                            handleQuery("SELECT Top 6 Audio_Data FROM [MusicLibrary].[Song];", data4 => {
+                                res.end(JSON.stringify({
+                                    data1: data1.recordset,
+                                    data2: data2.recordset,
+                                    data3: data3.recordset,
+                                    data4: data4.recordset
+                                }));
+                                sql.close();
+                            });
+                        });
+                    });
+                });
+            });
         }
-
+    
         // No file exists for this GET method
         else {
             res.writeHead(404, {'Content-Type': 'text/plain'});
@@ -2475,6 +2498,13 @@ const server = http.createServer(async function(req, res) {                     
         // else if (etc.)
     }
 })
+
+function queryDatabase(query, callback) {
+    const request = new sql.Request();
+    request.query(query, function (err, recordset) {
+        callback(err, { recordset });
+    });
+}
 
 const PORT = process.env.PORT || 8080;
 
