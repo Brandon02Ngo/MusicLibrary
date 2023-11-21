@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Create a new A element
         const anchorElement = document.createElement('a');
-        anchorElement.href = "playlist.html"; // Set the href attribute
+        anchorElement.href = `playlist.html?Song_ID=${peeps['Song_ID']}`; // Set the href attribute
 
         //Store the audio data as a variable within the box.
         anchorElement.dataset.Audio_Data = JSON.stringify(peeps['Audio_Data']);

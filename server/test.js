@@ -421,7 +421,7 @@ const server = http.createServer(async function(req, res) {                     
     const baseURL = protocol + '://' + req.headers.host + '/';
     const reqUrl = new URL(req.url, baseURL);
     const parsedUrl = url.parse(req.url, true)
-    const filename = path.basename(parsedUrl.pathname)
+    const songId = parsedUrl.query.Song_ID;
 
     var fileName = reqUrl.pathname;
 
@@ -2443,8 +2443,13 @@ const server = http.createServer(async function(req, res) {                     
             return; // Return to avoid further processing for this route
         }
 
+        // Checks if the file name requesting the 'GET' is from /getDatafromDB
         else if (fileName === '/getDatafromDB') {
+
+            //Logs it in the console
             console.log('Received request for /getDatafromDB');
+
+            //Creates the connection to the database
             sql.connect(dbConfig, function (err) {
                 if (err) {
                     console.error('Error connecting to the database:', err);
@@ -2453,6 +2458,8 @@ const server = http.createServer(async function(req, res) {                     
                     return;
                 }
         
+                //This is a function that handles the database query
+                // query = the sql query and the callback handles the results
                 const handleQuery = (query, callback) => {
                     queryDatabase(query, (err, result) => {
                         if (err) {
@@ -2471,7 +2478,8 @@ const server = http.createServer(async function(req, res) {                     
                     });
                 };
         
-                handleQuery("SELECT Top 6 Title,Audio_Data FROM [MusicLibrary].[Song];", data1 => {
+                // This are the different queries 
+                handleQuery("SELECT Top 6 Title,Song_ID FROM [MusicLibrary].[Song];", data1 => {
                     handleQuery("SELECT TOP 6 Username FROM [MusicLibrary].[User] WHERE Role_ID = 1;", data2 => {
                         handleQuery("SELECT Username FROM [MusicLibrary].[User] WHERE Role_ID = 3;", data3 => {
                             handleQuery("SELECT Top 6 Audio_Data FROM [MusicLibrary].[Song];", data4 => {
@@ -2487,7 +2495,33 @@ const server = http.createServer(async function(req, res) {                     
                     });
                 });
             });
-        }
+        } 
+
+        else if (fileName === '/getAudioData') {
+
+            //Creates the connection to the database
+            sql.connect(dbConfig, function (err) {
+                if (err) {
+                console.error('Error connecting to the database:', err);
+                res.writeHead(500, { 'Content-Type': 'text/plain' });
+                res.end('Internal Server Error');
+                return;
+            }
+
+            const AudioData = fetchAudioDataFromDatabase(songId);
+
+            if (AudioData) {
+                const decodeAudioData = parseAudioData(AudioData);
+
+                res.writeHead(200, { 'Content-Type': 'audio/mpeg' });
+                res.end(decodeAudioData);
+            } else {
+                res.writeHead(404, {'Content-Type': 'text/plain'});
+                res.end('Song not found');
+            }
+        }) 
+    }
+
     
         // No file exists for this GET method
         else {
@@ -2499,11 +2533,21 @@ const server = http.createServer(async function(req, res) {                     
     }
 })
 
+// Function called queryDatabase
 function queryDatabase(query, callback) {
+    //Create sql request object
     const request = new sql.Request();
+
+    //This will execute the sql query
     request.query(query, function (err, recordset) {
         callback(err, { recordset });
     });
+}
+
+function fetchAudioDataFromDatabase(songID) {
+    console.log('Received request for /getAudioData');
+
+      
 }
 
 const PORT = process.env.PORT || 8080;
