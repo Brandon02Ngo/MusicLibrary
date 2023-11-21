@@ -49,12 +49,10 @@
     <!-- Unorder list of music inside song boxes -->
     <ul id="songlist" class="song-list">
       <li class="song-item2">
-        <img src="img/eagle.svg" alt="eagle" width ="100" height="100">
+        <div class = "TP-box"></div>
         <div class="song-info">
-          <h2>
-            
-              <span id = "song-name">Apple song</span>
-            
+          <h2 class = "title">          
+            Apple song
           </h2>
           <p>
             <span id = "song-genre"> Genre: Rap </span>
@@ -63,42 +61,18 @@
               <span id = "song-ratings"> 3.9 </span>
             <br> 
               <img src="img/eye.svg" alt="Views:" width ="15" height="15">
-              <span id = "song-views"> 1235 </span>
+              <span class = "song-views"> 1235 </span>
           </p>
         </div>
           
       </li>
-    </a>
-      <a href="playlist.html">
-      <li class="song-item2">
-        <img src="img/music_disc.png" alt="eagle" width ="100" height="100">
-        <div class="song-info">
-          <h2>Banger song</h2>
-          <p>Genre: Country</p>
-          <p>Rating: 3.9</p>
-          <p> Views: 2345 </p>
-        </div>
-      </li>
-    </a>
-      
-    <a href="playlist.html">
-      <li class="song-item2">
-        <div class="song-box"></div>
-        <div class="song-info">
-          <h2>candy song</h2>
-          <p>Genre: Jazz</p>
-          <p>Rating: 4.4</p>
-          <p> Views: 4322 </p>
-        </div>
-      </li>
-    </a>
     </ul>
 
   <hr> <!--horizontal line-->
 
   <h1 class="uhFont">New Releases</h1>
     <ul id="new-releases" class="song-list">
-      <a href="playlist.html" class = "song-code" data-Audio_Data="Audiodata">
+      <a class = "section-info" href="playlist.html" class = "song-code" data-Audio_Data="Audiodata">
       <li class="song-item">
         <div class="NR-box"></div>
         <div class="song-info">
@@ -116,7 +90,7 @@
   <script src="mainPage.js">
   </script>
   <ul id="Recommended" class="song-list">
-    <a href="playlist.html" >
+    <a class = "section-info" href="playlist.html" >
       <li class="song-item">
         <div class="Rec-box"></div>
         <div class="song-info">
@@ -127,7 +101,7 @@
   </ul> 
   </body>
 
-  <script>
+  <!--<script>
     window.addEventListener('load', () => {
         console.log('Loaded!');
         fetch('/getAlbumID')
@@ -148,6 +122,6 @@
                 console.error('Error:', error);
             });
     });
-    </script>
+    </script>-->
 
   </html>

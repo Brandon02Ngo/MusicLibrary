@@ -2798,9 +2798,17 @@ const server = http.createServer(async function(req, res) {                     
                     });
                 };
         
-                handleQuery("SELECT Top 6 Title,Audio_Data FROM [MusicLibrary].[Song];", data1 => {
-                    handleQuery("SELECT Top 6 Artist FROM [MusicLibrary].[Song];", data2 => {
-                        handleQuery("SELECT Username FROM [MusicLibrary].[User] WHERE Role_ID = 3;", data3 => {
+                // This will query the newest songs that have been released recently
+                handleQuery("SELECT Top 6 Title,Song_ID FROM [MusicLibrary].[Song] Where [Created_At] IS Not NULL ORDER BY [Created_At] DESC;", data1 => {
+
+                    //This will query the artist that have the most song released and place them as top 6
+                    handleQuery("SELECT Distinct Artist, COUNT(*) as SongCount From [MusicLibrary].[Song] where Artist is not null Group by Artist Order by SongCount desc;", data2 => {
+
+                        // This will be the top picks with picking songs with the most views. 
+                        handleQuery(`SELECT TOP 3 s.Title, usl.Listens, s.Genre
+                                    FROM [MusicLibrary].[Song] s
+                                    JOIN [MusicLibrary].[User_Song_Listens] usl ON s.[Song_ID] = usl.[Song_ID]
+                                    ORDER BY usl.Listens DESC;`, data3 => {
                             handleQuery("SELECT Top 6 Audio_Data FROM [MusicLibrary].[Song];", data4 => {
                                 res.end(JSON.stringify({
                                     data1: data1.recordset,

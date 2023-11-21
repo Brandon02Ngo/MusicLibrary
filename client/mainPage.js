@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Create an H2 element for the artist name
         const artistName = document.createElement('h2');
+        artistName.classList.add("title")
         artistName.textContent = user["Artist"];
 
         // Create a new A element
@@ -60,14 +61,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Create an H2 element for the artist name
         const artistname = document.createElement('h2');
+        artistname.classList.add("title")
         artistname.textContent = peeps["Title"];
 
         // Create a new A element
         const anchorElement = document.createElement('a');
         anchorElement.href = `playlist.html?Song_ID=${peeps['Song_ID']}`; // Set the href attribute
-
-        //Store the audio data as a variable within the box.
-        anchorElement.dataset.Audio_Data = JSON.stringify(peeps['Audio_Data']);
 
         // Append the artist name to the anchor element
         anchorElement.appendChild(artistname);
@@ -84,6 +83,69 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         });
     });
+
+    fetch('http://localhost:8080/getDatafromDB', { method: 'GET' })
+    .then(z => z.json())
+    .then(z => {
+        const Tplist = document.getElementById('songlist');
+
+    // Loop through the array and create list items for each record
+    z.data3.forEach(TopPicks => {
+
+        // Create a new LI element
+        const TPlistitem = document.createElement('li');
+        TPlistitem.classList.add("song-item2");
+
+        // Create a new LI element
+        const TPartistbox = document.createElement('div');
+        TPartistbox.classList.add("TP-box");
+
+        // Create a new div for the song info
+        const TPartistinfo = document.createElement('div');
+        TPartistinfo.classList.add("song-info");
+
+        // Create an H2 element for the song title
+        const TPartistname = document.createElement('h2');
+        TPartistname.classList.add("title");
+        TPartistname.textContent = TopPicks["Title"]; // Assuming "Title" is the correct property name
+
+        // Create a new span element for Genre
+        const TPGenre = document.createElement('span');
+        TPGenre.classList.add("song-genre");
+        TPGenre.textContent = ("Genre: " + TopPicks["Genre"]);
+
+        // Create a new span element for song views
+        const TPsongViews = document.createElement('span');
+        TPsongViews.classList.add("song-views");
+        TPsongViews.textContent = ("Listens: " + TopPicks["Listens"]);
+
+        // Create a new A element
+        const TPanchorElement = document.createElement('a');
+        TPanchorElement.href = "playlist.html";
+
+        // Append the song title to the anchor element
+        TPanchorElement.appendChild(TPartistname);
+
+        // Append the anchor element and song views to the song info
+        TPartistinfo.appendChild(TPanchorElement);
+        TPartistinfo.appendChild(TPGenre);
+        TPartistinfo.appendChild(TPsongViews);
+
+        //Append the TP-box into listItem
+        TPartistbox.appendChild(TPartistinfo);
+
+        // Append the song info to the LI element
+        TPlistitem.appendChild(TPartistbox);
+        TPlistitem.appendChild(TPartistinfo);
+
+        // Append the LI element to the UL
+        Tplist.appendChild(TPlistitem);
+
+    });
+  });
+
+
+    
 });
 
 // On the source page (e.g., index.html)

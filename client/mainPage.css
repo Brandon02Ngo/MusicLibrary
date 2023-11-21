@@ -115,6 +115,8 @@ main {
 
 }
 
+
+
 .song-info p {
   margin: 3px;
 }
@@ -125,12 +127,14 @@ main {
 }
 
 .NR-box {
-  width: 100px;
-  height: 100px;
+  width: 110px;
+  height: 110px;
   background-color: pink;
-  margin-right: 10px;
+  margin-right: 0px;
+  margin-left: 0px;
   border-radius: 7px;
   word-wrap: break-word;
+  align-self: center;
 }
 
 #Recommended {
@@ -160,4 +164,14 @@ main {
   margin: 10px;
   border-radius: 10px;
   overflow: hidden;
+}
+
+
+.TP-box {
+  width: 100px;
+  height: 100px;
+  background-color: green;
+  border-radius: 50%;
+  margin-right: 10px;
+  word-wrap: break-word;
 }
