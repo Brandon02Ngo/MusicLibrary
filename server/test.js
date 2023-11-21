@@ -207,7 +207,8 @@ function getRecommendedAlbum(userID, callback) {
         const selectStatement = 
         'SELECT A.Album_ID ' +
         'FROM MusicLibrary.[Recommended_Album] A ' +
-        'WHERE Cougar_ID = @userID ';
+        'WHERE Cougar_ID = @userID ' +
+        'ORDER BY A.Album_ID DESC';
 
         // Adds parameters to the select statement
         request.input('userID', sql.Int, userID);
@@ -1035,50 +1036,6 @@ const server = http.createServer(async function(req, res) {                     
             res.end();
         }
 
-        else if (fileName === '/getSearchbar') {
-            console.log("Im Here");
-            sql.connect(dbConfig, (err) => {
-                // Database connection error handler
-                if (err) {
-                    handleDatabaseError(res, err);
-                    return;                    
-                }
-
-                const request = new sql.Request();
-
-                // Defining SELECT query to pass back to html
-                var query = `
-                SELECT 
-                Title, Artist
-                FROM MusicLibrary.[Song] 
-                FOR JSON AUTO`;
-
-                // Process query result and store it to use as a response
-                request.query(query, (err, result) =>  {
-                    if (err) {                                                   // Database query error handler
-                        console.error('Database query error:', err);
-                        sql.close();
-                        res.writeHead(500, { 'Content-Type': 'text/plain' });
-                        res.end('Database query error');
-                        return;
-                    }
-                    //console.log(result);
-                    const rows = result.recordset[0];
-                    //console.log(rows);
-                    const jsonData = JSON.stringify(rows);
-                    res.writeHead(200, {
-                        'Content-Type': 'application/json',
-                        'Content-Length': Buffer.byteLength(jsonData, 'utf8'), //remove row below if needed
-                        /* "Access-Control-Allow-Origin": "*" */
-                    });
-
-                    console.log(jsonData);
-                    res.end(jsonData);
-                })
-            })
-            return;
-        }
-
         else if(fileName === '/listenerDataReport') {
             console.log('In listener report');
             // Attempts to authenticate a user's session; if not authentic (session doesn't match server memory, or session doesn't exist) then user is sent to login page
@@ -1137,12 +1094,13 @@ const server = http.createServer(async function(req, res) {                     
                     
                     // Defining SELECT query to pass back to html form to display as a grid
                     const query = 
-                    `SELECT A.Song_ID, A.Cougar_ID, C.Genre, A.Listens, B.Rating
-                    FROM MusicLibrary.[User_Song_Listens] A, MusicLibrary.[User_Song_Rating] B, MusicLibrary.[Song] C
-                    WHERE A.Cougar_ID = 9
+                    `SELECT C.Artist, D.Title AS 'Album Title', C.Title AS 'Song Title', C.Genre, A.Listens, B.Rating
+                    FROM MusicLibrary.[User_Song_Listens] A, MusicLibrary.[User_Song_Rating] B, MusicLibrary.[Song] C, MusicLibrary.[Album] D
+                    WHERE A.Cougar_ID = @userID
                     AND A.Cougar_ID = B.Cougar_ID
                     AND A.Song_ID = B.Song_ID
                     AND A.Song_ID = C.Song_ID
+                    AND D.Album_ID = C.Album_ID
                     AND A.Listens >= @minListens
                     AND B.Rating BETWEEN @minRating AND @maxRating
                     AND C.Created_At BETWEEN CONVERT(datetime2, @fromDate) AND CONVERT(datetime2, @toDate)
@@ -1150,7 +1108,7 @@ const server = http.createServer(async function(req, res) {                     
                     ORDER BY B.Rating DESC, A.Listens DESC;`
 
                     // Set parameters for the query
-                    request.input('artistID', sql.Int, userID);
+                    request.input('userID', sql.Int, userID);
                     request.input('genre', sql.VarChar, genre);
                     request.input('minRating', sql.Int, minRating);
                     request.input('maxRating', sql.Int, maxRating);
@@ -1252,7 +1210,7 @@ const server = http.createServer(async function(req, res) {                     
                     
                     // Defining SELECT query to pass back to html form to display as a grid
                     const query = 
-                    `SELECT DISTINCT A.Title, A.Times_Played, A.Rating, A.Genre, FORMAT(A.Created_At, 'MM/dd/yyyy') AS Created_Date
+                    `SELECT DISTINCT B.Title AS 'Album Title', A.Title AS 'Song Title', A.Times_Played AS 'Listens', A.Rating, A.Genre, FORMAT(A.Created_At, 'MM/dd/yyyy') AS 'Date Created'
                     FROM MusicLibrary.[Song] A, MusicLibrary.[Album] B, MusicLibrary.[User_Song_Rating] D, MusicLibrary.[Listener] E, MusicLibrary.[User] F
                     WHERE F.Cougar_ID = @artistID
                     AND F.Role_ID = 2
@@ -1303,14 +1261,32 @@ const server = http.createServer(async function(req, res) {                     
 
         else if(fileName === '/adminDataReport') {
             // Data parsing
+            //console.log(req);
 
+            //////
             const data_from_server = await getReqData(req);
             const data_from_server_json = JSON.parse(data_from_server);
             console.log(typeof(data_from_server));
             console.log(typeof(data_from_server_json));
             console.log('data_from_server_json:')
             console.log(data_from_server_json);
+            //console.log(data_from_server_json.statement_for_generic_query);
+    
+            // get the query result
+            //const query_result = await new Username().generic_query(data_from_server_json.statement_for_generic_query)
+            //    .catch(()=> {
+            //        return null;
+            //    });
+            
+            // run sql query // currently here
 
+
+            // write the response back to client
+            // response headers
+            //res.writeHead(200, {
+            //    "Content-Type": "application/json",
+            //    "Access-Control-Allow-Origin": "*"
+            //});
             var number_of_artists_to_include = data_from_server_json.number_of_artists;
             var include_city = data_from_server_json.include_city;
             var include_name_of_song = data_from_server_json.include_most_famous_song_name;
@@ -1331,101 +1307,168 @@ const server = http.createServer(async function(req, res) {                     
 
                 const request = new sql.Request();
                 
+                // const query = `SELECT A.Title, A.Times_Played, A.Rating, A.Genre FROM MusicLibrary.[Song] A;`;
+
+                
+                // Defining SELECT query to pass back to html form to display as a grid
                 var query;
-                if (genre_selected ==='All Genres') { 
-                    query = `WITH
-                            table1
-                            AS
-                            
-                            (
-                                SELECT
-                                    [Created_By] AS Artist_ID,
-                                    [Title] AS Song_Name,
-                                    SUM([Listens]) AS total_listens
-                                FROM
-                                    [MusicLibrary].[Song],
-                                    [MusicLibrary].[User_Song_Listens]
-                                WHERE 
-                                [MusicLibrary].[Song].[Song_ID] = [MusicLibrary].[User_Song_Listens].[Song_ID]
-                                GROUP BY 
-                                [Created_By], 
-                                [Title]   
-                        
-                            )
-                        /*,table3 AS(*/
-                        
-                        SELECT * FROM (
-                        SELECT t2.*
-                        FROM table1 RIGHT JOIN (
-                        SELECT Artist_ID, Song_Name, MAX(total_listens) AS max_listens
-                            FROM table1
-                            GROUP BY table1.Artist_ID, table1.Song_Name
-                        ) AS t2 ON table1.Artist_ID = t2.Artist_ID AND table1.Song_Name=t2.Song_Name
-                        ) AS table_a/*;*/
-                        
-                        JOIN (
-                            SELECT most_famous_artist_table.*, other_details.Username, other_details.City, other_details.State, other_details.user_since FROM (
-                                SELECT TOP ${number_of_artists_to_include}
-                                    [Created_By] AS 'user_ids', SUM([Listens]) AS 'total_listens_for_artist'
-                                FROM [MusicLibrary].[Song], [MusicLibrary].[User_Song_Listens]
-                                WHERE  [MusicLibrary].[Song].[Song_ID] =  [MusicLibrary].[User_Song_Listens].[Song_ID]
-                                GROUP BY [Created_By]) /*ORDER BY [Listens] DESC*/
-                            AS most_famous_artist_table 
-                            JOIN (
-                            SELECT [MusicLibrary].[User].[Cougar_ID] AS 'id',[Username],[City], [State],[Created_At] as 'user_since'
-                            FROM [MusicLibrary].[User], [MusicLibrary].[Artist]
-                            WHERE [MusicLibrary].[User].[Cougar_ID] = [MusicLibrary].[Artist].[Cougar_ID]
-                            ) AS other_details ON most_famous_artist_table.user_ids = other_details.id
-                        ) AS extra_table ON extra_table.user_ids=table_a.Artist_ID ORDER BY total_listens_for_artist;`;
+                if (!(genre_selected ==='AllGenres')) { 
+                    query = `
+                    WITH table5 AS (
+                        SELECT t1.t1_id_of_user_who_uploaded_song, t2.Song_ID, t2.t1_listens_per_song 
+                        FROM
+                        (SELECT 
+                        [Song].[Created_By] AS t1_id_of_user_who_uploaded_song,
+                        [Song_ID]
+                        FROM [MusicLibrary].[Song] WHERE [Genre]='${genre_selected}' ) AS t1 
+                        RIGHT JOIN (
+                        SELECT [Song_ID], SUM([Listens]) AS t1_listens_per_song
+                        FROM [MusicLibrary].[User_Song_Listens]
+                        GROUP BY [Song_ID]
+                        ) AS t2 ON t1.Song_ID = t2.Song_ID
+                    )
+                    ,aggregate_listens_table AS (
+                        SELECT 
+                        t1_id_of_user_who_uploaded_song AS user_id, SUM(t1_listens_per_song) AS aggregate_listens
+                        FROM table5 /* add where?*/
+                        GROUP BY t1_id_of_user_who_uploaded_song
+                    )
+                    ,table6 AS (
+                        SELECT [t1_id_of_user_who_uploaded_song], [Song_ID], [t1_listens_per_song],
+                        MAX(t1_listens_per_song) OVER (PARTITION BY t1_id_of_user_who_uploaded_song)
+                        AS t6_listens_of_most_famous_song FROM table5 AS table6
+                    )
+                    ,table7 AS (
+                        SELECT * 
+                        FROM table6 
+                        WHERE t1_id_of_user_who_uploaded_song = t1_id_of_user_who_uploaded_song
+                        AND Song_ID = table6.Song_ID
+                        AND t1_listens_per_song = table6.t1_listens_per_song
+                    )
+                    ,table8 AS (
+                        SELECT * 
+                        FROM table7  
+                        WHERE t1_listens_per_song = t6_listens_of_most_famous_song
+                        AND t1_id_of_user_who_uploaded_song = t1_id_of_user_who_uploaded_song
+                        /*GROUP BY t1_id_of_user_who_uploaded_song*/
+                    )
+                    /*SELECT * FROM table8*/
+                    ,most_popular_accounts AS (
+                        SELECT TOP ${number_of_artists_to_include}
+                        user_id, Song_ID AS id_of_most_famous_song, aggregate_listens
+                        FROM aggregate_listens_table, table8 
+                        WHERE aggregate_listens_table.user_id = table8.t1_id_of_user_who_uploaded_song
+                        /*GROUP BY user_id*/ ORDER BY aggregate_listens DESC
+                    )
+                    /*SELECT * FROM most_popular_accounts*/
+                    ,final_table AS (
+                        SELECT
+                        [Username], [City], [State], id_of_most_famous_song, [Song].[Title] AS name_of_most_famous_song_uploaded_by_this_artist, aggregate_listens, [User].[Created_At] AS user_since
+                        FROM 
+                        [MusicLibrary].[User],
+                        [MusicLibrary].[Artist], 
+                        most_popular_accounts,
+                        [MusicLibrary].[Song]
+                        WHERE most_popular_accounts.user_id = [MusicLibrary].[User].[Cougar_ID]
+                        AND most_popular_accounts.user_id = [MusicLibrary].[Artist].[Cougar_ID]
+                        AND most_popular_accounts.id_of_most_famous_song = [MusicLibrary].[Song].[Song_ID]
+                    )
+                    SELECT * FROM final_table
+                    `;
                 }
                 else {
-                query = `WITH
-                        table1
-                        AS
-                        
-                        (
-                            SELECT
-                                [Created_By] AS Artist_ID,
-                                [Title] AS Song_Name,
-                                SUM([Listens]) AS total_listens
-                            FROM
-                                [MusicLibrary].[Song],
-                                [MusicLibrary].[User_Song_Listens]
-                            WHERE 
-                            [MusicLibrary].[Song].[Song_ID] = [MusicLibrary].[User_Song_Listens].[Song_ID]
-                                AND [Genre] = '${genre_selected}'
-                            GROUP BY 
-                            [Created_By], 
-                            [Title]   
-            
-                        )
-                    /*,table3 AS(*/
-            
-                    SELECT * FROM (
-                    SELECT t2.*
-                    FROM table1 RIGHT JOIN (
-                    SELECT Artist_ID, Song_Name, MAX(total_listens) AS max_listens
-                        FROM table1
-                        GROUP BY table1.Artist_ID, table1.Song_Name
-                    ) AS t2 ON table1.Artist_ID = t2.Artist_ID AND table1.Song_Name=t2.Song_Name
-                    ) AS table_a/*;*/
-            
-                    JOIN (
-                        SELECT most_famous_artist_table.*, other_details.Username, other_details.City, other_details.State, other_details.user_since FROM (
-                            SELECT TOP ${number_of_artists_to_include}
-                                [Created_By] AS 'user_ids', SUM([Listens]) AS 'total_listens_for_artist'
-                            FROM [MusicLibrary].[Song], [MusicLibrary].[User_Song_Listens]
-                            WHERE  [MusicLibrary].[Song].[Song_ID] =  [MusicLibrary].[User_Song_Listens].[Song_ID]
-                                AND [Song].[Genre] = '${genre_selected}'
-                            GROUP BY [Created_By]) /*ORDER BY [Listens] DESC*/
-                        AS most_famous_artist_table 
-                        JOIN (
-                        SELECT [MusicLibrary].[User].[Cougar_ID] AS 'id',[Username],[City], [State],[Created_At] as 'user_since'
-                        FROM [MusicLibrary].[User], [MusicLibrary].[Artist]
-                        WHERE [MusicLibrary].[User].[Cougar_ID] = [MusicLibrary].[Artist].[Cougar_ID]
-                        ) AS other_details ON most_famous_artist_table.user_ids = other_details.id
-                    ) AS extra_table ON extra_table.user_ids=table_a.Artist_ID ORDER BY total_listens_for_artist;`;
+                query = `
+                    WITH table5 AS (
+                        SELECT t1.t1_id_of_user_who_uploaded_song, t2.Song_ID, t2.t1_listens_per_song 
+                        FROM
+                        (SELECT 
+                        [Song].[Created_By] AS t1_id_of_user_who_uploaded_song,
+                        [Song_ID]
+                        FROM [MusicLibrary].[Song]) AS t1 
+                        RIGHT JOIN (
+                        SELECT [Song_ID], SUM([Listens]) AS t1_listens_per_song
+                        FROM [MusicLibrary].[User_Song_Listens]
+                        GROUP BY [Song_ID]
+                        ) AS t2 ON t1.Song_ID = t2.Song_ID
+                    )
+                    ,aggregate_listens_table AS (
+                        SELECT 
+                        t1_id_of_user_who_uploaded_song AS user_id, SUM(t1_listens_per_song) AS aggregate_listens
+                        FROM table5 /* add where?*/
+                        GROUP BY t1_id_of_user_who_uploaded_song
+                    )
+                    ,table6 AS (
+                        SELECT [t1_id_of_user_who_uploaded_song], [Song_ID], [t1_listens_per_song],
+                        MAX(t1_listens_per_song) OVER (PARTITION BY t1_id_of_user_who_uploaded_song)
+                        AS t6_listens_of_most_famous_song FROM table5 AS table6
+                    )
+                    ,table7 AS (
+                        SELECT * 
+                        FROM table6 
+                        WHERE t1_id_of_user_who_uploaded_song = t1_id_of_user_who_uploaded_song
+                        AND Song_ID = table6.Song_ID
+                        AND t1_listens_per_song = table6.t1_listens_per_song
+                    )
+                    ,table8 AS (
+                        SELECT * 
+                        FROM table7  
+                        WHERE t1_listens_per_song = t6_listens_of_most_famous_song
+                        AND t1_id_of_user_who_uploaded_song = t1_id_of_user_who_uploaded_song
+                        /*GROUP BY t1_id_of_user_who_uploaded_song*/
+                    )
+                    /*SELECT * FROM table8*/
+                    ,most_popular_accounts AS (
+                        SELECT TOP ${number_of_artists_to_include}
+                        user_id, Song_ID AS id_of_most_famous_song, aggregate_listens
+                        FROM aggregate_listens_table, table8 
+                        WHERE aggregate_listens_table.user_id = table8.t1_id_of_user_who_uploaded_song
+                        /*GROUP BY user_id*/ ORDER BY aggregate_listens DESC
+                    )
+                    /*SELECT * FROM most_popular_accounts*/
+                    ,final_table AS (
+                        SELECT
+                        [Username], [City], [State], id_of_most_famous_song, [Song].[Title] AS name_of_most_famous_song_uploaded_by_this_artist, aggregate_listens, [User].[Created_At] AS user_since
+                        FROM 
+                        [MusicLibrary].[User],
+                        [MusicLibrary].[Artist], 
+                        most_popular_accounts,
+                        [MusicLibrary].[Song]
+                        WHERE most_popular_accounts.user_id = [MusicLibrary].[User].[Cougar_ID]
+                        AND most_popular_accounts.user_id = [MusicLibrary].[Artist].[Cougar_ID]
+                        AND most_popular_accounts.id_of_most_famous_song = [MusicLibrary].[Song].[Song_ID]
+                    )
+                    SELECT * FROM final_table
+                `;
                 }
+
+                /*
+                const query = 
+                `SELECT A.Title, A.Times_Played, A.Rating, A.Genre
+                FROM MusicLibrary.[Song] A, MusicLibrary.[Album] B, MusicLibrary.[User_Song_Listens] C, MusicLibrary.[User_Song_Rating] D, MusicLibrary.[Listener] E, MusicLibrary.[User] F
+                WHERE F.Cougar_ID = @artistID
+                AND F.Role_ID = 2
+                AND B.Created_By = F.Cougar_ID
+                AND A.Album_ID = B.Album_ID
+                AND A.Song_ID = C.Song_ID
+                AND A.Song_ID = D.Song_ID
+                AND C.Cougar_ID = E.Cougar_ID
+                AND E.[State] LIKE @state
+                AND B.Title LIKE @album
+                AND A.Rating BETWEEN @minRating AND @maxRating
+                AND A.Times_Played BETWEEN @minListens AND @maxListens
+                AND A.Created_At BETWEEN @fromDate AND @toDate;`;
+
+                // Set parameters for the query
+                request.input('artistID', sql.Int, userID);
+                request.input('state', sql.VarChar, state);
+                request.input('album', sql.VarChar, albumTitle);
+                request.input('minRating', sql.Int, minRating);
+                request.input('maxRating', sql.Int, maxRating);
+                request.input('minListens', sql.Int, minListens);
+                request.input('maxListens', sql.Int, maxListens);
+                request.input('fromDate', sql.DateTime2, fromDate);
+                request.input('toDate', sql.DateTime2, toDate);
+                */
 
                 // Process query result and store it to use as a response
                 request.query(query, (err, result) =>  {
@@ -1452,9 +1495,190 @@ const server = http.createServer(async function(req, res) {                     
                 })
             })
             
-            return;
+            // set the response
+            //res.write(JSON.stringify(data_from_server_json));
+    
+            // end the response
+            //res.end();
+            //////
+            //return;
+            /*
+            //const data_from_client = await (req);
             
+            console.log(req.body);
+            const chunks = [];
+            let body = '';
+            req.on("data", function (data) {
+                //body += data.toString();
+                //chunks.push(data);
+                body += data;
+            });
+            req.on("end", function () {
+                //const final_data = Buffer.concat(chunks);
+                const final_data = body;
+                var got = JSON.parse(final_data);
+                console.log('final data:');
+                console.log(got);
+            });
+            console.log(body);
+            //const data_json = JSON.parse(body);
+            console.log('data_json:')
+            console.log(got);
+            // response headers
+            res.writeHead(200, {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*"
+            });
             
+            // set the response
+            res.write(JSON.stringify(data_json));
+
+            // end the response
+            res.end();            
+
+
+            // Attempts to authenticate a user's session; if not authentic (session doesn't match server memory, or session doesn't exist) then user is sent to login page
+            // Also retrieves userID if session in cookie matches session in memory
+            const user = { id: undefined };
+            let certified = authenticateSession(req, res, user);
+
+            if (!certified) {
+                return;
+            }
+
+            var userID = user.id;
+
+            // Data Validation 
+            
+            const form = new formidable.IncomingForm();
+            console.log(form);
+            //const form1 = req;
+            //console.log(req);
+            //const form = formidable();
+            //const fields = {}
+            //console.log(form);
+            form.parse(req, (err, fields) => {
+                if (err) {
+                    console.error('Error parsing form:', err);
+                    res.writeHead(500, { 'Content-Type': 'text/plain' });
+                    res.end('Internal Server Error');
+                    return;
+                }
+                // Access form fields
+
+                console.log('Fields are:')
+                console.log(fields)
+                res.writeHead(500, { 'Content-Type': 'text/plain' });
+                res.end('Hi there');
+                const number_of_artists_to_include = fields.number_of_artists_to_include;
+                
+                var city = false;
+                if (fields.city){
+                    city = true; // if city will be included
+                }
+                
+                const genre = fields.genre;
+
+                var show_name_of_most_famous_song = false;
+                if (fields.show_name_of_most_famous_song){
+                    show_name_of_most_famous_song = true;
+                }
+
+                console.log(number_of_artists_to_include);
+                console.log(city);
+                console.log(genre);
+                console.log(show_name_of_most_famous_song);
+
+                // Sets albumTitle parameter accordingly
+                
+                let albumTitle;
+                if (albumParameter === 'allAlbums') {
+                    albumTitle = '%';
+                }
+                else {
+                    albumTitle = fields.albumTitle[0];
+                }
+
+                // Sets state parameter accordingly
+                let state = fields.state[0];
+                if (state === 'ALL') {
+                    state = '%';
+                }
+
+                const minRating = fields.minimumRating[0];
+                const maxRating = fields.maximumRating[0];
+                const minListens = fields.minimumListens[0];
+                const maxListens = fields.maximumListens[0];
+                const fromDate = fields.fromDate[0];
+                const toDate = fields.toDate[0];
+
+                sql.connect(dbConfig, (err) => {
+                    // Database connection error handler
+                    if (err) {
+                        handleDatabaseError(res, err);
+                        return;                    
+                    }
+
+                    const request = new sql.Request();
+                    
+                    // const query = `SELECT A.Title, A.Times_Played, A.Rating, A.Genre FROM MusicLibrary.[Song] A;`;
+
+                    
+                    // Defining SELECT query to pass back to html form to display as a grid
+                    const query = 
+                    `SELECT A.Title, A.Times_Played, A.Rating, A.Genre
+                    FROM MusicLibrary.[Song] A, MusicLibrary.[Album] B, MusicLibrary.[User_Song_Listens] C, MusicLibrary.[User_Song_Rating] D, MusicLibrary.[Listener] E, MusicLibrary.[User] F
+                    WHERE F.Cougar_ID = @artistID
+                    AND F.Role_ID = 2
+                    AND B.Created_By = F.Cougar_ID
+                    AND A.Album_ID = B.Album_ID
+                    AND A.Song_ID = C.Song_ID
+                    AND A.Song_ID = D.Song_ID
+                    AND C.Cougar_ID = E.Cougar_ID
+                    AND E.[State] LIKE @state
+                    AND B.Title LIKE @album
+                    AND A.Rating BETWEEN @minRating AND @maxRating
+                    AND A.Times_Played BETWEEN @minListens AND @maxListens
+                    AND A.Created_At BETWEEN @fromDate AND @toDate;`;
+
+                    // Set parameters for the query
+                    request.input('artistID', sql.Int, userID);
+                    request.input('state', sql.VarChar, state);
+                    request.input('album', sql.VarChar, albumTitle);
+                    request.input('minRating', sql.Int, minRating);
+                    request.input('maxRating', sql.Int, maxRating);
+                    request.input('minListens', sql.Int, minListens);
+                    request.input('maxListens', sql.Int, maxListens);
+                    request.input('fromDate', sql.DateTime2, fromDate);
+                    request.input('toDate', sql.DateTime2, toDate);
+                    
+
+                    // Process query result and store it to use as a response
+                    request.query(query, (err, result) =>  {
+                        if (err) {                                                   // Database query error handler
+                            console.error('Database query error:', err);
+                            sql.close();
+                            res.writeHead(500, { 'Content-Type': 'text/plain' });
+                            res.end('Database query error');
+                            return;
+                        }
+                        // Collects rows of data and stores it as JSON to send back to the client
+                        const rows = result.recordset;
+                        const jsonData = JSON.stringify(rows);
+                        res.writeHead(200, {
+                            'Content-Type': 'application/json',
+                            'Content-Length': Buffer.byteLength(jsonData, 'utf8')
+                        });
+
+                        console.log(jsonData);
+                        res.end(jsonData);
+                    })
+                })
+                
+               res.end();
+            })
+            */
+           return;
         }
 
         else if(fileName === '/adminDeleteUser') {
@@ -1758,7 +1982,41 @@ const server = http.createServer(async function(req, res) {                     
                 }
             })
         }
+/*
+        else if (fileName === '/removeRecAlbum') {
+            const userCookie = req.headers.cookie;
+            let userID = getIdFromCookie(userCookie)
 
+            sql.connect(dbConfig, (err) => {
+                // Database connection error handler
+                if (err) {
+                    handleDatabaseError(res, err);
+                    return;                    
+                }
+
+                const request = new sql.Request();
+                
+                const deleteStatement = 
+                `DELETE FROM MusicLibrary.[Recommended_Album] A
+                WHERE A.Cougar_ID = @userID;`;
+        
+                // Adds parameters to the select statement
+                request.input('userID', sql.Int, userID);
+                
+                request.query(deleteStatement, (err, result) =>  {
+                    if (err) {                                                   // Database query error handler
+                        console.error('Database query error:', err);
+                        sql.close();
+                        callback('Database query error', null);
+                        return;
+                    }
+        
+                    // Process query result and close
+                    sql.close();
+                })
+            })
+        }  
+*/
         else if (fileName === '/login/searchbar.html') {
             const user = { id: undefined };
             let certified = authenticateSession(req, res, user);
@@ -1783,6 +2041,52 @@ const server = http.createServer(async function(req, res) {                     
             });
         
             return; // Return to avoid further processing for this route
+        }
+
+        else if (fileName === '/searchbar'){
+            sql.connect(dbConfig, (err) => {
+                
+                 // Database connection error handler
+                if (err) {
+                    handleDatabaseError(res, err);
+                    return;                    
+                }
+
+                const request = new sql.Request();
+            
+                
+                // Defining SELECT query to pass back to html
+                var query = `
+                SELECT 
+                Title, Artist, Song_ID
+                FROM MusicLibrary.[Song] 
+                `;
+
+                // Process query result and store it to use as a response
+                request.query(query, (err, result) =>  {
+                    if (err) {                                                   // Database query error handler
+                        console.error('Database query error:', err);
+                        sql.close();
+                        res.writeHead(500, { 'Content-Type': 'text/plain' });
+                        res.end('Database query error');
+                        return;
+                    }
+                    // Collects rows of data and stores it as JSON to send back to the client
+                    //console.log(result);
+                    const rows = result.recordset;
+                    //console.log(rows);
+                    const jsonData = JSON.stringify(rows);
+                    res.writeHead(200, {
+                        'Content-Type': 'application/json',
+                        'Content-Length': Buffer.byteLength(jsonData, 'utf8'), //remove row below if needed
+                        "Access-Control-Allow-Origin": "*"
+                    });
+
+                    console.log(jsonData);
+                    res.end(jsonData);
+                })
+            })
+            return; 
         }
 
         else if (fileName === '/login/listener_report.html') {
@@ -1943,7 +2247,6 @@ const server = http.createServer(async function(req, res) {                     
         }
 
         else if (fileName === '/login/login.html') {
-            const filePath = path.join(__dirname, '..', 'client', 'login.html');
             // Authenticates user session
             const user = { id: undefined };
             let certified = authenticateSession(req, res, user);
@@ -2002,6 +2305,23 @@ const server = http.createServer(async function(req, res) {                     
 
             return; // Return to avoid further processing for this route
         }
+
+        else if (req.url === '/login/img/bg01.png' || req.url === '/img/bg01.png') {
+            // Serving the image file
+            const imagePath = path.join(__dirname, '..', 'client', 'img', 'bg01.png');
+            
+            fs.readFile(imagePath, (err, data) => {
+              if (err) {
+                res.writeHead(404, { 'Content-Type': 'text/plain' });
+                res.end('File not found');
+              }
+              else {
+                res.writeHead(200, { 'Content-Type': 'image/png' });
+                res.end(data);
+              }
+            });
+        }
+
 
         else if (fileName === '/login/admin.html') {
 
@@ -2472,7 +2792,7 @@ const server = http.createServer(async function(req, res) {                     
                 };
         
                 handleQuery("SELECT Top 6 Title,Audio_Data FROM [MusicLibrary].[Song];", data1 => {
-                    handleQuery("SELECT TOP 6 Username FROM [MusicLibrary].[User] WHERE Role_ID = 1;", data2 => {
+                    handleQuery("SELECT Top 6 Artist FROM [MusicLibrary].[Song];", data2 => {
                         handleQuery("SELECT Username FROM [MusicLibrary].[User] WHERE Role_ID = 3;", data3 => {
                             handleQuery("SELECT Top 6 Audio_Data FROM [MusicLibrary].[Song];", data4 => {
                                 res.end(JSON.stringify({

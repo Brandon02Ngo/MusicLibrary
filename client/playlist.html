@@ -36,8 +36,6 @@
   <script>
     var audio_control = document.getElementById("audio-player"); 
     var fileName = document.getElementById("fileInput");
-    alert("below");
-    alert(fileName);
     function playAudio()
     { 
       var audio = new Audio("TheGerms_LexiconDevil.mp3");
@@ -52,13 +50,13 @@
       audio_control.res
     }
     document.getElementById('fileInput').addEventListener('change', handleFileSelect);
-
+  
     function handleFileSelect(event) {
       var fileList = event.target.files;
       var outputList = document.getElementById('fileList');
-
+  
       outputList.innerHTML = ''; // Clear the previous list
-
+  
       for (var i = 0; i < fileList.length; i++) {
         var listItem = document.createElement('li');
         listItem.textContent = fileList[i].name;
@@ -67,3 +65,5 @@
     }
   </script>
 </html>
+
+
