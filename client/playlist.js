@@ -1,11 +1,24 @@
-var audio_control = document.getElementById("audio-player"); 
-var audio = new Audio("happy-positive-rock-151330.mp3");
-
 function playAudio()
 {
-  audio.play();
+  //replace string with stuff pointing to the DB
+  var audio_control = document.getElementById("audio-player"); 
+  var fileInput = document.getElementById('fileInput');
+  var file = fileInput.files[0];
+  if (file) {
+    var objectURL = URL.createObjectURL(file);
+    audio_control.src = objectURL;
+    audio_control.play();
+  }
 }
 function pauseAudio()
 {
-  audio.pause();
+    var audio_control = document.getElementById("audio-player"); 
+    var fileInput = document.getElementById('fileInput');
+    var file = fileInput.files[0];
+    if (file) {
+      var objectURL = URL.createObjectURL(file);
+      audio_control.src = objectURL;
+      audio_control.pause();
+    }
+
 }

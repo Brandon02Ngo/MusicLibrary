@@ -35,7 +35,7 @@
     <a href= "artistDataReport.html">
       <button>Data Report</button>
     </a>
-    <a href= "listener_Report.html">
+    <a href= "listener_report.html">
       <button>Listener Report</button>
     </a>
     <a href= "searchbar.html">
@@ -126,4 +126,28 @@
     </a>
   </ul> 
   </body>
+
+  <script>
+    window.addEventListener('load', () => {
+        console.log('Loaded!');
+        fetch('/getAlbumID')
+            .then(response => response.json())
+            .then(data => {
+                // Process the retrieved album ID
+                const albumID = data.recommendedAlbum;
+                // Use the recommendedAlbum as needed (e.g., display in an alert)
+                if (albumID !== null) {
+                    alert(`Recommended Album ID: ${albumID}`);
+                    // at this point remove row from recomended album table*
+                    //fetch('/removeRecAlbum')
+                } else {
+                    // Handle the case when no recommended album is found
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+    </script>
+
   </html>

@@ -54,6 +54,7 @@
 
         .show_users p {
             white-space: pre-line;
+            font-size: x-large;
         }
 
         .show_users {
@@ -79,6 +80,7 @@
             /*margin-left: auto;*/
             /*margin-right: auto;*/
             margin: auto; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            font-size: x-large;
         }
 
         .show_users.show {
@@ -204,6 +206,7 @@
             align-self:center;
             display: inline-block;
             width: 100%;
+            font-size: x-large;
         }
 
         #table_of_users_and_roles {
@@ -215,6 +218,7 @@
             align-self: center;
             margin-left: auto;
             margin-right: auto;
+            font-size: large;
         }
 
         #table_of_users_and_roles td {
@@ -235,6 +239,7 @@
 
         .create_reports_section p {
             white-space: pre-line;
+            font-size: x-large;
         }
 
         .create_reports_section {
@@ -260,6 +265,7 @@
             /*margin-left: auto;*/
             /*margin-right: auto;*/
             margin: auto; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            font-size: x-large;
         }
 
         .create_reports_section.show {
@@ -272,6 +278,7 @@
             border: 1px solid rgb(0, 0, 0);
             padding: 1%;
             width: 100%;
+            font-size: x-large;
         }
 
         #data_report_table thead {
@@ -370,7 +377,7 @@
 
 
     <div class="create_reports_section" id ="create_reports_section_id">
-        <h3> Most Famous Artists </h3>
+        <h3> Most Listened-to Artists on CoogMusic </h3>
         <form name="user_parameters_for_admin_report" id = "user_parameters_for_admin_report_id" method="POST" action="/adminDataReport" enctype="application/x-www-form-urlencoded">
             <label> Choose the number of most-famous artists to include in report </label>
             <input id="number_of_artists_to_include_id" min="1" max="10" step="1" type="range" name="number_of_artists_to_include" value="number_of_artists_to_include"/>
@@ -385,8 +392,8 @@
             <p> Change the selection below if you wish to search for a specific genre only: </p>
             <label for="genre0"> All Genres </label>
             <input type="radio" id="genre0" name ="genre" value="AllGenres"/>
-            <label for="genre1"> Jazz </label>
-            <input type="radio" id="genre1" name ="genre" value="Jazz"/>
+            <label for="genre1"> Pop </label>
+            <input type="radio" id="genre1" name ="genre" value="Pop"/>
             <label for="genre2"> Country </label>
             <input type="radio" id="genre2" name ="genre" value="Country"/>
             <label for="genre3"> Electronic </label>
@@ -660,100 +667,7 @@
             console.log('number is:')
             console.log(number);
             var query;
-            if (genre_selected ==='All Genres') { 
-                query = `WITH
-                table1
-                AS
-                
-                (
-                    SELECT
-                        [Created_By] AS Artist_ID,
-                        [Title] AS Song_Name,
-                        SUM([Listens]) AS total_listens
-                    FROM
-                        [MusicLibrary].[Song],
-                        [MusicLibrary].[User_Song_Listens]
-                    WHERE 
-                    [MusicLibrary].[Song].[Song_ID] = [MusicLibrary].[User_Song_Listens].[Song_ID]
-                    GROUP BY 
-                    [Created_By], 
-                    [Title]   
             
-                )
-            /*,table3 AS(*/
-            
-            SELECT * FROM (
-            SELECT t2.*
-            FROM table1 RIGHT JOIN (
-            SELECT Artist_ID, Song_Name, MAX(total_listens) AS max_listens
-                FROM table1
-                GROUP BY table1.Artist_ID, table1.Song_Name
-            ) AS t2 ON table1.Artist_ID = t2.Artist_ID AND table1.Song_Name=t2.Song_Name
-            ) AS table_a/*;*/
-            
-            JOIN (
-                SELECT most_famous_artist_table.*, other_details.Username, other_details.City, other_details.State, other_details.user_since FROM (
-                    SELECT TOP ${number}
-                        [Created_By] AS 'user_ids', SUM([Listens]) AS 'total_listens_for_artist'
-                    FROM [MusicLibrary].[Song], [MusicLibrary].[User_Song_Listens]
-                    WHERE  [MusicLibrary].[Song].[Song_ID] =  [MusicLibrary].[User_Song_Listens].[Song_ID]
-                    GROUP BY [Created_By]) /*ORDER BY [Listens] DESC*/
-                AS most_famous_artist_table 
-                JOIN (
-                SELECT [MusicLibrary].[User].[Cougar_ID] AS 'id',[Username],[City], [State],[Created_At] as 'user_since'
-                FROM [MusicLibrary].[User], [MusicLibrary].[Artist]
-                WHERE [MusicLibrary].[User].[Cougar_ID] = [MusicLibrary].[Artist].[Cougar_ID]
-                ) AS other_details ON most_famous_artist_table.user_ids = other_details.id
-            ) AS extra_table ON extra_table.user_ids=table_a.Artist_ID ORDER BY total_listens_for_artist;`;
-            }
-            else {
-            query = `WITH
-            table1
-            AS
-            
-            (
-                SELECT
-                    [Created_By] AS Artist_ID,
-                    [Title] AS Song_Name,
-                    SUM([Listens]) AS total_listens
-                FROM
-                    [MusicLibrary].[Song],
-                    [MusicLibrary].[User_Song_Listens]
-                WHERE 
-                [MusicLibrary].[Song].[Song_ID] = [MusicLibrary].[User_Song_Listens].[Song_ID]
-                    AND [Genre] = '${genre_selected}'
-                GROUP BY 
-                [Created_By], 
-                [Title]   
-
-            )
-        /*,table3 AS(*/
-
-        SELECT * FROM (
-        SELECT t2.*
-        FROM table1 RIGHT JOIN (
-        SELECT Artist_ID, Song_Name, MAX(total_listens) AS max_listens
-            FROM table1
-            GROUP BY table1.Artist_ID, table1.Song_Name
-        ) AS t2 ON table1.Artist_ID = t2.Artist_ID AND table1.Song_Name=t2.Song_Name
-        ) AS table_a/*;*/
-
-        JOIN (
-            SELECT most_famous_artist_table.*, other_details.Username, other_details.City, other_details.State, other_details.user_since FROM (
-                SELECT TOP ${number}
-                    [Created_By] AS 'user_ids', SUM([Listens]) AS 'total_listens_for_artist'
-                FROM [MusicLibrary].[Song], [MusicLibrary].[User_Song_Listens]
-                WHERE  [MusicLibrary].[Song].[Song_ID] =  [MusicLibrary].[User_Song_Listens].[Song_ID]
-                    AND [Song].[Genre] = '${genre_selected}'
-                GROUP BY [Created_By]) /*ORDER BY [Listens] DESC*/
-            AS most_famous_artist_table 
-            JOIN (
-            SELECT [MusicLibrary].[User].[Cougar_ID] AS 'id',[Username],[City], [State],[Created_At] as 'user_since'
-            FROM [MusicLibrary].[User], [MusicLibrary].[Artist]
-            WHERE [MusicLibrary].[User].[Cougar_ID] = [MusicLibrary].[Artist].[Cougar_ID]
-            ) AS other_details ON most_famous_artist_table.user_ids = other_details.id
-        ) AS extra_table ON extra_table.user_ids=table_a.Artist_ID ORDER BY total_listens_for_artist;`;
-            }
             //console.log("input query received");
             //console.log("Query to run is:")
             //console.log(query);
@@ -784,10 +698,10 @@
                         },
                         // body with the query
                         body: JSON.stringify({
-                            number_of_artists:7,
-                            include_city:true,
-                            include_most_famous_song_name:true,
-                            genre_selected:"All Genres"
+                            number_of_artists: number_of_artist_selected,
+                            include_city: include_city,
+                            include_most_famous_song_name: include_song_name,
+                            genre_selected: genre_selected
                         })
                         /*body: myData*/
                         });//.then(response_from_fetch => {
@@ -862,9 +776,9 @@
                             data_to_write += `<td> ${row.State} </td>`;
                             // if song name will be included, add it to the html:
                             if (include_song_name_checkbox.checked){
-                                data_to_write += `<td> ${row.Song_Name} </td>`;
+                                data_to_write += `<td> ${row.name_of_most_famous_song_uploaded_by_this_artist} </td>`;
                             }
-                            data_to_write += `<td> ${row.total_listens_for_artist} </td>`;
+                            data_to_write += `<td> ${row.aggregate_listens} </td>`;
                             data_to_write += `<td> ${row.user_since.slice(0,10)} </td>`;
                             //console.log(row.Username);
                             //console.log(row.Role_Name);

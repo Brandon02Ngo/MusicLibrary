@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Create an H2 element for the artist name
         const artistName = document.createElement('h2');
-        artistName.textContent = user["Username"];
+        artistName.textContent = user["Artist"];
 
         // Create a new A element
         const anchorElementRec = document.createElement('a');
