@@ -2805,7 +2805,7 @@ const server = http.createServer(async function(req, res) {                     
                     handleQuery("SELECT Distinct Artist, COUNT(*) as SongCount From [MusicLibrary].[Song] where Artist is not null Group by Artist Order by SongCount desc;", data2 => {
 
                         // This will be the top picks with picking songs with the most views. 
-                        handleQuery(`SELECT TOP 3 s.Title, usl.Listens, s.Genre
+                        handleQuery(`SELECT TOP 3 s.Title, usl.Listens, s.Genre, s.Song_ID
                                     FROM [MusicLibrary].[Song] s
                                     JOIN [MusicLibrary].[User_Song_Listens] usl ON s.[Song_ID] = usl.[Song_ID]
                                     ORDER BY usl.Listens DESC;`, data3 => {

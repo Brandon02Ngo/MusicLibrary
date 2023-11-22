@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="mainPage.css">
   <link rel="icon" href="img/eagle.svg" type="image/x-icon">
   <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
+  <script src="mainPage.js"></script>
 </head>
 
 <body>
@@ -48,80 +50,50 @@
     <a href="playlist.html">
     <!-- Unorder list of music inside song boxes -->
     <ul id="songlist" class="song-list">
-      <li class="song-item2">
-        <div class = "TP-box"></div>
+      <!-- <li class="song-item2">
+        <div class = "TP-box">
+          <img src = "Top6Picks.PNG" alt = "Top6Picks">
+        </div>
         <div class="song-info">
           <h2 class = "title">          
-            Apple song
           </h2>
           <p>
-            <span id = "song-genre"> Genre: Rap </span>
+            <span id = "song-genre"></span>
             <br> 
-              <img src="img/star.svg" alt="Rating:" width ="15" height="15"> 
-              <span id = "song-ratings"> 3.9 </span>
+              <span id = "song-ratings">  </span>
             <br> 
-              <img src="img/eye.svg" alt="Views:" width ="15" height="15">
-              <span class = "song-views"> 1235 </span>
+              <span class = "song-views"> </span>
           </p>
         </div>
           
-      </li>
+      </li> -->
     </ul>
 
   <hr> <!--horizontal line-->
 
   <h1 class="uhFont">New Releases</h1>
+  <a class = "section-info" href="playlist.html" class = "song-code">
     <ul id="new-releases" class="song-list">
-      <a class = "section-info" href="playlist.html" class = "song-code" data-Audio_Data="Audiodata">
-      <li class="song-item">
+      <!-- <li class="song-item">
         <div class="NR-box"></div>
         <div class="song-info">
           <h2 class = "title">
             Dancing song Dancing Dancing yun
           </h2>
         </div>
-      </li>
-    </a>
+      </li> -->
     </ul>
 
   <hr> <!--horizontal line-->
   <h1 class="uhFont"> Recommended Artist </h1>
-  <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
-  <script src="mainPage.js">
-  </script>
+  <a class = "section-info" href="playlist.html" >
   <ul id="Recommended" class="song-list">
-    <a class = "section-info" href="playlist.html" >
-      <li class="song-item">
+      <!-- <li class="song-item">
         <div class="Rec-box"></div>
         <div class="song-info">
           <h2 class = "title">Wolfgang</h2>
         </div>
-      </li>
-    </a>
+      </li> -->
   </ul> 
   </body>
-
-  <!--<script>
-    window.addEventListener('load', () => {
-        console.log('Loaded!');
-        fetch('/getAlbumID')
-            .then(response => response.json())
-            .then(data => {
-                // Process the retrieved album ID
-                const albumID = data.recommendedAlbum;
-                // Use the recommendedAlbum as needed (e.g., display in an alert)
-                if (albumID !== null) {
-                    alert(`Recommended Album ID: ${albumID}`);
-                    // at this point remove row from recomended album table*
-                    //fetch('/removeRecAlbum')
-                } else {
-                    // Handle the case when no recommended album is found
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-    });
-    </script>-->
-
   </html>

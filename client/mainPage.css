@@ -152,7 +152,7 @@ main {
 }
 
 .title {
-  font-size: 15px;
+  font-size: 110%;
 }
 
 .song-item2 {
@@ -174,4 +174,10 @@ main {
   border-radius: 50%;
   margin-right: 10px;
   word-wrap: break-word;
+}
+
+
+
+.song-genre {
+  margin-bottom: 10px;
 }

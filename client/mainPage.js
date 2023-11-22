@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Create a new A element
         const anchorElementRec = document.createElement('a');
-        anchorElementRec.href = "playlist.html"; // Set the href attribute
+        anchorElementRec.href = `playlist.html?Artist=${user['Artist']}`; // Set the href attribute
 
         //Anchor the artist Name
         anchorElementRec.appendChild(artistName);
@@ -122,6 +122,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Create a new A element
         const TPanchorElement = document.createElement('a');
         TPanchorElement.href = "playlist.html";
+        TPanchorElement.href = `playlist.html?Song_ID=${TopPicks['Song_ID']}`;
 
         // Append the song title to the anchor element
         TPanchorElement.appendChild(TPartistname);
