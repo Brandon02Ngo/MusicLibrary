@@ -1259,6 +1259,83 @@ const server = http.createServer(async function(req, res) {                     
             })
         }
 
+        else if (fileName === '/getComparisonReport') {
+            // Parse the incoming request data (assuming it's JSON)
+            let requestData = '';
+            req.on('data', (chunk) => {
+                requestData += chunk;
+            });
+        
+            req.on('end', () => {
+                // Parse JSON data
+                const reportOptions = JSON.parse(requestData);
+        
+                // Dynamically construct the SQL query based on user choices
+                const genreFilter = reportOptions.genre ? `AND Genre = '${reportOptions.genre}'` : '';
+                const rowNumFilter = reportOptions.rowNum ? `AND RowNum <= ${reportOptions.rowNum}` : '';
+        
+                let selectColumns = 'Artist'; // Always select the Artist column
+                if (reportOptions.selectedMetrics.includes('AvgListens')) {
+                    selectColumns += ', AVG(Listens) AS Average_Listens';
+                }
+                if (reportOptions.selectedMetrics.includes('TotalListens')) {
+                    selectColumns += ', SUM(Listens) AS Total_Listens';
+                }
+                if (reportOptions.selectedMetrics.includes('AvgRatings')) {
+                    selectColumns += ', AVG(Rating) AS Average_Ratings';
+                }
+
+                const sqlQuery = `
+                    WITH RankedSongs AS (
+                        SELECT
+                            A.Artist,
+                            A.Title,
+                            B.Listens,
+                            A.Rating,
+                            A.Genre,
+                            ROW_NUMBER() OVER (PARTITION BY A.Artist ORDER BY B.Listens DESC) AS RowNum
+                        FROM
+                            [MusicLibrary].[Song] A
+                            JOIN [MusicLibrary].[User_Song_Listens] B ON A.Song_ID = B.Song_ID
+                    )
+                    SELECT
+                        ${selectColumns}
+                    FROM
+                        RankedSongs
+                    WHERE
+                        1 = 1 ${genreFilter} ${rowNumFilter}
+                    GROUP BY
+                        Artist;
+                    `;
+        
+                // Now you can execute the SQL query and send the results to the client
+                sql.connect(dbConfig, (err) => {
+                    if (err) {
+                        console.error('Error connecting to the database:', err);
+                        res.writeHead(500, { 'Content-Type': 'text/plain' });
+                        res.end('Internal Server Error');
+                        return;
+                    }
+        
+                    const request = new sql.Request();
+                    request.query(sqlQuery, (err, result) => {
+                        if (err) {
+                            console.error('Error executing SQL query:', err);
+                            res.writeHead(500, { 'Content-Type': 'text/plain' });
+                            res.end('Internal Server Error');
+                        } else {
+                            // Send the result back to the client
+                            res.writeHead(200, { 'Content-Type': 'application/json' });
+                            res.end(JSON.stringify(result.recordset));
+                        }
+        
+                        // Close the database connection
+                        sql.close();
+                    });
+                });
+            });
+        }
+
         else if(fileName === '/adminDataReport') {
             // Data parsing
             //console.log(req);
@@ -2824,7 +2901,7 @@ const server = http.createServer(async function(req, res) {                     
             });
         } 
 
-        else if (fileName === '/getAudioData') {
+        else if (fileName === 'getComparisonReport') {
 
             //Creates the connection to the database
             sql.connect(dbConfig, function (err) {
@@ -2835,17 +2912,6 @@ const server = http.createServer(async function(req, res) {                     
                 return;
             }
 
-            const AudioData = fetchAudioDataFromDatabase(songId);
-
-            if (AudioData) {
-                const decodeAudioData = parseAudioData(AudioData);
-
-                res.writeHead(200, { 'Content-Type': 'audio/mpeg' });
-                res.end(decodeAudioData);
-            } else {
-                res.writeHead(404, {'Content-Type': 'text/plain'});
-                res.end('Song not found');
-            }
         }) 
     }
 
