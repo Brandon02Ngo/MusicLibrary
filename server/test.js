@@ -2106,12 +2106,6 @@ const server = http.createServer(async function(req, res) {                     
                     handleDatabaseError(res, err);
                     return;                    
                 }
-            sql.connect(dbConfig, (err) => {
-                // Database connection error handler
-                if (err) {
-                    handleDatabaseError(res, err);
-                    return;                    
-                }
 
                 const request = new sql.Request();
 
@@ -2144,12 +2138,11 @@ const server = http.createServer(async function(req, res) {                     
                     res.end(jsonData);
                 })
             })
-            
            return;
             
         }
 
-        else if(fileName === '/adminUpdateUserDataActivateUserAccount') {
+        else if (fileName === '/adminUpdateUserDataActivateUserAccount') {
             // Data parsing
 
             const data_from_server = await getReqData(req);
