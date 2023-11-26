@@ -144,9 +144,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     });
   });
-
-
-    
+  const event = new Event('scriptsFinished');
+  document.dispatchEvent(event);
 });
 
 // On the source page (e.g., index.html)

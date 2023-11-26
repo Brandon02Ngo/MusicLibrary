@@ -4,7 +4,6 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!--<link href="admin.css" rel="stylesheet"/>-->
     <style>
         /*Styling */
         :root{
@@ -60,7 +59,7 @@
         .show_users {
             background-color: /* rgb(219, 217, 217) */ var(--BGCOLORSUB);
             position: absolute; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
-            top: 0;
+            /*top: 0;*/
             left: 0;
             bottom: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
             right: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
@@ -81,6 +80,7 @@
             /*margin-right: auto;*/
             margin: auto; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
             font-size: x-large;
+            top: 22%;
         }
 
         .show_users.show {
@@ -245,7 +245,7 @@
         .create_reports_section {
             background-color:/* rgb(219, 217, 217);*/var(--BGCOLORSUB);
             position: absolute; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
-            top: 0;
+            /*top: 0;*/
             left: 0;
             bottom: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
             right: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
@@ -266,6 +266,7 @@
             /*margin-right: auto;*/
             margin: auto; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
             font-size: x-large;
+            top: 22%;
         }
 
         .create_reports_section.show {
@@ -310,12 +311,291 @@
             margin-left: auto;
             margin-right: auto;
             font-size: large;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .report_data.show {
+            opacity: 1;
+            pointer-events: auto;
         }
 
         .report_data p {
             font-size: x-large;
         }
 
+        /*CSS for the admin navbar */
+        .admin_navbar ul {
+            list-style-type: none;
+            background-color: #352F44;
+            padding: 8px;
+            margin: 8px;
+            overflow: hidden;
+        }
+
+        .admin_navbar button {
+            display: block;
+            padding: 15px;
+            text-decoration: none;
+            color: black;
+            text-align: center;
+        }
+
+        .admin_navbar li {
+            float: left;
+        }
+
+        .data_modification_data_container {
+            width: 100%;
+            min-height: 100vh;
+            padding: 5%;
+            background-image: linear-gradient(rgba(0,8,51,0.9),rgba(0,8,51,0.9));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .admin_searchbar {
+            width: 100%;
+            max-width: 700px;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            border-radius: 60px;
+            padding: 10px 20px;
+        }
+
+        .admin_searchbar input{
+            background: rgb(245, 245, 245);
+            flex: 1;
+            border: 0;
+            outline: none;
+            padding: 24px 20px;
+            font-size: 20px;
+            color: #000000;
+        }
+
+        .admin_searchbar::placeholder{
+            color: black;
+        }
+
+        #data_modification_results_table{
+            border: 1px solid black;
+
+        }
+
+        #search_results{
+            margin-bottom: 10px;
+        }
+
+        /*Admin Data Modification Pop Ups*/
+        .admin_results_table {
+            top: auto;
+            pointer-events: none;
+        }
+
+        .admin_results_table th, td, tr {
+            padding: 5px;
+        }
+
+        .edit_album_pop_up {
+            background-color: rgb(32, 36, 67);
+            opacity: 0;
+            /*margin-left: 50vh;*/
+            margin-right: -50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            align-items: center;
+            border: 6px solid rgb(8, 8, 206);
+            box-shadow: -10px 10px 5px rgb(28, 28, 28); /* credit for left shadow: Message Akunna or Viraj Singh https://stackoverflow.com/questions/10463208/box-shadow-on-the-left-side-of-the-element-only*/
+        }
+
+        .edit_album_pop_up label {
+            font-style: italic;
+        }
+
+        .edit_album_pop_up.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .album_results_table {
+            opacity: 0;
+            position: absolute;
+            top: 22%;
+        }
+
+        .album_results_table.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .artist_results_table {
+            opacity: 0;
+            position: absolute;
+            top: 22%;
+        }
+
+        .artist_results_table.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .edit_artist_pop_up {
+            background-color: rgb(32, 36, 67);
+            opacity: 0;
+            /*margin-left: 50vh;*/
+            margin-right: -50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            align-items: center;
+            border: 6px solid rgb(8, 8, 206);
+            box-shadow: -10px 10px 5px rgb(28, 28, 28); /* credit for left shadow: Message Akunna or Viraj Singh https://stackoverflow.com/questions/10463208/box-shadow-on-the-left-side-of-the-element-only*/
+        }
+
+        .edit_artist_pop_up label {
+            font-style: italic;
+        }
+
+
+        .edit_artist_pop_up.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .song_results_table {
+            opacity: 0;
+            position: absolute;
+            top: 22%;
+        }
+
+        .song_results_table.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .edit_song_pop_up {
+            background-color: rgb(32, 36, 67);
+            opacity: 0;
+            /*margin-left: 50vh;*/
+            margin-right: -50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            align-items: center;
+            border: 6px solid rgb(8, 8, 206);
+            box-shadow: -10px 10px 5px rgb(28, 28, 28); /* credit for left shadow: Message Akunna or Viraj Singh https://stackoverflow.com/questions/10463208/box-shadow-on-the-left-side-of-the-element-only*/
+        }
+
+        .edit_song_pop_up label {
+            font-style: italic;
+        }
+
+        .edit_song_pop_up.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .user_results_table {
+            opacity: 0;
+            position: absolute;
+            top: 22%;
+        }
+
+        .user_results_table.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .edit_user_pop_up {
+            background-color: rgb(32, 36, 67);
+            opacity: 0;
+            /*margin-left: 50vh;*/
+            margin-right: -50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            align-items: center;
+            border: 6px solid rgb(8, 8, 206);
+            box-shadow: -10px 10px 5px rgb(28, 28, 28); /* credit for left shadow: Message Akunna or Viraj Singh https://stackoverflow.com/questions/10463208/box-shadow-on-the-left-side-of-the-element-only*/
+        }
+
+        .edit_user_pop_up label {
+            font-style: italic;
+        }
+
+        .edit_user_pop_up.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .delete_album_pop_up {
+            opacity: 0;
+            background-color: #352F44;
+        }
+
+        .delete_album_pop_up.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .user_account_marked_for_deletion {
+            background-color: orangered;
+            color: black;
+            border: 1px solid black;
+        }
+
+        
+        .data_modification_section {
+            opacity: 1;
+        }
+
+        .data_modification_section.show {
+            opacity: 0;
+            pointer-events: auto;
+        }
+
+        .delete_album_pop_up.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .user_account_active {
+            /*background-color: rgb(16, 182, 16);*/
+            /*color: black;*/
+            border: 1px solid black;
+        }
+
+        .activate_user_account_button {
+            background-color: rgba(41, 187, 41, 0.899);
+            color: black;
+            padding: 4px;
+            /*border: 1px solid black;*/
+        }
+
+        .delete_user_account_button {
+            background-color: rgb(255, 82, 82);
+            padding: 4px;
+            /*border: 1px solid black;*/
+        }
+
+        .generic_delete_button {
+            background-color: rgb(255, 82, 82);
+            padding: 4px;
+            /*border: 1px solid black;*/
+        }
+
+        .generic_edit_button {
+            background-color: rgb(24, 123, 204);
+            padding: 4px;
+            /*border: 1px solid black;*/
+        }
 
     </style>
     <title>Admin</title>
@@ -331,17 +611,6 @@
     </div>
     <main>
     <h1> Administration </h1>
-    <!--adapted/extracted from: https://www.w3schools.com/howto/howto_css_dropdown.asp-->
-    <!-- and from https://www.youtube.com/watch?v=VQWu4e6agPc&t=76s-->
-
-    <div class="admin_options_dropdown">
-        <button > Actions </button>
-        <div class = "dropdown_content">
-            <button class="dropdown_menu_btn" id = "delete_users_btn"> Delete User </button>
-            <button class="dropdown_menu_btn" id = "create_report_btn"> Create Reports </button>
-        </div>
-        
-    </div>
     <div class="show_users" id ="show_users_id">
         <h3> Users in Coog Music: </h3>
         <p> Select the user you want to delete.</p>
@@ -362,7 +631,6 @@
                 </form>
             </table>
         </div>
-        <!--<button id = "delete_user_button"> Delete User </button>-->
         <button id ="clear_screen"> Close </button>
     </div>
     <div class="ask_confirmation_to_delete" id ="ask_confirmation_to_delete_id">
@@ -373,6 +641,103 @@
     <div class="deletion_result" id ="deletion_result_id">
         <h3> The user's account has been deleted. </h3>
         <button id = "deletion_result_close_button"> Close </button>
+    </div>
+    <div class="data_modification_section" id="data_modification_section_id">
+        <!--<h3> Data Modification </h3>-->
+        <!-- navbar credit: https://www.youtube.com/watch?v=f3uCSh6LIY0-->
+        
+        <nav class="admin_navbar">
+            <ul>
+                <li> <button id="admin_generate_reports_button"> Generate Report </button> </li>
+                <li> <button id="admin_album_button"> Modify/Delete Album </button> </li>
+                <li> <button id="admin_song_button"> Modify/Delete Song </button> </li>
+                <li> <button id="admin_user_button"> Modify/Delete Users </button> </li>
+                <li> <button id="admin_batch_delete_users_button"> Batch Delete Users </button> </li>
+            </ul>
+        </nav>
+
+    </div>
+    <div class="admin_results_table">
+        <div class="album_results_table" id="album_results_table">
+            <table id = "data_modification_album_results_table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Artist</th>
+                        <th>Genre</th>
+                        <th>Release Year</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id ="album_modification_data_table">
+                
+                </tbody>
+            </table>
+        </div>
+        <div class="edit_album_pop_up" id="edit_album_pop_up_id">
+
+        </div>
+        <div class="delete_album_pop_up" id="delete_album_pop_up_id">
+
+        </div>
+        <div class="artist_results_table" id="artist_results_table">
+            <input type="text" name="search_results" id="search_results" placeholder="search Artist">
+            <table id = "data_modification_artist_results_table">
+                <thead>
+                    <tr>
+                        <th>Album</th>
+                        <th>Title</th>
+                        <th>Artist</th>
+                        <th>Genre</th>
+                        <th>Release Year</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="artist_modification_data_table">
+
+                </tbody>
+            </table>
+        </div>
+        <div class="edit_artist_pop_up" id="edit_artist_pop_up_id">
+
+        </div>
+        <div class="song_results_table" id="song_results_table">
+            <table id = "data_modification_song_results_table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Artist</th>
+                        <th>Genre</th>
+                        <th>Release Year</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="song_modification_data_table">
+
+                </tbody>
+            </table>
+        </div>
+        <div class="edit_song_pop_up" id="edit_song_pop_up_id">
+
+        </div>
+        <div class="user_results_table" id="user_results_table">
+            <table id = "data_modification_user_results_table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Account Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="users_modification_data_table">
+
+                </tbody>
+            </table>
+        </div>
+        <div class="edit_user_pop_up" id="edit_user_pop_up_id">
+
+        </div>
     </div>
 
 
@@ -390,16 +755,15 @@
             <input id="song_checkbox_id" type="checkbox" name ="show_most_famous_song_name" value="show_most_famous_song_name"/>
             <br>
             <p> Change the selection below if you wish to search for a specific genre only: </p>
+            <input type="radio" id="genre0" name ="genre" value="AllGenres" checked/> <!-- credit for checked attribute for radio element for the form: https://bulma.io/documentation/form/radio/-->
             <label for="genre0"> All Genres </label>
-            <input type="radio" id="genre0" name ="genre" value="AllGenres"/>
-            <label for="genre1"> Pop </label>
             <input type="radio" id="genre1" name ="genre" value="Pop"/>
-            <label for="genre2"> Country </label>
+            <label for="genre1"> Pop </label>
             <input type="radio" id="genre2" name ="genre" value="Country"/>
-            <label for="genre3"> Electronic </label>
+            <label for="genre2"> Country </label>
             <input type="radio" id="genre3" name ="genre" value="Electronic"/>
+            <label for="genre3"> Electronic </label>
             <br>
-            <!--<input type="submit" value="Submit">-->
             <button type="submit" id = "create_report_button" > Submit </button>
         </form>
 
@@ -417,16 +781,45 @@
         </table>
     </div>
 
-    <!--<script src="admin.js"></script>-->
     <script>
 
+        // I probably used this resource for "event delegation", so I give them credit here:
+        //https://davidwalsh.name/event-delegate 
+        // Other resources from which implementations and/or ideas were or might have been 
+        // retrieved from to implement event delegation, are:
+        // https://www.codeinwp.com/snippets/add-event-listener-to-multiple-elements-with-javascript/#gref
+        // https://www.freecodecamp.org/news/event-delegation-javascript/
+        // https://stackoverflow.com/questions/51573435/want-to-add-addeventlistener-on-multiple-elements-with-same-class
+        // https://www.freecodecamp.org/news/event-bubbling-in-javascript/
+
+        const show_report_data = document.getElementById("class_report_data_id");
+
+        const opens_show_album_modification = document.getElementById("admin_album_button");
+        const show_album_modification = document.getElementById("album_results_table");
+        //const opens_show_artist_modification = document.getElementById("admin_artist_button");
+        //const show_artist_modification = document.getElementById("artist_results_table");
+        const opens_show_song_modification = document.getElementById("admin_song_button");
+        const show_song_modification = document.getElementById("song_results_table");
+        const opens_show_user_modification = document.getElementById("admin_user_button");
+        const show_user_modification = document.getElementById("user_results_table");
+        //const close_show_artist_modification = document.getElementById("clear_screen");
+        // this part will be closed as soon as they click on another table
+
         // show users
-        const opens_show_users = document.getElementById("delete_users_btn");
+        //const opens_show_users = document.getElementById("delete_users_btn");
+        const opens_show_users = document.getElementById("admin_batch_delete_users_button"); // new
         const show_users = document.getElementById("show_users_id");
+        
+
         const close_show_users = document.getElementById("clear_screen");
 
         opens_show_users.addEventListener("click", () => {
             show_users.classList.add("show");
+            create_reports_section.classList.remove("show");
+            show_album_modification.classList.remove("show");
+            show_song_modification.classList.remove("show");
+            show_user_modification.classList.remove("show");
+            show_report_data.classList.remove("show")
         });
 
         close_show_users.addEventListener("click", () => {
@@ -455,6 +848,7 @@
 
         opens_deletion_result.addEventListener("click", () => {
             deletion_result.classList.add("show");
+            show_report_data.classList.remove("show")
         });
 
         closes_deletion_result.addEventListener("click", () => {
@@ -487,19 +881,6 @@
                     //console.log(row.Cougar_ID);
                 };
                 target.innerHTML = output
-            
-            /*
-            info = "";
-            for (row of data){
-                info += `
-                    <tr>
-                        <td> '${row.Username}' </td>
-                        <td> '${row.Role_Name}' </td>
-                    </tr> 
-                `
-            }
-            html_element.innerHTML(info);
-            */
         }
 
         logJSON();
@@ -514,64 +895,99 @@
         const button = document.querySelector("#user_to_delete_button");
         button.addEventListener('click', (event) => {
             event.preventDefault();
-            if (confirm('Please click OK to confirm deletion.') == false ){
-                return;
-            }
-            let checkboxes = document.querySelectorAll('input[name="unique_id"]:checked');
-            let output = [];
+            const show_admin_album_edit_window = document.getElementById("edit_album_pop_up_id");
+            var options = `
+                <p> Click OK to confirm batch deletion of users </p>
+                <button id = "submit_song_changes">OK</button>  
+                <button id="close_song_edit_pop_up">Close</button>
+            `;
+            show_admin_album_edit_window.innerHTML = options;
+            show_admin_album_edit_window.classList.add("show")
 
-            checkboxes.forEach((checkbox) => {
-                output.push(checkbox.value);
-            });
-            console.log('output of users to be deleted is:');
-            console.log(output);
+            var close_album_edit_pop_up = document.getElementById("close_song_edit_pop_up");
+            var submit_song_changes = document.getElementById("submit_song_changes");
 
-            // mark the users for deletion
-            // this function requires that the JSON server be running
-            // there will be a for loop here
-            var data_object = [];
-            var success = false; // credit for success implementation: khelwood, at https://stackoverflow.com/questions/30019453/java-run-code-only-if-no-exception-is-thrown-in-try-and-catch-block
-            console.log('sucess')
-            console.log(success)
-            try{
-                for (let n =0;n<output.length;n++){
-                    async function delete_user(){
-                        // credit: https://stackoverflow.com/questions/59554421/how-perform-patch-request-from-html-form-using-nodejs
-                        var cougar_id_to_be_deleted = output[n]; // from session
-                        var url = "http://localhost:8080/adminDeleteUser" ; // no need to convert cougar_id_to_be_deleted to a string because it is string already
-                        const response = await fetch(url, {
-                            method: "POST",
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            // body with necessary data
-                            body: JSON.stringify({
-                                target_cougar_id_to_delete: cougar_id_to_be_deleted,
-                            })
-                        });
-                        
-                        //console.log(response[0]);
-                        const data = await response.json();
-                        console.log(data);
-                    };
-
-                    delete_user();
+            close_album_edit_pop_up.addEventListener('click', () => {
+                    show_admin_album_edit_window.classList.remove("show");
+                    return;
+            })
+            submit_song_changes.addEventListener('click', () => {
+                // if the user clicks close, return
+                /*
+                if (confirm('Please click OK to confirm deletion.') == false ){
+                    return;
                 }
-                success = true;
-                console.log()
+                */
+                let checkboxes = document.querySelectorAll('input[name="unique_id"]:checked');
+                let output = [];
+
+                checkboxes.forEach((checkbox) => {
+                    output.push(checkbox.value);
+                });
+                console.log('output of users to be deleted is:');
+                console.log(output);
+
+                // mark the users for deletion
+                // this function requires that the JSON server be running
+                // there will be a for loop here
+                var data_object = [];
+                var success = false; // credit for success implementation: khelwood, at https://stackoverflow.com/questions/30019453/java-run-code-only-if-no-exception-is-thrown-in-try-and-catch-block
                 console.log('sucess')
                 console.log(success)
-            }
-            catch {
-                alert('There was an error when trying to delete users. Please try again.')
-                return;
-            }
-            if (success) {
-                alert('Operation completed. Please refresh page to see changes.')
-            }
+                try{
+                    for (let n =0;n<output.length;n++){
+                        async function delete_user(){
+                            // credit: https://stackoverflow.com/questions/59554421/how-perform-patch-request-from-html-form-using-nodejs
+                            var cougar_id_to_be_deleted = output[n]; // from session
+                            var url = "http://localhost:8080/adminDeleteUser" ; // no need to convert cougar_id_to_be_deleted to a string because it is string already
+                            const response = await fetch(url, {
+                                method: "POST",
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                // body with necessary data
+                                body: JSON.stringify({
+                                    target_cougar_id_to_delete: cougar_id_to_be_deleted,
+                                })
+                            });
+                            
+                            //console.log(response[0]);
+                            const data = await response.json();
+                            console.log(data);
+                        };
 
+                        delete_user();
+                    }
+                    success = true;
+                    console.log()
+                    console.log('sucess')
+                    console.log(success)
+                }
+                catch {
+                    alert('There was an error when trying to batch delete users. Please try again.')
+                    return;
+                }
+                if (success) {
+                    //alert('Operation completed. Please refresh page to see changes.')
+                    show_admin_album_edit_window.innerHTML = ``;
+                    var confirmation_user_batch_delete = `
+                        <p> User batch delete successful </p>
+                        <p> Please refresh page to see the changes </p>
+                        <button id="close_album_edit_pop_up">Close</button>
+                    `;
+                    show_admin_album_edit_window.innerHTML = confirmation_user_batch_delete;
+                    show_admin_album_edit_window.classList.add("show");
+                    var close_album_edit_pop_up = document.getElementById("close_album_edit_pop_up")
+                    close_album_edit_pop_up.addEventListener('click', () => {
+                        show_admin_album_edit_window.classList.remove("show");
+                    })
 
-            // need to send desired_password and cougar_id_from_client_side to the server-side
+                }
+                else {
+                    alert('Batch delete users was unsuccessful. Please attempt refreshing the page and trying again.')
+                }
+            })
+
         });
         // finished getting the desired password from the client-side
 
@@ -580,13 +996,18 @@
 
         //////// create reports
         // show create reports section
-        const opens_create_reports_section = document.getElementById("create_report_btn");
+        //const opens_create_reports_section = document.getElementById("create_report_btn");
+        const opens_create_reports_section = document.getElementById("admin_generate_reports_button"); // new
         const create_reports_section = document.getElementById("create_reports_section_id");
         const close_create_reports_section = document.getElementById("close_reports_section");
 
         opens_create_reports_section.addEventListener("click", () => {
             show_users.classList.remove("show");
             create_reports_section.classList.add("show");
+            show_album_modification.classList.remove("show");
+            show_song_modification.classList.remove("show");
+            show_user_modification.classList.remove("show");
+            show_report_data.classList.remove("show")
         });
 
         close_create_reports_section.addEventListener("click", () => {
@@ -660,22 +1081,11 @@
             }
 
             // build the query string
-            //var query = "";
-            //query += "SELECT * FROM [music_library].[Roles]"; // for testing purposes
-            // need:
             var number = document.getElementById("number_of_artists_to_include_id").value;// number of artists the user wants to see (between 1 and 10)
             console.log('number is:')
             console.log(number);
             var query;
             
-            //console.log("input query received");
-            //console.log("Query to run is:")
-            //console.log(query);
-            // ask the api to make the query for you and to give you the result
-            // (send the query in a json format such as:
-            // { "query_to_run" = "string_of_the_query_to_run_with_variables_and_everything"}
-            // )
-            //
             
             try{
                 console.log("entered try:")
@@ -715,14 +1125,13 @@
                         console.log("something went wrong in fetch function fro adminDataReport")
                     }
                     console.log("finished response")
-                    //console.log(response);
-                    //console.log(response[0]);
+
                     data_for_report = await response_from_fetch.json();
                     console.log("reponse in JSON for adminDataReport is:")
                     console.log(data_for_report);
                 };
+                var report_succeeded = false;
                 try {
-                    // parse the data?
 
                     
                     run_report_query().then(() => {
@@ -780,38 +1189,31 @@
                             }
                             data_to_write += `<td> ${row.aggregate_listens} </td>`;
                             data_to_write += `<td> ${row.user_since.slice(0,10)} </td>`;
-                            //console.log(row.Username);
-                            //console.log(row.Role_Name);
                             data_to_write += `</tr>`;
                         };
 
                         headers_target_html.innerHTML = headers_html;
                         target_html.innerHTML = data_to_write;
-                        n_artists += `The ${number} most listened-to artists in Coog Music are:`;
+                        n_artists += `The ${number} most listened-to artists in Coog Music are: (first row is top 1)`;
                         n_artists_html.innerHTML = n_artists;
 
-
+                        console.log('set report suceeded to true')
+                        report_succeeded = true;
+                        if (report_succeeded){
+                            show_report_data.classList.add('show');
+                        }
+                        else {
+                            alert('report generation failed');
+                        }
                     });
                     
                 }
                 finally {
 
-                }
-                /*
-                info = "";
-                for (row of data){
-                    info += `
-                        <tr>
-                            <td> '${row.Username}' </td>
-                            <td> '${row.Role_Name}' </td>
-                        </tr> 
-                    `
-                }
-                */
-            
-                //html_element.innerHTML(info);
 
-                //};
+                }
+
+
                 
             }
             catch {
@@ -824,8 +1226,1041 @@
         });
         // finished reading form, running the query for the result, and getting the result from api*/
 
+        
+        
+        // code for the admin data modification table
+
+        // table that filters results, credit: https://www.youtube.com/watch?v=mbW-0Pey7Aw
+        //const data_modification_search_input = document.getElementById("search_results_album_id")
+        const rows_container = document.querySelector("#album_modification_data_table")
+        const rows = rows_container.querySelectorAll("tbody tr")
+        console.log("rows for the data modification table:")
+        console.log(rows)
 
 
+        // show album
+        opens_show_album_modification.addEventListener("click", () => {
+            show_album_modification.classList.add("show");
+            console.log('show album')
+            //show_artist_modification.classList.remove("show");
+            show_song_modification.classList.remove("show")
+            show_user_modification.classList.remove("show")
+            show_users.classList.remove("show")
+            create_reports_section.classList.remove("show")
+            show_report_data.classList.remove("show")
+        });
+
+
+        // show songs
+        opens_show_song_modification.addEventListener("click", () => {
+            show_song_modification.classList.add("show");
+            console.log('show song')
+            show_album_modification.classList.remove("show");
+            //show_artist_modification.classList.remove("show")
+            show_user_modification.classList.remove("show")
+            show_users.classList.remove("show")
+            create_reports_section.classList.remove("show")
+            show_report_data.classList.remove("show")
+        });
+
+        // show users
+        opens_show_user_modification.addEventListener("click", () => {
+            show_user_modification.classList.add("show");
+            console.log('show user')
+            show_album_modification.classList.remove("show");
+            //show_artist_modification.classList.remove("show")
+            show_song_modification.classList.remove("show")
+            show_users.classList.remove("show")
+            create_reports_section.classList.remove("show")
+            show_report_data.classList.remove("show")
+        });
+
+
+        // modify album feature starts
+        // update the data in HTML from data in database
+        let albumData;
+        async function populateAlbumModification(){
+            const albumResponse = await fetch('http://localhost:8080/adminGetAlbumData');
+            albumData = await albumResponse.json();
+            console.log('albumdata from fetch')
+            console.log(albumData);
+            //const html_element = document.getElementById("usernames_and_roles_table");
+            
+                var album_target = document.getElementById("album_modification_data_table");
+                var album_output = "";
+                //console.log(data);
+
+                var album_ids = []
+                
+                for (var row of albumData){
+                    album_output += `
+                        <tr>
+                            <td>${row.Title}</td>
+                            <td>${row.Artist}</td>
+                            <td>${row.Genre}</td>
+                            <td>${row.Release_Year}</td>
+                            <td><button class = "generic_edit_button" id="edit_album_${row.Album_ID}">Edit</button><button class = "generic_delete_button" id="delete_album_${row.Album_ID}">Delete</button></td>
+                        </tr>
+                    `;
+                    album_ids.push(row.Album_ID);
+
+                };
+                album_target.innerHTML = album_output;
+        }
+
+        populateAlbumModification();
+        var id_sentence = "edit_album_pop_up_"
+        var id_number = 1 // the id of the album chosen
+        var id_to_get = id_sentence + id_number.toString()
+
+       // credit for event delegation: https://javascript.info/event-delegation
+       const admin_album_modification_edit_bttns = document.getElementById("data_modification_album_results_table")
+       admin_album_modification_edit_bttns.addEventListener("click", (event) => {
+            let target = event.target;
+
+            if (target.tagName!= 'BUTTON')
+                return;
+            // else (valid click), do something
+            // credit for "includes" function: https://sentry.io/answers/string-contains-substring-javascript/
+            if (target.id.includes('edit_album_')){
+                console.log('edit event')
+                console.log(target.id);
+                // show edit window
+                //const opens_show_artist_modification = document.getElementById("admin_artist_button");
+                const show_admin_album_edit_window = document.getElementById("edit_album_pop_up_id");
+                var album_id_to_modify = target.id.slice(11,)
+                console.log(album_id_to_modify)
+                console.log('albumdata')
+                console.log(albumData)
+                for (var row of albumData){
+                    if (row.Album_ID == album_id_to_modify){
+                        var cur_title = row.Title;
+                        var cur_artist = row.Artist; 
+                        var cur_release_year = row.Release_Year; 
+                        var cur_genre = row.Genre;
+                    }
+                };
+                // populate the pop-up with the custom form
+                var info = `
+                <form id ="update_username_form">
+                    <p>Edit Album</p>
+                    <p>Current title is ${cur_title}</p>
+                    <label for="new_title_input"> Enter new title: </label>
+                    <input id = "new_album_title_id" type="text" id="new_title_input" name="new_title_input" placeholder="">
+                    <!--<button id ="OK_edit_title_pop_up"> Change title </button>-->
+                    <p>Current artist is ${cur_artist}</p>
+                    <label for="new_artist_input"> Enter new artist: </label>
+                    <input id = "new_album_artist_id" type="text" id="new_artist_input" name="new_artist_input" placeholder="">
+                    <!--<button id ="OK_edit_artist_pop_up"> Change artist </button>-->
+                    <p>Current genre is ${cur_genre}</p>
+                    <label for="new_genre_input"> Enter new genre: </label>
+                    <input id = "new_album_genre_id" type="text" id="new_genre_input" name="new_genre_input" placeholder="">
+                    <!--<button id ="OK_edit_genre_pop_up"> Change genre </button>-->
+                    <p>Current Release Year is ${cur_release_year}</p>
+                    <label for="new_release_year_input"> Enter new release year: </label>
+                    <input id = "new_album_release_year_id" type="text" id="new_release_year_input" name="new_release_year_input" placeholder="">
+                    <!--<button id ="OK_edit_release_year_pop_up"> Change Release Year </button>-->                  
+                    <button id = "submit_album_changes">Apply Changes</button>  
+                </form>
+                <button id="close_album_edit_pop_up">Close</button>
+                `;
+                show_admin_album_edit_window.innerHTML = info;
+                
+
+                //const close_show_artist_modification = document.getElementById("clear_screen");
+                // this part will be closed as soon as they click on another table
+
+                //opens_show_artist_modification.addEventListener("click", () => {
+                // finally, show the pop up to the user
+                    show_admin_album_edit_window.classList.add("show");
+                //});
+
+                // add the event listener to the static object
+                // and filter for the newly created button
+                show_admin_album_edit_window.addEventListener("click", (event2) => {
+                    event2.preventDefault();
+                    let pop_up_target = event2.target
+                    if (pop_up_target.id.includes('submit_album_changes')){
+                        console.log('apply changes clicked!')
+                        let new_album_title = new_album_title_id.value;
+                        console.log(new_album_title)
+                        let new_artist_name = new_album_artist_id.value;
+                        console.log(new_artist_name)
+                        let new_album_genre = new_album_genre_id.value;
+                        console.log(new_album_genre)
+                        let new_album_release_year = new_album_release_year_id.value;
+                        console.log(new_album_release_year)
+
+                        var success = false; // credit for success implementation: khelwood, at https://stackoverflow.com/questions/30019453/java-run-code-only-if-no-exception-is-thrown-in-try-and-catch-block
+                        console.log('sucess')
+                        console.log(success)
+                        try{
+                                async function update_album_data(){
+                                    // credit: https://stackoverflow.com/questions/59554421/how-perform-patch-request-from-html-form-using-nodejs
+                                    var url = "http://localhost:8080/adminUpdateAlbumData" ;
+                                    const response_from_fetch_update_album_data = await fetch(url, {
+                                        method: "POST",
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        // body with necessary data
+                                        body: JSON.stringify({
+                                            album_id: album_id_to_modify,
+                                            new_title : new_album_title,
+                                            new_artist : new_artist_name,
+                                            new_genre : new_album_genre,
+                                            new_year : new_album_release_year
+                                        })
+                                    });
+                                    
+                                    //console.log(response[0]);
+                                    const data = await response.json();
+                                    console.log(data);
+                                };
+
+                                update_album_data();
+                            
+                            success = true;
+                            console.log()
+                            console.log('sucess')
+                            console.log(success)
+                        }
+                        catch {
+                            alert('There was an error trying to modify album. Please refresh the page and try again, if that does not work please refresh the page and try again for a different album.')
+                            return;
+                        }
+                        if (success) {
+                            //alert('Operation completed. Please refresh page to see changes.')
+                            // update html
+                            var confirmation_album_modification = `
+                                <p>Data for album '${cur_title}' has been updated</p>
+                                <p> Please refresh the page to see the changes </p>
+                                <button id="close_album_edit_pop_up">Close</button>
+                            `;
+                            show_admin_album_edit_window.innerHTML = confirmation_album_modification;
+                        }
+                        else {
+                            alert('There was an error trying to modify album. Please refresh the page and try again, if that does not work please refresh the page and try again for a different album.')
+                        }
+                    }
+                    else if (pop_up_target.id.includes('close_album_edit_pop_up')){
+                        console.log('close button clicked')
+                        show_admin_album_edit_window.classList.remove("show");
+                    }
+                })
+
+                // catch the user's response to the popup
+                // (apply changes, remove songs, cancel?)
+            }
+            else if (target.id.includes('delete_album_')){
+                console.log('delete event')
+                console.log(target.id);
+
+                // show delete window
+                //const opens_show_artist_modification = document.getElementById("admin_artist_button");
+                const show_admin_album_edit_window = document.getElementById("edit_album_pop_up_id");
+                var album_id_to_modify = target.id.slice(13,)
+                console.log(album_id_to_modify)
+                console.log('albumdata')
+                console.log(albumData)
+                for (var row of albumData){
+                    if (row.Album_ID == album_id_to_modify){
+                        var cur_title = row.Title;
+                        var cur_artist = row.Artist; 
+                        var cur_release_year = row.Release_Year; 
+                        var cur_genre = row.Genre;
+                    }
+                };
+                // populate the pop-up with the custom form
+                var info = `
+                <form id ="update_username_form">
+                    <p>Delete Album</p>
+                    <p>Please click OK to delete album '${cur_title}'</p>               
+                    <button id = "submit_album_changes">OK</button>  
+                </form>
+                <button id="close_album_edit_pop_up">Close</button>
+                `;
+                show_admin_album_edit_window.innerHTML = info;
+                
+
+                //const close_show_artist_modification = document.getElementById("clear_screen");
+                // this part will be closed as soon as they click on another table
+
+                //opens_show_artist_modification.addEventListener("click", () => {
+                // finally, show the pop up to the user
+                show_admin_album_edit_window.classList.add("show");
+                //});
+
+                // add the event listener to the static object
+                // and filter for the newly created button
+                show_admin_album_edit_window.addEventListener("click", (event2) => {
+                    event2.preventDefault();
+                    let pop_up_target = event2.target
+                    if (pop_up_target.id.includes('submit_album_changes')){
+                        console.log('apply changes clicked!')
+
+                        var success = false; // credit for success implementation: khelwood, at https://stackoverflow.com/questions/30019453/java-run-code-only-if-no-exception-is-thrown-in-try-and-catch-block
+                        console.log('sucess')
+                        console.log(success)
+                        try{
+                                async function update_album_data(){
+                                    // credit: https://stackoverflow.com/questions/59554421/how-perform-patch-request-from-html-form-using-nodejs
+                                    var url = "http://localhost:8080/adminUpdateAlbumDataMarkForDeletion" ;
+                                    const response_from_fetch_update_album_data = await fetch(url, {
+                                        method: "POST",
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        // body with necessary data
+                                        body: JSON.stringify({
+                                            album_id: album_id_to_modify,
+                                        })
+                                    });
+                                    
+                                    const data = await response.json();
+                                    console.log(data);
+                                };
+
+                                update_album_data();
+                            
+                            success = true;
+                            console.log()
+                            console.log('sucess')
+                            console.log(success)
+                        }
+                        catch {
+                            alert('There was an error when trying to mark album for deletion. Please try again.')
+                            return;
+                        }
+                        if (success) {
+                            //alert('Album Deleted. Please refresh page to see changes.')
+                            
+                            
+                            // approach: rewrite the html!
+
+                            // make it empty
+                            show_admin_album_edit_window.innerHTML = ``;
+
+                            // write new data
+                            var confirmation_info = `
+                            <p> Album '${cur_title}' was deleted sucessfully. </p>
+                            <p> Please refresh the page to reflect the changes </p>
+                            <button id="close_album_edit_pop_up">Close</button>
+                            `;
+                            show_admin_album_edit_window.innerHTML = confirmation_info;
+
+                        }
+                        else {
+                            alert('There was an error when trying to mark album for deletion. Please refresh and try again, if that does not work, try a different album.')
+                        }
+                    }
+                    else if (pop_up_target.id.includes('close_album_edit_pop_up')){
+                        console.log('close button clicked')
+                        show_admin_album_edit_window.classList.remove("show");
+                    }
+                })
+
+
+            }
+       })
+        // modify album feature ends
+
+        // modify song feature starts
+        // update the data in HTML from data in database
+        let songData;
+        async function populate_song_modification(){
+            const song_response = await fetch('http://localhost:8080/adminGetSongData');
+            songData = await song_response.json();
+            console.log('songdata from fetch')
+            console.log(songData);
+            
+                var song_target = document.getElementById("song_modification_data_table");
+                var song_output = "";
+
+                var song_ids = []
+                
+                for (var row of songData){
+                    song_output += `
+                        <tr>
+                            <td>${row.Title}</td>
+                            <td>${row.Artist}</td>
+                            <td>${row.Genre}</td>
+                            <td>${row.Release_Year}</td>
+                            <td><button class = "generic_edit_button" id="edit_song_${row.Song_ID}">Edit</button><button class = "generic_delete_button" id="delete_song_${row.Song_ID}">Delete</button></td>
+                        </tr>
+                    `;
+                };
+                console.log(song_output)
+                song_target.innerHTML = song_output;
+        }
+
+        populate_song_modification();
+        var id_sentence = "edit_song_pop_up_"
+        var id_number = 1 // the id of the album chosen
+        var id_to_get = id_sentence + id_number.toString()
+
+       // credit for event delegation: https://javascript.info/event-delegation
+       const admin_song_modification_edit_bttns = document.getElementById("data_modification_song_results_table")
+       admin_song_modification_edit_bttns.addEventListener("click", (event) => {
+            let target = event.target;
+
+            if (target.tagName!= 'BUTTON')
+                return;
+            // else (valid click), do something
+            if (target.id.includes('edit_song_')){
+                console.log('edit song event')
+                console.log(target.id);
+                // show edit window
+                //const opens_show_artist_modification = document.getElementById("admin_artist_button");
+                const show_admin_song_edit_window = document.getElementById("edit_song_pop_up_id");
+                var song_id_to_modify = target.id.slice(10,)
+                console.log(song_id_to_modify)
+                console.log('songdata')
+                console.log(songData)
+                for (var row of songData){
+                    if (row.Song_ID == song_id_to_modify){
+                        var cur_title = row.Title;
+                        var cur_artist = row.Artist; 
+                        var cur_release_year = row.Release_Year; 
+                        var cur_genre = row.Genre;
+                        var cur_plays = row.Times_Played;
+                        var cur_rating = row.Rating;
+                    }
+                };
+                // populate the pop-up with the custom form
+                var info_song = `
+                <form id ="update_song_form">
+                    <p>Edit Song</p>
+                    <p>Current title is ${cur_title}</p>
+                    <label for="new_title_input"> Enter new title: </label>
+                    <input id = "new_song_title_id" type="text" id="new_title_input" name="new_title_input" placeholder="">
+                    <!--<button id ="OK_edit_title_pop_up"> Change title </button>-->
+                    <p>Current artist is ${cur_artist}</p>
+                    <label for="new_artist_input"> Enter new artist: </label>
+                    <input id = "new_song_artist_id" type="text" id="new_artist_input" name="new_artist_input" placeholder="">
+                    <!--<button id ="OK_edit_artist_pop_up"> Change artist </button>-->
+                    <p>Current genre is ${cur_genre}</p>
+                    <label for="new_genre_input"> Enter new genre: </label>
+                    <input id = "new_song_genre_id" type="text" id="new_genre_input" name="new_genre_input" placeholder="">
+                    <!--<button id ="OK_edit_genre_pop_up"> Change genre </button>-->
+                    <p>Current Release Year is ${cur_release_year}</p>
+                    <label for="new_release_year_input"> Enter new release year: </label>
+                    <input id = "new_song_release_year_id" type="text" id="new_release_year_input" name="new_release_year_input" placeholder="">
+                    <!--<button id ="OK_edit_release_year_pop_up"> Change Release Year </button>-->                  
+                    <button id = "submit_song_changes">Apply Changes</button>  
+                </form>
+                <button id="close_song_edit_pop_up">Close</button>
+                `;
+                show_admin_song_edit_window.innerHTML = info_song;
+                
+
+                //const close_show_artist_modification = document.getElementById("clear_screen");
+                // this part will be closed as soon as they click on another table
+
+                //opens_show_artist_modification.addEventListener("click", () => {
+                // finally, show the pop up to the user
+                show_admin_song_edit_window.classList.add("show");
+                //});
+
+                // add the event listener to the static object
+                // and filter for the newly created button
+                show_admin_song_edit_window.addEventListener("click", (event_song) => {
+                    event_song.preventDefault();
+                    let pop_up_target = event_song.target
+                    if (pop_up_target.id.includes('submit_song_changes')){
+                        console.log('apply song changes clicked!')
+                        let new_song_title = new_song_title_id.value;
+                        console.log(new_song_title)
+                        let new_artist_name = new_song_artist_id.value;
+                        console.log(new_artist_name)
+                        let new_song_genre = new_song_genre_id.value;
+                        console.log(new_song_genre)
+                        let new_song_release_year = new_song_release_year_id.value;
+                        console.log(new_song_release_year)
+
+                        var success = false; // credit for success implementation: khelwood, at https://stackoverflow.com/questions/30019453/java-run-code-only-if-no-exception-is-thrown-in-try-and-catch-block
+                        console.log('sucess')
+                        console.log(success)
+                        try{
+                                async function update_song_data(){
+                                    // credit: https://stackoverflow.com/questions/59554421/how-perform-patch-request-from-html-form-using-nodejs
+                                    var url = "http://localhost:8080/adminUpdateSongData" ;
+                                    const response_from_fetch_update_song_data = await fetch(url, {
+                                        method: "POST",
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        // body with necessary data
+                                        body: JSON.stringify({
+                                            song_id: song_id_to_modify,
+                                            new_title : new_song_title,
+                                            new_artist : new_artist_name,
+                                            new_genre : new_song_genre,
+                                            new_year : new_song_release_year
+                                        })
+                                    });
+                                    
+                                    //console.log(response[0]);
+                                    const data = await response.json();
+                                    console.log(data);
+                                };
+
+                                update_song_data();
+                            
+                            success = true;
+                            console.log()
+                            console.log('sucess')
+                            console.log(success)
+                        }
+                        catch {
+                            alert('There was an error when trying to update songs. Please try again.')
+                            return;
+                        }
+                        if (success) {
+                            //alert('Song updated. Please refresh page to see changes.')
+
+                            // update html
+                            // erase html
+                            
+                            show_admin_song_edit_window.innerHTML = ``;
+
+                            // write new html
+                            var confirmation_song_updated = `
+                                <p>Data for song '${cur_title}' was updated successfully</p>
+                                <p>Please refresh the page to reflect the changes</p>
+                                <button id="close_song_edit_pop_up">Close</button>
+                            `;
+                            show_admin_song_edit_window.innerHTML = confirmation_song_updated;
+                            
+                        }
+                        else {
+                            alert('Updating data for song failed. Please attempt refreshing the page and try again for the same song, if that does not work please try updating data for a different song.')
+                        }
+                    }
+                    else if (pop_up_target.id.includes('close_song_edit_pop_up')){
+                        console.log('close button clicked')
+                        show_admin_song_edit_window.classList.remove("show");
+                    }
+                })
+
+            }
+            else if (target.id.includes('delete_song_')){
+                console.log('delete song event')
+                console.log(target.id);
+                // show delete window
+                // show edit window
+                //const opens_show_artist_modification = document.getElementById("admin_artist_button");
+                const show_admin_song_edit_window = document.getElementById("edit_song_pop_up_id");
+                var song_id_to_modify = target.id.slice(12,)
+                console.log(song_id_to_modify)
+                console.log('songdata')
+                console.log(songData)
+                for (var row of songData){
+                    if (row.Song_ID == song_id_to_modify){
+                        var cur_title = row.Title;
+                        var cur_artist = row.Artist; 
+                        var cur_release_year = row.Release_Year; 
+                        var cur_genre = row.Genre;
+                        var cur_plays = row.Times_Played;
+                        var cur_rating = row.Rating;
+                    }
+                };
+                // populate the pop-up with the custom form
+                var info_song = `
+                <form id ="update_song_form">
+                    <p>Delete Song</p>
+                    <p>Click OK to confirm deletion of '${cur_title}'</p>            
+                    <button id = "submit_song_changes">OK</button>  
+                </form>
+                <button id="close_song_edit_pop_up">Close</button>
+                `;
+                show_admin_song_edit_window.innerHTML = info_song;
+                
+
+                //const close_show_artist_modification = document.getElementById("clear_screen");
+                // this part will be closed as soon as they click on another table
+
+                //opens_show_artist_modification.addEventListener("click", () => {
+                // finally, show the pop up to the user
+                show_admin_song_edit_window.classList.add("show");
+                //});
+
+                // add the event listener to the static object
+                // and filter for the newly created button
+                show_admin_song_edit_window.addEventListener("click", (event_song) => {
+                    event_song.preventDefault();
+                    let pop_up_target = event_song.target
+                    if (pop_up_target.id.includes('submit_song_changes')){
+                        console.log('apply song changes clicked!')
+
+                        var success = false; // credit for success variable implementation: khelwood, at https://stackoverflow.com/questions/30019453/java-run-code-only-if-no-exception-is-thrown-in-try-and-catch-block
+                        console.log('sucess')
+                        console.log(success)
+                        try{
+                                async function update_song_data(){
+                                    // credit: https://stackoverflow.com/questions/59554421/how-perform-patch-request-from-html-form-using-nodejs
+                                    var url = "http://localhost:8080/adminUpdateSongDataMarkForDeletion" ;
+                                    const response_from_fetch_update_song_data = await fetch(url, {
+                                        method: "POST",
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        // body with necessary data
+                                        body: JSON.stringify({
+                                            song_id: song_id_to_modify,
+                                        })
+                                    });
+                                    
+                                    const data = await response.json();
+                                    console.log(data);
+                                };
+
+                                update_song_data();
+                            
+                            success = true;
+                            console.log()
+                            console.log('sucess')
+                            console.log(success)
+                        }
+                        catch {
+                            alert('There was an error when trying to delete song. Please try again.')
+                            return;
+                        }
+                        if (success) {
+                            //alert('Song updated. Please refresh page to see changes.')
+                            show_admin_song_edit_window.innerHTML = ``;
+
+                            // write new html
+                            var confirmation_song_deleted = `
+                                <p>Song '${cur_title}' was deleted successfully</p>
+                                <p>Please refresh the page to reflect the changes</p>
+                                <button id="close_song_edit_pop_up">Close</button>
+                            `;
+                            show_admin_song_edit_window.innerHTML = confirmation_song_deleted;
+                        }
+                        else {
+                            alert('Song deletion failed. Please refresh the page and try again for the same song, or please try another song.')
+                        }
+                    }
+                    else if (pop_up_target.id.includes('close_song_edit_pop_up')){
+                        console.log('close button clicked')
+                        show_admin_song_edit_window.classList.remove("show");
+                    }
+                })
+
+
+            }
+       })
+        // modify song feature ends
+
+        // modify users feature starts
+        // update the data in HTML from data in database
+        let usersData;
+        async function populate_users_modification(){
+            const users_response = await fetch('http://localhost:8080/adminGetUserData');
+            usersData = await users_response.json();
+            console.log('usersData from fetch')
+            console.log(usersData);
+            //const html_element = document.getElementById("usernames_and_roles_table");
+            
+                var users_target = document.getElementById("users_modification_data_table");
+                var users_output = "";
+                //console.log(data);
+
+                var user_ids = []
+                
+                for (var row of usersData){
+                    users_output += `
+                        <tr>
+                            <td>${row.Username}</td>
+                            <td>${row.Role_Name}</td>
+                    `;
+                    if (row.Marked_For_Deletion){
+                        // it is marked_for_deletion
+                        users_output += `<td class="user_account_marked_for_deletion">Marked For Deletion</td>`
+                        users_output += `
+                        <td><button class = "generic_edit_button" id="edit_user_${row.Cougar_ID}">Edit</button><button class = "activate_user_account_button" id="activate_user_account_${row.Cougar_ID}">Activate Account</button></td>
+                        </tr>
+                        `;
+                    }
+                    else {
+                        // it is active
+                        users_output += `<td class="user_account_active">Active</td>`
+                        users_output += `
+                        <td><button class = "generic_edit_button" id="edit_user_${row.Cougar_ID}">Edit</button><button class = "delete_user_account_button" id="delete_user_${row.Cougar_ID}">Delete</button></td>
+                        </tr>
+                        `;
+                    }
+                };
+                console.log(users_output)
+                users_target.innerHTML = users_output;
+        }
+
+        populate_users_modification();
+        var id_sentence = "edit_user_pop_up_"
+        var id_number = 1 // the id of the album chosen
+        var id_to_get = id_sentence + id_number.toString()
+
+       // credit for event delegation: https://javascript.info/event-delegation
+       const admin_user_modification_edit_bttns = document.getElementById("data_modification_user_results_table")
+       admin_user_modification_edit_bttns.addEventListener("click", (event) => {
+            let target = event.target;
+
+            if (target.tagName!= 'BUTTON')
+                return;
+            // else (valid click), do something
+            if (target.id.includes('edit_user_')){
+                console.log('edit user event')
+                console.log(target.id);
+                // show edit window
+                //const opens_show_artist_modification = document.getElementById("admin_artist_button");
+                const show_admin_user_edit_window = document.getElementById("edit_user_pop_up_id");
+                var user_id_to_modify = target.id.slice(10,)
+                console.log(user_id_to_modify)
+                console.log('userdata')
+                console.log(usersData)
+                for (var row of usersData){
+                    if (row.Cougar_ID == user_id_to_modify){
+                        var cur_username = row.Username;
+                        var cur_role = row.Role_Name; 
+                        var cur_Marked_For_Deletion = row.Marked_For_Deletion;
+                    }
+                };
+                // populate the pop-up with the custom form
+                let status_string;
+                if (Number(cur_Marked_For_Deletion) === 1){
+                    status_string = "Marked for deletion (or, 'inactive')"
+                }
+                else {
+                    status_string = "Active"
+                }
+                var info_user = `
+                <form id ="update_user_form">
+                    <p>Edit User Account</p>
+                    <p>Current account status is: ${status_string}</p>
+                    <p>Current username is ${cur_username}</p>
+                    <label for="new_username_input"> Enter new username: </label>
+                    <input id = "new_username_id" type="text" id="new_username_input" name="new_username_input" placeholder="">
+                    <!--<button id ="OK_edit_title_pop_up"> Change title </button>-->                 
+                    <p>If you want to change this user's password, enter the new password below:</p>
+                    <label for="new_password_input"> Enter new password: </label>
+                    <input id = "new_password_id" type="text" id="new_password_input" name="new_password_input" placeholder="">
+                    <button id = "submit_user_changes">Apply Changes</button>  
+                </form>
+                <button id="close_user_edit_pop_up">Close</button>
+                `;
+                show_admin_user_edit_window.innerHTML = info_user;
+                
+
+                //const close_show_artist_modification = document.getElementById("clear_screen");
+                // this part will be closed as soon as they click on another table
+
+                //opens_show_artist_modification.addEventListener("click", () => {
+                // finally, show the pop up to the user
+                show_admin_user_edit_window.classList.add("show");
+                //});
+
+                // add the event listener to the static object
+                // and filter for the newly created button
+                show_admin_user_edit_window.addEventListener("click", (event_user) => {
+                    event_user.preventDefault();
+                    let pop_up_target = event_user.target
+                    if (pop_up_target.id.includes('submit_user_changes')){
+                        console.log('apply user changes clicked!')
+                        let new_username = new_username_id.value;
+                        console.log(new_username)
+                        let new_password = new_password_id.value;
+                        console.log(new_password)
+                        let new_status = new_status_id.value;
+                        console.log(new_status)
+
+                        var success = false; // credit for success implementation: khelwood, at https://stackoverflow.com/questions/30019453/java-run-code-only-if-no-exception-is-thrown-in-try-and-catch-block
+                        console.log('sucess')
+                        console.log(success)
+                        try{
+                                async function update_user_data(){
+                                    // credit: https://stackoverflow.com/questions/59554421/how-perform-patch-request-from-html-form-using-nodejs
+                                    var url = "http://localhost:8080/adminUpdateUserData" ;
+                                    const response_from_fetch_update_user_data = await fetch(url, {
+                                        method: "POST",
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        // body with necessary data
+                                        body: JSON.stringify({
+                                            user_id: user_id_to_modify,
+                                            new_username : new_username,
+                                            new_status : new_status,
+                                            new_password : new_password,
+                                        })
+                                    });
+                                    
+                                    //console.log(response[0]);
+                                    const data = await response.json();
+                                    console.log(data);
+                                };
+
+                                update_user_data();
+                            
+                            success = true;
+                            console.log()
+                            console.log('sucess')
+                            console.log(success)
+                        }
+                        catch {
+                            alert('There was an error when trying to update user. Please try again.')
+                            return;
+                        }
+                        if (success) {
+                            //alert('User updated. Please refresh page to see changes.')
+
+                            // rewrite the HTML
+                            var confirmation_update_user = `
+                                <p> Data for user '${cur_username}' was updated successfully </p>
+                                <p> Please refresh the page to see the changes (exception: only password was updated - password changes are not reflected visually)</p>
+                                <button id="close_user_edit_pop_up">Close</button>
+                            `;
+                            show_admin_user_edit_window.innerHTML = confirmation_update_user;
+
+
+                        }
+                        else {
+                            alert('Updating data for user failed. Please refresh the page and try again for the same user, if that does not work please refresh the page and try updating data for a different user.')
+                        }
+                    }
+                    else if (pop_up_target.id.includes('close_user_edit_pop_up')){
+                        console.log('close button clicked')
+                        show_admin_user_edit_window.classList.remove("show");
+                    }
+                })
+
+            }
+            else if (target.id.includes('delete_user_')){
+                console.log('delete event')
+                console.log(target.id);
+                // show delete window
+
+                //const opens_show_artist_modification = document.getElementById("admin_artist_button");
+                const show_admin_user_edit_window = document.getElementById("edit_user_pop_up_id");
+                var user_id_to_modify = target.id.slice(12,)
+                console.log(user_id_to_modify)
+                console.log('userdata')
+                console.log(usersData)
+                for (var row of usersData){
+                    if (row.Cougar_ID == user_id_to_modify){
+                        var cur_username = row.Username;
+                        var cur_role = row.Role_Name; 
+                        var cur_Marked_For_Deletion = row.Marked_For_Deletion;
+                    }
+                };
+                // populate the pop-up with the custom form
+                let status_string;
+                if (Number(cur_Marked_For_Deletion) === 1){
+                    status_string = "Marked for deletion (or, 'inactive')"
+                }
+                else {
+                    status_string = "Active"
+                }
+                var info_user = `
+                <form id ="update_user_form">
+                    <p>Mark User Account for Deletion</p>
+                    <p>Current account status is ${status_string}</p>
+                    <p>Click OK to Mark '${cur_username}''s account for deletion</p>
+                    <button id = "submit_user_changes">OK</button>  
+                </form>
+                <button id="close_user_edit_pop_up">Close</button>
+                `;
+                show_admin_user_edit_window.innerHTML = info_user;
+                
+
+                //const close_show_artist_modification = document.getElementById("clear_screen");
+                // this part will be closed as soon as they click on another table
+
+                //opens_show_artist_modification.addEventListener("click", () => {
+                // finally, show the pop up to the user
+                show_admin_user_edit_window.classList.add("show");
+                //});
+
+                // add the event listener to the static object
+                // and filter for the newly created button
+                show_admin_user_edit_window.addEventListener("click", (event_user) => {
+                    event_user.preventDefault();
+                    let pop_up_target = event_user.target
+                    if (pop_up_target.id.includes('submit_user_changes')){
+
+
+                        var success = false; // credit for success implementation: khelwood, at https://stackoverflow.com/questions/30019453/java-run-code-only-if-no-exception-is-thrown-in-try-and-catch-block
+                        console.log('sucess')
+                        console.log(success)
+                        try{
+                                async function update_user_data(){
+                                    // credit: https://stackoverflow.com/questions/59554421/how-perform-patch-request-from-html-form-using-nodejs
+                                    var url = "http://localhost:8080/adminUpdateUserDataMarkForDeletion" ;
+                                    const response_from_fetch_update_user_data = await fetch(url, {
+                                        method: "POST",
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        // body with necessary data
+                                        body: JSON.stringify({
+                                            user_id: user_id_to_modify,
+                                        })
+                                    });
+                                    
+                                    //console.log(response[0]);
+                                    const data = await response.json();
+                                    console.log(data);
+                                };
+
+                                update_user_data();
+                            
+                            success = true;
+                            console.log()
+                            console.log('sucess')
+                            console.log(success)
+                        }
+                        catch {
+                            alert('There was an error when trying to mark user for deletion. Please try again.')
+                            return;
+                        }
+                        if (success) {
+                            //alert('User marked for deletion. Please refresh page to see changes.')
+
+                            // rewrite the html
+                            var confirmation_user_deleted = `
+                                <p> User '${cur_username}' has been marked for deletion </p>
+                                <p> Please refresh the page to see the changes </p>
+                                <button id="close_user_edit_pop_up">Close</button>
+                            `;
+                            show_admin_user_edit_window.innerHTML = confirmation_user_deleted;
+
+                        }
+                        else {
+                            alert('User deletion failed. Please refresh the page and try again for the same user, if that does not work please try another user.')
+                        }
+                    }
+                    else if (pop_up_target.id.includes('close_user_edit_pop_up')){
+                        console.log('close button clicked')
+                        show_admin_user_edit_window.classList.remove("show");
+                    }
+                })
+
+
+            }
+            else if (target.id.includes('activate_user_account_')){
+                console.log('activate user account event')
+                console.log(target.id);
+                // show delete window
+
+                //const opens_show_artist_modification = document.getElementById("admin_artist_button");
+                const show_admin_user_edit_window = document.getElementById("edit_user_pop_up_id");
+                var user_id_to_modify = target.id.slice(22,)
+                console.log(user_id_to_modify)
+                console.log('userdata')
+                console.log(usersData)
+                for (var row of usersData){
+                    if (row.Cougar_ID == user_id_to_modify){
+                        var cur_username = row.Username;
+                        var cur_role = row.Role_Name; 
+                        var cur_Marked_For_Deletion = row.Marked_For_Deletion;
+                    }
+                };
+                // populate the pop-up with the custom form
+                let status_string;
+                if (Number(cur_Marked_For_Deletion) === 1){
+                    status_string = "Marked for deletion ('inactive')"
+                }
+                else {
+                    status_string = "Active"
+                }
+                var info_user = `
+                <form id ="update_user_form">
+                    <p>Activate User Account</p>
+                    <p>Current account status is ${status_string}</p>
+                    <p>Click OK to activate '${cur_username}''s account</p>
+                    <button id = "submit_user_changes">OK</button>  
+                </form>
+                <button id="close_user_edit_pop_up">Close</button>
+                `;
+                show_admin_user_edit_window.innerHTML = info_user;
+                
+
+                //const close_show_artist_modification = document.getElementById("clear_screen");
+                // this part will be closed as soon as they click on another table
+
+                //opens_show_artist_modification.addEventListener("click", () => {
+                // finally, show the pop up to the user
+                show_admin_user_edit_window.classList.add("show");
+                //});
+
+                // add the event listener to the static object
+                // and filter for the newly created button
+                show_admin_user_edit_window.addEventListener("click", (event_user) => {
+                    event_user.preventDefault();
+                    let pop_up_target = event_user.target
+                    if (pop_up_target.id.includes('submit_user_changes')){
+                        console.log('apply user changes clicked!')
+
+                        var success = false; // credit for success implementation: khelwood, at https://stackoverflow.com/questions/30019453/java-run-code-only-if-no-exception-is-thrown-in-try-and-catch-block
+                        console.log('sucess')
+                        console.log(success)
+                        try{
+                                async function update_user_data(){
+                                    // credit: https://stackoverflow.com/questions/59554421/how-perform-patch-request-from-html-form-using-nodejs
+                                    var url = "http://localhost:8080/adminUpdateUserDataActivateUserAccount" ;
+                                    const response_from_fetch_update_user_data = await fetch(url, {
+                                        method: "POST",
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        // body with necessary data
+                                        body: JSON.stringify({
+                                            user_id: user_id_to_modify,
+                                        })
+                                    });
+                                    
+                                    //console.log(response[0]);
+                                    const data = await response.json();
+                                    console.log(data);
+                                };
+
+                                update_user_data();
+                            
+                            success = true;
+                            console.log()
+                            console.log('sucess')
+                            console.log(success)
+                        }
+                        catch {
+                            alert('There was an error when trying to activate user account. Please try again.')
+                            return;
+                        }
+                        if (success) {
+                            //alert('User account activated. Please refresh page to see changes.')
+                            
+                            // rewrite the html
+                            var confirmation_account_activation = `
+                                <p> Account with username '${cur_username}' has been activated </p>
+                                <p> Please refresh the page to reflect the changes </p>
+                                <button id="close_user_edit_pop_up">Close</button>
+                            `;
+                            show_admin_user_edit_window.innerHTML = confirmation_account_activation;
+
+                        }
+                        else {
+                            alert('User account activation failed. Please refresh the page and try again for the same user, if that does not work please try activating the account of another user.')
+                        }
+                    }
+                    else if (pop_up_target.id.includes('close_user_edit_pop_up')){
+                        console.log('close button clicked')
+                        show_admin_user_edit_window.classList.remove("show");
+                    }
+                })
+
+
+            }
+       })
+        // modify users feature ends
 
 
     </script>

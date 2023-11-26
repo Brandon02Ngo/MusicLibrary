@@ -2106,6 +2106,12 @@ const server = http.createServer(async function(req, res) {                     
                     handleDatabaseError(res, err);
                     return;                    
                 }
+            sql.connect(dbConfig, (err) => {
+                // Database connection error handler
+                if (err) {
+                    handleDatabaseError(res, err);
+                    return;                    
+                }
 
                 const request = new sql.Request();
 
@@ -2343,7 +2349,7 @@ const server = http.createServer(async function(req, res) {                     
             
         }
 
-        else if(fileName === '/adminDeleteUser') {
+        else if(fileName === '/adminUpdateSongData') {
             // Data parsing
 
             const data_from_server = await getReqData(req);
@@ -2352,7 +2358,11 @@ const server = http.createServer(async function(req, res) {                     
             console.log(typeof(data_from_server_json));
             console.log('data_from_server_json:')
             console.log(data_from_server_json);
-            var target_cougar_id_to_delete = data_from_server_json.target_cougar_id_to_delete;
+            let new_title = data_from_server_json.new_title;
+            let new_artist = data_from_server_json.new_artist;
+            let new_genre = data_from_server_json.new_genre;
+            let new_year = Number(data_from_server_json.new_year); // this value must be a number
+            let songID = Number(data_from_server_json.song_id);
 
             sql.connect(dbConfig, (err) => {
                 // Database connection error handler
@@ -2362,9 +2372,48 @@ const server = http.createServer(async function(req, res) {                     
                 }
 
                 const request = new sql.Request();
-                
-                var query=`UPDATE [MusicLibrary].[User] 
-                SET [Marked_For_Deletion] = 1 WHERE [Cougar_ID] = ${target_cougar_id_to_delete};`;
+                let title = false;
+                let artist = false;
+                let genre = false;
+                let year = false;
+
+                var query = `UPDATE [MusicLibrary].[Song] SET `
+
+                if (new_title.length > 0){
+                    query += `[Title] = '${new_title}'`
+                    title = true;
+                }
+                if (new_artist.length > 0){
+                    if (title) {
+                        query += `,[Artist] = '${new_artist}'`
+                        artist = true
+                    }
+                    else {
+                        query += `[Artist] = '${new_artist}'`
+                        artist = true
+                    }
+                }
+                if (new_genre.length > 0){
+                    if (title || artist){
+                        query += `,[Genre] = '${new_genre}'`
+                        genre = true
+                    }
+                    else {
+                        query += `[Genre] = '${new_genre}'`
+                        genre = true                        
+                    }
+                }
+                if (new_year){
+                    if (title || artist || genre){
+                        query += `,[Release_Year] = '${new_year}'`
+                        year = true
+                    }
+                    else {
+                        query += `[Release_Year] = '${new_year}'`
+                        year = true
+                    }
+                }
+                query += ` WHERE [Song_ID] = ${songID};`
 
                 // Process query result and store it to use as a response
                 request.query(query, (err, result) =>  {
@@ -2376,6 +2425,7 @@ const server = http.createServer(async function(req, res) {                     
                         return;
                     }
                     // Collects rows of data and stores it as JSON to send back to the client
+                    console.log('results for album update:')
                     console.log(result);
                     const rows = result.rowsAffected;
                     console.log(rows);
@@ -2385,7 +2435,7 @@ const server = http.createServer(async function(req, res) {                     
                         /*'Content-Length': Buffer.byteLength(jsonData, 'utf8'),*/ //remove row below if needed
                         "Access-Control-Allow-Origin": "*"
                     });
-                    console.log('response sent:')
+                    console.log('response sent for song update:')
                     console.log(jsonData);
                     res.end(jsonData);
                 })
@@ -2393,23 +2443,10 @@ const server = http.createServer(async function(req, res) {                     
             
            return;
             
-            
         }
 
-        else if(fileName === '/updateMyUsername') {
+        else if(fileName === '/adminUpdateUserData') {
             // Data parsing
-
-            const userCookie = req.headers.cookie;
-
-            var user_id = getIdFromCookie(userCookie);
-            var userID;
-            if (!(user_id == undefined)){
-                userID = user_id;
-            }
-            else {
-                console.log('Axel code could not get the user id from the cookie')
-                return;
-            }
 
             const data_from_server = await getReqData(req);
             const data_from_server_json = JSON.parse(data_from_server);
@@ -2417,7 +2454,10 @@ const server = http.createServer(async function(req, res) {                     
             console.log(typeof(data_from_server_json));
             console.log('data_from_server_json:')
             console.log(data_from_server_json);
-            var new_username = data_from_server_json.desired_new_username;
+            let new_username = data_from_server_json.new_username;
+            let new_status = data_from_server_json.new_status;
+            let new_password = data_from_server_json.new_password;
+            let userID = Number(data_from_server_json.user_id);
 
             sql.connect(dbConfig, (err) => {
                 // Database connection error handler
@@ -2427,9 +2467,53 @@ const server = http.createServer(async function(req, res) {                     
                 }
 
                 const request = new sql.Request();
+                let username = false;
+                let status = false;
+                let password = false;
 
-                var query=`UPDATE [MusicLibrary].[User] 
-                SET [Username] = '${new_username}' WHERE [Cougar_ID] = ${userID};`;
+                var query = `UPDATE [MusicLibrary].[User] SET `
+
+                if (new_username.length > 0){
+                    query += `[Username] = '${new_username}'`
+                    username = true;
+                }
+                if (new_status === 'activate' || new_status === 'deactivate'){
+                    if (username) {
+                        let value;
+                        if (new_status === 'deactivate'){
+                            value = 1
+                        }
+                        else {
+                            value = 0
+                        }
+
+                        query += `,[Marked_For_Deletion] = ${value}`
+                        status = true
+                    }
+                    else {
+                        let value;
+                        if (new_status === 'deactivate'){
+                            value = 1
+                        }
+                        else {
+                            value = 0
+                        }
+
+                        query += `[Marked_For_Deletion] = ${value}`
+                        status = true
+                    }
+                }
+                if (new_password.length > 0){
+                    if (username || status){
+                        query += `,[Pass] = '${new_password}'`
+                        password = true
+                    }
+                    else {
+                        query += `[Pass] = '${new_password}'`
+                        password = true                        
+                    }
+                }
+                query += ` WHERE [Cougar_ID] = ${userID};`
 
                 // Process query result and store it to use as a response
                 request.query(query, (err, result) =>  {
@@ -2441,73 +2525,7 @@ const server = http.createServer(async function(req, res) {                     
                         return;
                     }
                     // Collects rows of data and stores it as JSON to send back to the client
-                    console.log('results for username update:')
-                    console.log(result);
-                    const rows = result.rowsAffected;
-                    console.log(rows);
-                    const jsonData = JSON.stringify(rows);
-                    res.writeHead(200, {
-                        'Content-Type': 'application/json',
-                        /*'Content-Length': Buffer.byteLength(jsonData, 'utf8'),*/
-                        "Access-Control-Allow-Origin": "*"
-                    });
-                    console.log('response sent for username update:')
-                    console.log(jsonData);
-                    res.end(jsonData);
-                })
-            })
-            
-           return;
-            
-            
-        }
-
-        else if(fileName === '/updateMyPassword') {
-            // Data parsing
-
-            const userCookie = req.headers.cookie;
-
-            var user_id = getIdFromCookie(userCookie);
-            var userID;
-            if (!(user_id == undefined)){
-                userID = user_id;
-            }
-            else {
-                console.log('Axel code could not get the user id from the cookie')
-                return;
-            }
-
-            const data_from_server = await getReqData(req);
-            const data_from_server_json = JSON.parse(data_from_server);
-            console.log(typeof(data_from_server));
-            console.log(typeof(data_from_server_json));
-            console.log('data_from_server_json:')
-            console.log(data_from_server_json);
-            var desired_password = data_from_server_json.desired_new_password;
-
-            sql.connect(dbConfig, (err) => {
-                // Database connection error handler
-                if (err) {
-                    handleDatabaseError(res, err);
-                    return;                    
-                }
-
-                const request = new sql.Request();
-
-                var query=`UPDATE [MusicLibrary].[User] 
-                SET [Pass] = '${desired_password}' WHERE [Cougar_ID] = ${userID};`;
-
-                // Process query result and store it to use as a response
-                request.query(query, (err, result) =>  {
-                    if (err) {                                                   // Database query error handler
-                        console.error('Database query error:', err);
-                        sql.close();
-                        res.writeHead(500, { 'Content-Type': 'text/plain' });
-                        res.end('Database query error');
-                        return;
-                    }
-                    // Collects rows of data and stores it as JSON to send back to the client
-                    console.log('results for username update:')
+                    console.log('results for album update:')
                     console.log(result);
                     const rows = result.rowsAffected;
                     console.log(rows);
@@ -2517,9 +2535,204 @@ const server = http.createServer(async function(req, res) {                     
                         /*'Content-Length': Buffer.byteLength(jsonData, 'utf8'),*/ //remove row below if needed
                         "Access-Control-Allow-Origin": "*"
                     });
-                    console.log('response sent for password update:')
+                    console.log('response sent for song update:')
                     console.log(jsonData);
                     res.end(jsonData);
+                })
+            })
+            
+           return;
+            
+        }
+
+        else if(fileName === '/adminUpdateUserDataMarkForDeletion') {
+            // Data parsing
+
+            const data_from_server = await getReqData(req);
+            const data_from_server_json = JSON.parse(data_from_server);
+            console.log(typeof(data_from_server));
+            console.log(typeof(data_from_server_json));
+            console.log('data_from_server_json:')
+            console.log(data_from_server_json);
+            let userID = Number(data_from_server_json.user_id);
+
+            sql.connect(dbConfig, (err) => {
+                // Database connection error handler
+                if (err) {
+                    handleDatabaseError(res, err);
+                    return;                    
+                }
+
+                const request = new sql.Request();
+
+                var query = `UPDATE [MusicLibrary].[User] 
+                SET [Marked_For_Deletion] = 1
+                WHERE [Cougar_ID] = ${userID}`;
+
+                // Process query result and store it to use as a response
+                request.query(query, (err, result) =>  {
+                    if (err) {                                                   // Database query error handler
+                        console.error('Database query error:', err);
+                        sql.close();
+                        res.writeHead(500, { 'Content-Type': 'text/plain' });
+                        res.end('Database query error');
+                        return;
+                    }
+                    // Collects rows of data and stores it as JSON to send back to the client
+                    console.log('results for album update:')
+                    console.log(result);
+                    const rows = result.rowsAffected;
+                    console.log(rows);
+                    const jsonData = JSON.stringify(rows);
+                    res.writeHead(200, {
+                        'Content-Type': 'application/json',
+                        /*'Content-Length': Buffer.byteLength(jsonData, 'utf8'),*/ //remove row below if needed
+                        "Access-Control-Allow-Origin": "*"
+                    });
+                    console.log('response sent for song update:')
+                    console.log(jsonData);
+                    res.end(jsonData);
+                })
+            })
+            
+           return;
+            
+        }
+
+        else if(fileName === '/adminUpdateUserDataActivateUserAccount') {
+            // Data parsing
+
+            const data_from_server = await getReqData(req);
+            const data_from_server_json = JSON.parse(data_from_server);
+            console.log(typeof(data_from_server));
+            console.log(typeof(data_from_server_json));
+            console.log('data_from_server_json:')
+            console.log(data_from_server_json);
+            let userID = Number(data_from_server_json.user_id);
+
+            sql.connect(dbConfig, (err) => {
+                // Database connection error handler
+                if (err) {
+                    handleDatabaseError(res, err);
+                    return;                    
+                }
+
+                const request = new sql.Request();
+
+                var query = `UPDATE [MusicLibrary].[User] 
+                SET [Marked_For_Deletion] = 0
+                WHERE [Cougar_ID] = ${userID}`;
+
+                // Process query result and store it to use as a response
+                request.query(query, (err, result) =>  {
+                    if (err) {                                                   // Database query error handler
+                        console.error('Database query error:', err);
+                        sql.close();
+                        res.writeHead(500, { 'Content-Type': 'text/plain' });
+                        res.end('Database query error');
+                        return;
+                    }
+                    // Collects rows of data and stores it as JSON to send back to the client
+                    console.log('results for album update:')
+                    console.log(result);
+                    const rows = result.rowsAffected;
+                    console.log(rows);
+                    const jsonData = JSON.stringify(rows);
+                    res.writeHead(200, {
+                        'Content-Type': 'application/json',
+                        /*'Content-Length': Buffer.byteLength(jsonData, 'utf8'),*/ //remove row below if needed
+                        "Access-Control-Allow-Origin": "*"
+                    });
+                    console.log('response sent for song update:')
+                    console.log(jsonData);
+                    res.end(jsonData);
+                })
+            })
+            
+           return;
+            
+        }
+        
+        else if(fileName === '/adminUpdateAlbumDataMarkForDeletion') {
+            // Data parsing
+
+            const data_from_server = await getReqData(req);
+            const data_from_server_json = JSON.parse(data_from_server);
+            console.log(typeof(data_from_server));
+            console.log(typeof(data_from_server_json));
+            console.log('data_from_server_json:')
+            console.log(data_from_server_json);
+            let album_id = data_from_server_json.album_id;
+
+            sql.connect(dbConfig, (err) => {
+                // Database connection error handler
+                if (err) {
+                    handleDatabaseError(res, err);
+                    return;                    
+                }
+
+                let request = new sql.Request();
+
+                var query = `
+                UPDATE [MusicLibrary].[Album] 
+                SET [Marked_For_Deletion] = 1 
+                WHERE [Album_ID] = ${album_id}`;
+
+                // Process query result and store it to use as a response
+                request.query(query, (err, result) =>  {
+                    if (err) {                                                   // Database query error handler
+                        console.error('Database query error:', err);
+                        sql.close();
+                        res.writeHead(500, { 'Content-Type': 'text/plain' });
+                        res.end('Database query error');
+                        return;
+                    }
+                    // Collects rows of data and stores it as JSON to send back to the client
+                    console.log('results for album update:')
+                    console.log(result);
+                    const rows = result.rowsAffected;
+                    console.log(rows);
+                    const jsonData = JSON.stringify(rows);
+                    res.writeHead(200, {
+                        'Content-Type': 'application/json',
+                        /*'Content-Length': Buffer.byteLength(jsonData, 'utf8'),*/ //remove row below if needed
+                        "Access-Control-Allow-Origin": "*"
+                    });
+                    console.log('response sent for song update:')
+                    console.log(jsonData);
+                    res.end(jsonData);
+                })
+
+                request = new sql.Request();
+
+                var query2 = `
+                UPDATE [MusicLibrary].[Song] 
+                SET [Marked_For_Deletion] = 1 
+                WHERE [Album_ID] = ${album_id}`;
+
+                // Process query result and store it to use as a response
+                request.query(query2, (err, result) =>  {
+                    if (err) {                                                   // Database query error handler
+                        console.error('Database query error:', err);
+                        sql.close();
+                        res.writeHead(500, { 'Content-Type': 'text/plain' });
+                        res.end('Database query error');
+                        return;
+                    }
+                    // Collects rows of data and stores it as JSON to send back to the client
+                    console.log('results for deleting songs associated with album update:')
+                    console.log(result);
+                    const rows = result.rowsAffected;
+                    console.log(rows);
+                    const jsonData = JSON.stringify(rows);
+                    //res.writeHead(200, {
+                    //    'Content-Type': 'application/json',
+                    //    /*'Content-Length': Buffer.byteLength(jsonData, 'utf8'),*/ //remove row below if needed
+                    //    "Access-Control-Allow-Origin": "*"
+                    //});
+                    console.log('response not sent for deleting all songs associated with album:')
+                    console.log(jsonData);
+                    //res.end(jsonData);
                 })
             })
             
