@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Report</title>
+  <link rel="icon" href="img/music_disc.png" type="image/x-icon">
+  <style>
+/* || RESET */
+* {
+  margin: 5 px;
+  padding: 5 px;
+}
+    
+button{
+  font: inherit;
+}
+    
+/* ||VARIABLES */
+:root{
+  /* ||COLORS */
+  --BGCOLOR: #352F44 /*#54585A linear-gradient(#0F0F0F, #28406e) #FFFBF5*/;
+  --BGCOLORSUB: #5C5470 /*#888B8D radial-gradient( #28406e,#0F0F0F)#F7EFE5*/;
+  --FONTCOLOR: /*#C8102E*/ #FAF0E6;
+  --FONTCOLORSUB: #FFF;
+  --COLORFALLBACK: #000;
+  --HOVERCOLOR: /*#960C22*/ #B9B4C7;
+  --TEXTSHADOW: -1px 0 #FFFFFF, 0 1px #FFFFFF, 1px 0 #FFFFFF, 0 -1px #FFFFFF;
+  /* ||BORDER */
+  --GRIDBORDERS: #000 1px solid;
+}
+
+body{
+  background-color: var(--BGCOLOR);
+  color: var(--FONTCOLOR);
+}
+
+p{
+  font-family: sans-serif;
+  font-weight: bold;
+  color: white;
+  text-shadow: 1px 1px 2px pink
+}
+.container {
+    width: 300px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color:  var(--BGCOLORSUB)  /*#f9f9f9*/;
+    margin-top: 70px;
+    color: var(--FONTCOLOR);
+}
+
+h2 {
+    margin: 0 0 20px 0;
+}
+form {
+    text-align: left;
+}
+
+label, input, select {
+    display: block;
+    margin-bottom: 10px;
+}
+
+input[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+.textLogo
+{
+  text-align: center;
+}
+
+
+</style>
+
+
+</head>
+
+<body>
+    <a href = "login.html">
+        <button>
+            Login
+        </button>
+    </a>
+    <h2 class = "textLogo">
+        <p>COOG MUSIC</p>
+    </h2>
+
+    <div class="container">
+    <h2>Register</h2>
+    <form id="form" method="POST" action="/register">
+    <!-- <label for="CougarID">CougarID:</label>
+    <input type="text" id="CougarID" name="CougarID" required> -->
+
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+
+        <label for="password">Confirm Password:</label>
+        <input type="password" id="confirm" name="confirm" required>
+
+        <label for="role">Role:</label>
+        <select name="role" id="role">
+            <option value="1">Listener</option>
+            <option value="2">Artist</option>
+        </select>
+
+        <input type="submit" id="submit" value="Register">
+    </form>
+
+    
+</div>
+</body>
+<script>
+  function validateForm() {
+            //var cougarIDInput = document.getElementById("CougarID");
+            //var cougarIDValue = cougarIDInput.value;
+
+            // Check if CougarID is an integer
+            //if (!Number.isInteger(Number(cougarIDValue))) {
+            //    alert("CougarID must be an integer. Please enter a valid integer.");
+            //    return false; // Prevent form submission
+            //}
+
+            var usernameInput = document.getElementById("username");
+            var usernameValue = usernameInput.value;
+
+            // Check if Username is of type VARCHAR(50)
+            if (usernameValue.length > 50) {
+                alert("Username must be at most 50 characters. Please enter a shorter username.");
+                return false; // Prevent form submission
+            }
+
+            // Rest of your validation logic
+            var password = document.getElementById("password").value;
+            var confirm = document.getElementById("confirm").value;
+
+            if (password !== confirm) {
+                alert("Passwords do not match. Please check and try again.");
+                return false; // Prevent form submission
+            }
+
+            return true; // Allow form submission
+        }
+</script>
+
+<script>
+    document.getElementById('form').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            if (validateForm()) {
+                try {
+                    const formData = new FormData(this); // Collect form data
+                    console.log('formData: ', formData);
+                    const response = await fetch('/register', {
+                        method: 'POST',
+                        body: formData // Pass form data in the fetch request
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                }
+                catch (error) {
+                    console.error('Error fetching data:', error);
+                }
+            }
+
+            else {
+                console.log('Form is not valid');
+            }
+        });
+</script>
+
+</html>

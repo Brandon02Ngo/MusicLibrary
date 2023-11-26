@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Data Reporting</title>
+    <style>
+        :root{
+            /* ||COLORS */
+            --BGCOLOR: #352F44 /*#54585A linear-gradient(#0F0F0F, #28406e) #FFFBF5*/;
+            --BGCOLORSUB: #5C5470 /*#888B8D radial-gradient( #28406e,#0F0F0F)#F7EFE5*/;
+            --FONTCOLOR: /*#C8102E*/ #FAF0E6;
+            --FONTCOLORSUB: #FFF;
+            --COLORFALLBACK: #000;
+            --HOVERCOLOR: /*#960C22*/ #B9B4C7;
+            --TEXTSHADOW: -1px 0 #FFFFFF, 0 1px #FFFFFF, 1px 0 #FFFFFF, 0 -1px #FFFFFF;
+            /* ||BORDER */
+            --GRIDBORDERS: #000 1px solid;
+        }
+        body {
+            font-family: 'League Gothic';font-size: 30; letter-spacing: 1px;
+            background-color: var(--BGCOLOR);
+        }
+        h1 {
+            color: var(--FONTCOLOR);
+        }
+        h2 {
+            color: var(--FONTCOLOR);
+        }
+        h3 {
+            color: var(--FONTCOLOR);
+        }
+        form {
+            color: var(--FONTCOLORSUB);
+        }
+        div {
+            color: #FFF9D9;
+        }
+        #songInputs{
+            border-radius: 10px;
+            background: #640817;
+        }
+        input {
+            color: var(--FONTCOLORSUB);
+            background-color: var(--BGCOLORSUB); 
+        }
+        
+        select{
+            color: var(--FONTCOLORSUB);
+            background-color: var(--BGCOLORSUB);
+        }
+
+        #albumSection {
+            display: none;
+        }
+
+        .grid-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .grid-table th,
+        .grid-table td {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        .grid-table th {
+            background-color: #000000;
+            font-weight: bold;
+        }
+
+        .grid-table tr:nth-child(odd) {
+            background-color: #000000;
+        }
+
+        .grid-table tr:hover {
+            background-color: #eaeaea;
+        }
+        
+        /* Hides both sections on initial page load */
+        #albumSection, #singleSection {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Edit Existing Music</h1>
+        <h3>Select Album</h3>
+        <div>
+            <label for="album">Album</label>
+                <select name="album" id="album">
+                </select>
+        </div>
+
+        <div id="gridContainerAlbum"></div>
+        <div id="gridContainer"></div>
+
+    <script>
+        let selectedAlbumId = null;
+        let selectedSongId = null;
+    </script>
+
+    <script>
+        // Function to dynamically populate the dropdown list
+        function populateAlbumDropdown(albums) {
+                const albumSelect = document.getElementById('album');
+
+                // Clear existing options except the first one (All Albums)
+                while (albumSelect.options.length > 1) {
+                    albumSelect.remove(1);
+                }
+
+                // Add options based on the received data
+                albums.forEach(album => {
+                    const option = document.createElement('option');
+                    option.value = album.Album_ID;
+                    option.text = album.Title;
+                    albumSelect.appendChild(option);
+                });
+            }
+    </script>
+
+    <script>
+        function makeRowEditable(rowData, row) {
+            // Gets the row data
+            const rowDataKeys = Object.keys(rowData);
+
+            // Loop through each cell in the row and replaces text content with input fields
+            rowDataKeys.forEach((key, index) => {
+                const cellData = rowData[key];
+                const input = document.createElement('input');
+                input.value = cellData;
+                const cell = row.querySelector(`td:nth-child(${index + 1})`);
+                cell.textContent = '';
+                cell.appendChild(input);
+            });
+        }
+    </script>
+
+    <script>
+        async function updateAlbumData(albumId, updatedData) {
+            try {
+                console.log('updating album id', albumId);
+                console.log('updated data', updatedData);
+                const response = await fetch(`/updateAlbumData?albumId=${albumId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updatedData),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error updating album data');
+                }
+
+                return await response.json();
+            } 
+            catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    </script>
+
+<script>
+    async function updateAlbumDataOnly(albumId, updatedData) {
+        try {
+            console.log('updating album id', albumId);
+            console.log('updated data', updatedData);
+            const response = await fetch(`/updateAlbumDataOnly?albumId=${albumId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedData),
+            });
+
+            if (!response.ok) {
+                throw new Error('Error updating album data');
+            }
+
+            return await response.json();
+        } 
+        catch (error) {
+            console.error('Error:', error);
+        }
+    }
+</script>
+
+    <script>
+        function renderGrid(data) {
+            const gridContainer = document.getElementById('gridContainer');
+
+            // Creates a table element
+            const table = document.createElement('table');
+            table.classList.add('grid-table'); // Optional: Add CSS class for styling
+
+            // Creates table header row
+            const headerRow = document.createElement('tr');
+            for (const key in data[0]) {
+                if (Object.prototype.hasOwnProperty.call(data[0], key)) {
+                    const th = document.createElement('th');
+                    th.textContent = key;
+                    headerRow.appendChild(th);
+                }
+            }
+            table.appendChild(headerRow);
+
+            // Create table rows with data
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                let index = 0;
+
+                for (const key in item) {
+                    if (Object.prototype.hasOwnProperty.call(item, key)) {
+                        const td = document.createElement('td');
+                        td.textContent = item[key];
+                        // Checks if it's the first column (index === 0)
+                        if (index === 0) {
+                            td.textContent = item[key];
+                        } else {
+                            const input = document.createElement('input');
+                            input.value = item[key];
+                            td.textContent = '';
+                            td.appendChild(input);
+                        }
+
+                        row.appendChild(td);
+                        index++;
+                    }
+                }
+
+                // Creates an "Edit" button in a new column for each row
+                const editButtonCell = document.createElement('td');
+                const editButton = document.createElement('button');
+                editButton.textContent = 'Edit';
+                editButtonCell.appendChild(editButton);
+                row.appendChild(editButtonCell);
+
+                table.appendChild(row);
+            });
+
+            
+
+            // Appends the table to the container
+            gridContainer.innerHTML = ''; // Clear previous content
+            gridContainer.appendChild(table);
+        }
+    </script>
+
+    <script>
+        function renderGridAlbum(data) {
+            const gridContainer = document.getElementById('gridContainerAlbum');
+
+            // Creates a table element
+            const table = document.createElement('table');
+            table.classList.add('grid-table'); // Optional: Add CSS class for styling
+
+            // Creates table header row
+            const headerRow = document.createElement('tr');
+            for (const key in data[0]) {
+                if (Object.prototype.hasOwnProperty.call(data[0], key)) {
+                    const th = document.createElement('th');
+                    th.textContent = key;
+                    headerRow.appendChild(th);
+                }
+            }
+            table.appendChild(headerRow);
+
+            // Creates table rows with data
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                let index = 0;
+
+                for (const key in item) {
+                    if (Object.prototype.hasOwnProperty.call(item, key)) {
+                        const td = document.createElement('td');
+                        td.textContent = item[key];
+                        // Check if it's the first column (index === 0)
+                        if (index === 0) {
+                            td.textContent = item[key];
+                        } else {
+                            const input = document.createElement('input');
+                            input.value = item[key];
+                            td.textContent = ''; 
+                            td.appendChild(input);
+                        }
+
+                        row.appendChild(td);
+                        index++;
+                    }
+                }
+
+                // Creates an "Edit" button in a new column for each row
+                const editButtonCell = document.createElement('td');
+                const editButton = document.createElement('button');
+                editButton.textContent = 'Edit';
+                editButtonCell.appendChild(editButton);
+                row.appendChild(editButtonCell);
+
+                table.appendChild(row);
+            });
+
+            
+
+            // Appends the table to the container
+            gridContainer.innerHTML = ''; // Clear previous content
+            gridContainer.appendChild(table);
+        }
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('/getThisArtistsAlbums', {
+                    method: 'GET',
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                
+                // Populates the album dropdown list
+                populateAlbumDropdown(data);
+            }
+            catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        });
+    </script>
+
+    <script>
+        document.getElementById('gridContainer').addEventListener('click', async (event) => {
+            const target = event.target;
+
+            if (target && target.tagName === 'BUTTON' && target.textContent === 'Edit') {
+                console.log('Edit button');
+                const row = target.closest('tr'); 
+                makeRowEditable(row);
+                
+                target.textContent = 'Save';
+                return;
+            }
+
+            else if (target && target.tagName === 'BUTTON' && target.textContent === 'Save') {
+                console.log('Save button');
+                const row = target.closest('tr'); 
+
+                console.log('Row: ', row);
+                // Get Song ID
+                const songIdCell = row.querySelector('td:first-child');
+                const songId = songIdCell.textContent;
+                // Get row data
+                const rowData = {};
+                row.querySelectorAll('td').forEach((cell, index) => {
+                    console.log('index: ', index);
+
+                    const cellData = cell.querySelector('input') ? cell.querySelector('input').value : cell.textContent;
+                    console.log('cellData:', cellData);
+
+                    const header = document.querySelector(`table.grid-table th:nth-child(${index + 1})`);
+                    console.log('Header:', header);
+                        if (header) {
+                            rowData[header.textContent] = cellData;
+                        }
+                });
+                console.log('Rowdata: ', rowData);
+
+                // Get updated data
+                const updatedData = { 'Song_ID': songId };
+
+                row.querySelectorAll('td').forEach((cell, index) => {
+                    const input = cell.querySelector('input');
+                    if (input) {
+                        const header = document.querySelector(`table.grid-table th:nth-child(${index + 1})`).textContent;
+                        updatedData[header] = input.value;
+                    }
+                });
+
+                const updatedDataResponse = await updateAlbumData(selectedAlbumId, updatedData);
+
+                if (updatedDataResponse) {
+                    console.log('Data updated successfully:', updatedDataResponse);
+                } 
+                else {
+                    console.log('Failed to update data.');
+                }
+
+                target.textContent = 'Edit';
+            }
+        });
+    </script>
+
+    <script>
+        document.getElementById('gridContainerAlbum').addEventListener('click', async (event) => {
+            const target = event.target;
+
+            if (target && target.tagName === 'BUTTON' && target.textContent === 'Edit') {
+                console.log('Edit button');
+                const row = target.closest('tr'); 
+                makeRowEditable(row); 
+                
+                target.textContent = 'Save';
+                return;
+            }
+
+            else if (target && target.tagName === 'BUTTON' && target.textContent === 'Save') {
+                console.log('Save button');
+                const row = target.closest('tr'); 
+
+                console.log('Row: ', row);
+                // Get row data
+                const rowData = {};
+                row.querySelectorAll('td').forEach((cell, index) => {
+                    console.log('index: ', index);
+
+                    const cellData = cell.querySelector('input') ? cell.querySelector('input').value : cell.textContent;
+                    console.log('cellData:', cellData);
+
+                    const header = document.querySelector(`table.grid-table th:nth-child(${index + 1})`);
+                    console.log('Header:', header);
+                        if (header) {
+                            rowData[header.textContent] = cellData;
+                        }
+                });
+                console.log('Rowdata: ', rowData);
+                
+                const updatedData = {};
+                row.querySelectorAll('td').forEach((cell, index) => {
+                    const input = cell.querySelector('input');
+                    if (input) {
+                        const header = document.querySelector(`table.grid-table th:nth-child(${index + 1})`).textContent;
+                        updatedData[header] = input.value;
+                    }
+                });
+
+                const updatedDataResponse = await updateAlbumDataOnly(selectedAlbumId, updatedData);
+
+                if (updatedDataResponse) {
+                    console.log('Data updated successfully:', updatedDataResponse);
+                } else {
+                    console.log('Failed to update data.');
+                }
+
+                target.textContent = 'Edit';
+            }
+        });
+    </script>
+
+    <script>
+        let albumSelect = document.getElementById('album');
+        // Event listener for the dropdown change
+        albumSelect.addEventListener('change', async function() {
+            selectedAlbumId = this.value;
+            console.log('Album ID: ', selectedAlbumId);
+
+            // Fetch data for the selected album based on its ID
+            const albumDataResponse = await fetch(`/getAlbumData?albumId=${selectedAlbumId}`, {
+                method: 'GET',
+            });
+
+            if (!albumDataResponse.ok) {
+                throw new Error('Error fetching album data');
+            }
+
+            // Get album data and populate grid
+            const albumData = await albumDataResponse.json();
+            console.log('Rendering Grid');
+            renderGrid(albumData);
+        });
+    </script>
+
+    <script>
+    albumSelect = document.getElementById('album');
+    // Event listener for the dropdown change
+    albumSelect.addEventListener('change', async function() {
+        selectedAlbumId = this.value;
+        console.log('Album ID: ', selectedAlbumId);
+
+        // Fetch data for the selected album based on its ID
+        const onlyAlbumDataResponse = await fetch(`/getOnlyAlbumData?albumId=${selectedAlbumId}`, {
+            method: 'GET',
+        });
+
+        if (!onlyAlbumDataResponse.ok) {
+            throw new Error('Error fetching album data');
+        }
+
+        // Get album data and populate grid
+        const onlyAlbumData = await onlyAlbumDataResponse.json();
+        console.log('Rendering Grid');
+        renderGridAlbum(onlyAlbumData);
+    });
+    </script>
+</body>

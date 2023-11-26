@@ -20,6 +20,9 @@
     <a href= "musicUpload.html">
       <button>Upload</button>
     </a>
+    <a href= "musicEdit.html">
+      <button>Edit Music</button>
+    </a>
     <a href= "profile.html">
       <button>Profile</button>
     </a>
@@ -102,4 +105,36 @@
     </a>
   </ul> 
   </body>
+  <script src="mainPage.js"></script>
+  <script>
+    document.addEventListener('scriptsFinished', async function () {
+      setTimeout(async () => {
+      console.log('Loaded!');
+      try {
+        const response = await fetch('/getAlbumID')
+        const data = await response.json();
+        console.log('Data in front end: ', data);
+
+        const title = data.data.Title;
+        const genre = data.data.Genre;
+        const artist = data.data.Artist;
+
+        console.log('Title: ', title);
+        console.log('Genre: ', genre);
+        console.log('Artist: ', artist);
+        // Use the recommendedAlbum as needed (e.g., display in an alert)
+        if (title !== null && genre !== null && artist !== null) {
+          alert(`Recommended ${genre} album, ${title}, by ${artist}.`);
+
+          // at this point remove row from recomended album table*
+          //fetch('/removeRecAlbum')
+          
+        }
+      }
+      catch (error) {
+        console.error('Error:', error);
+      };
+    }, 5000);
+  })
+  </script>
   </html>
