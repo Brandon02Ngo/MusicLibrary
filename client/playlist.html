@@ -2,10 +2,10 @@
 <html lang="en" dir="ltr">
   <head>
     <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
-    <script src="jquery-3.7.1.min.js"></script>
-    <!--<script src="C:\Users\dgrif\cosc3380\MusicLibrary\server\playlist.js"></script>-->
     <title>my playlist</title>
     <link rel="stylesheet" href="playlist_login.css">
+    <script src="http://cwilso.github.io/AudioContext-MonkeyPatch/AudioContextMonkeyPatch.js"></script>
+    <src src = "playlist.js"></src>
   </head>
   <body>
     <div class = "container">
@@ -21,49 +21,13 @@
          </ul>
          </div>
        </div>
-   <div class = "Tracks"><p class = "tracklistTitle">TRACK LIST</p>
-   <input type="file" id="fileInput">
-   <ul id="fileList"></ul></div>
+   <div class = "Tracks"><p class = "tracklistTitle">TRACK LIST</p></div>
   </div>
     <center>
-    <audio id="audio-player"></audio>
-    <button onclick="playAudio()" type="button">Play</button>
-    <button onclick="pauseAudio()" type="button">Pause Audio</button>
-    <button onclick="restartAudio()" type="button">Restart</button>
-  </center>
+      <audio id="audio-player"></audio>
+      <button onclick="playAudio()" type="button">Play</button>
+      <button onclick="pauseAudio()" type="button">Pause Audio</button>
+      <button onclick="restartAudio()" type="button">Restart</button>
+    </center>
   </body>
-
-  <script>
-    var audio_control = document.getElementById("audio-player"); 
-    var fileName = document.getElementById("fileInput");
-    function playAudio()
-    { 
-      var audio = new Audio("TheGerms_LexiconDevil.mp3");
-      audio.play();
-    }
-    function pauseAudio()
-    {
-      audio_control.pauseAudio();
-    }
-    function restartAudio()
-    {
-      audio_control.res
-    }
-    document.getElementById('fileInput').addEventListener('change', handleFileSelect);
-  
-    function handleFileSelect(event) {
-      var fileList = event.target.files;
-      var outputList = document.getElementById('fileList');
-  
-      outputList.innerHTML = ''; // Clear the previous list
-  
-      for (var i = 0; i < fileList.length; i++) {
-        var listItem = document.createElement('li');
-        listItem.textContent = fileList[i].name;
-        outputList.appendChild(listItem);
-      }
-    }
-  </script>
 </html>
-
-

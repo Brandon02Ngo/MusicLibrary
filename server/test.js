@@ -1351,81 +1351,110 @@ const server = http.createServer(async function(req, res) {                     
         }
 
         else if (fileName === '/getComparisonReport') {
-            // Parse the incoming request data (assuming it's JSON)
-            let requestData = '';
-            req.on('data', (chunk) => {
-                requestData += chunk;
-            });
-        
-            req.on('end', () => {
-                // Parse JSON data
-                const reportOptions = JSON.parse(requestData);
-        
-                // Dynamically construct the SQL query based on user choices
-                const genreFilter = reportOptions.genre ? `AND Genre = '${reportOptions.genre}'` : '';
-                const rowNumFilter = reportOptions.rowNum ? `AND RowNum <= ${reportOptions.rowNum}` : '';
-        
-                let selectColumns = 'Artist'; // Always select the Artist column
-                if (reportOptions.selectedMetrics.includes('AvgListens')) {
-                    selectColumns += ', AVG(Listens) AS Average_Listens';
-                }
-                if (reportOptions.selectedMetrics.includes('TotalListens')) {
-                    selectColumns += ', SUM(Listens) AS Total_Listens';
-                }
-                if (reportOptions.selectedMetrics.includes('AvgRatings')) {
-                    selectColumns += ', AVG(Rating) AS Average_Ratings';
+            const Artistform = new formidable.IncomingForm();
+            console.log(Artistform);
+            Artistform.parse(req, (err, fields) => {
+                if (err) {
+                    console.error('Error parsing form:', err);
+                    res.writeHead(500, { 'Content-Type': 'text/plain' });
+                    res.end('Internal Server Error');
+                    return;
                 }
 
-                const sqlQuery = `
-                    WITH RankedSongs AS (
-                        SELECT
-                            A.Artist,
-                            A.Title,
-                            B.Listens,
-                            A.Rating,
-                            A.Genre,
-                            ROW_NUMBER() OVER (PARTITION BY A.Artist ORDER BY B.Listens DESC) AS RowNum
-                        FROM
-                            [MusicLibrary].[Song] A
-                            JOIN [MusicLibrary].[User_Song_Listens] B ON A.Song_ID = B.Song_ID
-                    )
-                    SELECT
-                        ${selectColumns}
-                    FROM
-                        RankedSongs
-                    WHERE
-                        1 = 1 ${genreFilter} ${rowNumFilter}
-                    GROUP BY
-                        Artist;
-                    `;
-        
-                // Now you can execute the SQL query and send the results to the client
-                sql.connect(dbConfig, (err) => {
-                    if (err) {
-                        console.error('Error connecting to the database:', err);
-                        res.writeHead(500, { 'Content-Type': 'text/plain' });
-                        res.end('Internal Server Error');
-                        return;
+                try {
+                    // Parse JSON data
+                    console.log('Request Data:', fields);
+                    const reportOptions = fields;
+            
+                    // Dynamically construct the SQL query based on user choices
+                    const genreFilter = reportOptions.Genre ? `AND Genre = '${reportOptions.Genre}'` : '';
+                    const rowNumFilter = reportOptions.rowNum ? `AND topSongs <= ${reportOptions.rowNum}` : '';
+                    
+                    // Array to store selected metrics
+                    const selectedColumns = ['Artist'];
+
+                    // Check and add AVGListens
+                    if (reportOptions.selection.includes('AvgListens')) {
+                        selectedColumns.push('AVG(Listens) AS Average_Listens');
                     }
-        
-                    const request = new sql.Request();
-                    request.query(sqlQuery, (err, result) => {
+
+                    // Check and add TotalListens
+                    if (reportOptions.selection.includes('TotalListens')) {
+                        selectedColumns.push('SUM(Listens) AS Total_Listens');
+                    }
+
+                    // Check and add AvgRatings
+                    if (reportOptions.selection.includes('AvgRatings')) {
+                        selectedColumns.push('AVG(Rating) AS Average_Ratings');
+                    }
+
+                    // Join the array to create the SELECT clause
+                    const selectColumns = selectedColumns.join(', ');
+
+                    // This is the query to gather the information the user asked for in the report 
+                    const sqlQuery = `
+                        WITH RankedSongs AS (
+                            SELECT
+                                A.Artist,
+                                A.Title,
+                                B.Listens,
+                                A.Rating,
+                                A.Genre,
+                                ROW_NUMBER() OVER (PARTITION BY A.Artist ORDER BY B.Listens DESC) AS RowNum
+                            FROM
+                                [MusicLibrary].[Song] A
+                                JOIN [MusicLibrary].[User_Song_Listens] B ON A.Song_ID = B.Song_ID
+                        )
+                        SELECT
+                            ${selectColumns}
+                        FROM
+                            RankedSongs
+                        WHERE
+                            1 = 1 ${genreFilter} ${rowNumFilter}
+                        GROUP BY
+                            Artist;
+                        `;
+            
+                    // Connection to the database
+                    sql.connect(dbConfig, (err) => {
                         if (err) {
-                            console.error('Error executing SQL query:', err);
+                            console.error('Error connecting to the database:', err);
                             res.writeHead(500, { 'Content-Type': 'text/plain' });
                             res.end('Internal Server Error');
-                        } else {
-                            // Send the result back to the client
-                            res.writeHead(200, { 'Content-Type': 'application/json' });
-                            res.end(JSON.stringify(result.recordset));
+                            return;
                         }
-        
-                        // Close the database connection
-                        sql.close();
+            
+                        const request = new sql.Request();
+                        request.query(sqlQuery, (err, result) =>  {
+                            if (err) {                                                  
+                                console.error('Database query error:', err);
+                                sql.close();
+                                res.writeHead(500, { 'Content-Type': 'text/plain' });
+                                res.end('Database query error');
+                                return;
+                            }
+                            // Collects rows of data and stores it as JSON to send back to the client
+                            const rows = result.recordset;
+                            const jsonData = JSON.stringify(rows);
+                            res.writeHead(200, {
+                                'Content-Type': 'application/json',
+                                'Content-Length': Buffer.byteLength(jsonData, 'utf8')
+                            });
+    
+                            console.log(jsonData);
+                            res.end(jsonData);
+                        });
                     });
-                });
+
+                } catch (error) {
+                    console.error('Error parsing JSON:', error);
+                    res.writeHead(400, { 'Content-Type': 'text/plain' });
+                    res.end('Bad Request: Invalid JSON data');
+                }
+                
             });
         }
+
 
         else if(fileName === '/adminDataReport') {
             // Data parsing
@@ -4161,16 +4190,61 @@ const server = http.createServer(async function(req, res) {                     
 
         }) 
     }
+    
+    else if (fileName === '/login/ComparisonReport.html') {
+            // Serve playlist.html
+            const htmlPath = path.join(__dirname, '..', 'client', 'ComparisonReport.html');
+            fs.readFile(htmlPath, function (err, data) {
+                if (err) {
+                    res.writeHead(404, { 'Content-Type': 'text/plain' });
+                    res.end('File not found');
+                }
+                else {
+                    res.writeHead(200, { 'Content-Type': 'text/html' });
+                    res.write(data);
+
+                    // Serve assosciated css file
+                    const cssPath = path.join(__dirname, '..', 'client', 'ComparisonReport.css');
+                    fs.readFile(cssPath, 'utf-8', function (err, cssData) {
+                        if (!err) {
+                            res.write('\n<style>\n' + cssData + '\n</style>');
+                        }
+                        else {
+                            console.error('Error reading CSS file:', err);
+                        }
+
+                        // Serve assosciated js file
+
+                        const jsPath = path.join(__dirname, '..', 'client', 'ComparisonReport.js');
+                        fs.readFile(jsPath, 'utf-8', function (err, jsData) {
+                            if (!err) {
+                                res.write('\n<script>\n' + jsData + '\n</script>');
+                            }
+                            else {
+                                console.error('Error reading js file:', err);
+                            }
+
+                            // End the response
+                        })
+
+                        res.end();
+                    })
+                }
+            });
+            return; // Return to avoid further processing for this route
+    }
+    
+    // No file exists for this GET method
+    else {
+        res.writeHead(404, {'Content-Type': 'text/plain'});
+        res.end('Not Found');
+    }
+}
+    
 
     
-        // No file exists for this GET method
-        else {
-            res.writeHead(404, {'Content-Type': 'text/plain'});
-            res.end('Not Found');
-        }
 
-        // else if (etc.)
-    }
+
     else if (req.method === 'PUT') {
         console.log('File path for PUT request:', fileName);
 

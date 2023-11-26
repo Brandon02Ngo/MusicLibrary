@@ -1,55 +1,91 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('userPreferencesForm');
 
-    form.addEventListener('submit', (event) => {
+    form.addEventListener('submit', async function (event) {
         event.preventDefault();
 
-        // Get user preferences from the form
-        const genre = document.getElementById('genreSelect').value;
-        const rowNum = document.getElementById('topSongs').value;
-        const selectedMetrics = Array.from(document.querySelectorAll('input[name="selection"]:checked'))
-            .map(checkbox => checkbox.value);
+        if (validateForm()) {
+            try {
+                const formData = new FormData(this);
+                const response = await fetch('http://localhost:8080/getComparisonReport', {
+                    method: 'POST',
+                    body: formData,
+                });
 
-        // Construct the userPreferences object
-        const userPreferences = {
-            genre,
-            rowNum,
-            selectedMetrics,
-        };
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
 
-        // Make a POST request to the server
-        fetch('http://localhost:8080/getComparisonReport', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(userPreferences),
-        })
-        .then(response => response.json())  // Use response.json() for JSON responses
-        .then(data => {
-            console.log(data); // Handle the response from the server
-        })
-        .catch(error => console.error('Error:', error));
+                const data = await response.json();
+                renderGrid(data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        } else {
+            console.log('Form is not valid');
+        }
     });
 
-    // Function to display data on the page
-    function displayData(data) {
-        const resultContainer = document.getElementById('resultContainer');
+    function renderGrid(data) {
+        const gridContainer = document.getElementById('gridContainer');
 
-        // Clear previous results
-        resultContainer.innerHTML = '';
+        // Create a table element
+        const table = document.createElement('table');
+        table.classList.add('grid-table');
 
-        // Create elements to display data
-        const resultList = document.createElement('ul');
+        // Create table header row
+        const headerRow = document.createElement('tr');
+        for (const key in data[0]) {
+            if (Object.prototype.hasOwnProperty.call(data[0], key)) {
+                const th = document.createElement('th');
+                th.textContent = key;
+                headerRow.appendChild(th);
+            }
+        }
+        table.appendChild(headerRow);
 
+        // Create table rows with data
         data.forEach(item => {
-            const listItem = document.createElement('li');
-            listItem.textContent = `Artist: ${item.Artist}, Average Listens: ${item.Average_Listens}, Total Listens: ${item.Total_Listens}, Average Ratings: ${item.Average_Ratings}`;
-            resultList.appendChild(listItem);
+            const row = document.createElement('tr');
+            for (const key in item) {
+                if (Object.prototype.hasOwnProperty.call(item, key)) {
+                    const td = document.createElement('td');
+                    td.textContent = item[key];
+                    row.appendChild(td);
+                }
+            }
+            table.appendChild(row);
         });
 
-        // Append the result list to the container
-        resultContainer.appendChild(resultList);
+        // Append the table to the container
+        gridContainer.innerHTML = ''; // Clear previous content
+        gridContainer.appendChild(table);
     }
-});
 
+    function validateForm() {
+        // Validate genre selection
+        const genreSelect = document.getElementById('genreSelect');
+        if (genreSelect.value === '') {
+            alert('Please select a genre');
+            return false;
+        }
+        // Validate Result type selection
+        const resultType = document.querySelectorAll('input[name="selection"]:checked');
+        if (!resultType || resultType.length === 0) {
+            alert('Please select at least one result type.');
+            return false;
+        }
+
+
+        // Validate top number of listened songs
+        const topSongs = document.getElementById('topSongs');
+        if (topSongs.value === '' || topSongs.value < 1 || topSongs.value > 100) {
+            alert('Please enter a valid top number of listened songs (1-100).');
+            return false;
+        }
+
+        // If all validation is passed.
+        return true;
+    }
+
+});
