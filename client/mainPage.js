@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    fetch('http://localhost:8080/getDatafromDB',{method: 'GET'}).then(x => x.json()).then( x => {
+    fetch('/getDatafromDB',{method: 'GET'}).then(x => x.json()).then( x => {
         const userList = document.getElementById('Recommended');
         
     // Loop through the array and create list items for each username
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    fetch('http://localhost:8080/getDatafromDB',{method: 'GET'}).then(y => y.json()).then( y => {
+    fetch('/getDatafromDB',{method: 'GET'}).then(y => y.json()).then( y => {
         const userlist = document.getElementById('new-releases');
         
     // Loop through the array and create list items for each username
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    fetch('http://localhost:8080/getDatafromDB', { method: 'GET' })
+    fetch('/getDatafromDB', { method: 'GET' })
     .then(z => z.json())
     .then(z => {
         const Tplist = document.getElementById('songlist');

@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 const data = await response.json();
+                console.log(data);
                 renderGrid(data);
             } catch (error) {
                 console.error('Error fetching data:', error);

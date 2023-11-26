@@ -2,7 +2,7 @@
   "name": "music-library-package",
   "version": "1.0.0",
   "description": "COSC 3380 Database Group Project",
-  "main": "app.js",
+  "main": "test.js",
   "scripts": {
     "test": "echo \\\"Error: no test specified\\\" && exit 1"
   },

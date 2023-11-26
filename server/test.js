@@ -3229,7 +3229,8 @@ const server = http.createServer(async function(req, res) {                     
                 var query = `
                 SELECT 
                 Title, Artist, Song_ID
-                FROM MusicLibrary.[Song] 
+                FROM MusicLibrary.[Song]
+                WHERE Marked_For_Deletion = 0 
                 `;
 
                 // Process query result and store it to use as a response
