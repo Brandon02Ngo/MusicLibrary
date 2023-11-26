@@ -1,3 +1,16 @@
+:root{
+  /* ||COLORS */
+  --BGCOLOR: #352F44 /*#54585A linear-gradient(#0F0F0F, #28406e) #FFFBF5*/;
+  --BGCOLORSUB: #5C5470 /*#888B8D radial-gradient( #28406e,#0F0F0F)#F7EFE5*/;
+  --FONTCOLOR: /*#C8102E*/ #FAF0E6;
+  --FONTCOLORSUB: #FFF;
+  --COLORFALLBACK: #000;
+  --HOVERCOLOR: /*#960C22*/ #B9B4C7;
+  --TEXTSHADOW: -1px 0 #FFFFFF, 0 1px #FFFFFF, 1px 0 #FFFFFF, 0 -1px #FFFFFF;
+  /* ||BORDER */
+  --GRIDBORDERS: #000 1px solid;
+}
+
 #songlist {
   list-style: none;
   padding: 0;
@@ -10,20 +23,20 @@ html {
 
 /*the style used for the hyperlinks*/
 a {
-  color: #C8102E;
+  color: var(--FONTCOLOR);
   text-decoration: none;
 }
 a:visited {
-  color: #960C22;
+  color: var(--FONTCOLOR);
 }
 a:hover, a:active {
-  color: #640817;
+  color: var(--FONTCOLORSUB);
 }
 
 /*main body colors for the page*/
 body {
-  background-color: #54585A;
-  color: #C8102E;
+  background-color: var(--BGCOLOR);
+  color: var(--FONTCOLOR);
 }
 
 /* for the sidebar and playlist in the side */
@@ -47,14 +60,14 @@ body {
 
 /* position of the main page */
 main {
-  margin-left: 200px; /* Same as the width of the sidebar */
+  /* margin-left: 200px; /* Same as the width of the sidebar */ 
   padding: 0px 10px;
 }
 
 /* font colors */
 .uhFont {
-  color: #C8102E;
-  text-shadow: -1px 0 #FFFFFF, 0 1px #FFFFFF, 1px 0 #FFFFFF, 0 -1px #FFFFFF;
+  color: var(--FONTCOLOR);
+  /* text-shadow: -1px 0 #FFFFFF, 0 1px #FFFFFF, 1px 0 #FFFFFF, 0 -1px #FFFFFF; */
 }
 
 /*For the search bar*/
@@ -73,8 +86,10 @@ main {
 }
 
 .song-item {
+  width: 110px;
+  height: 160px;
   border: 1px solid #FFF9D9;
-  background-color: #888B8D;
+  background-color: var(--BGCOLORSUB);
   padding: 10px;
   margin: 10px;
   border-radius: 10px;
@@ -100,6 +115,8 @@ main {
 
 }
 
+
+
 .song-info p {
   margin: 3px;
 }
@@ -110,11 +127,14 @@ main {
 }
 
 .NR-box {
-  width: 100px;
-  height: 100px;
+  width: 110px;
+  height: 110px;
   background-color: pink;
-  margin-right: 10px;
+  margin-right: 0px;
+  margin-left: 0px;
   border-radius: 7px;
+  word-wrap: break-word;
+  align-self: center;
 }
 
 #Recommended {
@@ -128,7 +148,36 @@ main {
   background-color: green;
   border-radius: 50%;
   margin-right: 10px;
+  word-wrap: break-word;
+}
+
+.title {
+  font-size: 110%;
+}
+
+.song-item2 {
+  width: 110px;
+  height: 210px;
+  border: 1px solid #FFF9D9;
+  background-color: var(--BGCOLORSUB);
+  padding: 10px;
+  margin: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+
+.TP-box {
+  width: 100px;
+  height: 100px;
+  background-color: green;
+  border-radius: 50%;
+  margin-right: 10px;
+  word-wrap: break-word;
 }
 
 
 
+.song-genre {
+  margin-bottom: 10px;
+}

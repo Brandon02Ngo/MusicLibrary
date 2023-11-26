@@ -4,21 +4,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home</title>
+  <title>Document</title>
   <link rel="stylesheet" href="mainPage.css">
   <link rel="icon" href="img/eagle.svg" type="image/x-icon">
   <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
+  <script src="mainPage.js"></script>
 </head>
 
 <body>
-  <!-- The side bar with home  -->
-  <h2 class = side>
-    <!-- Home Button -->
+ 
     <a href= "index.html">
       <button>Home</button>
     </a>
     <a href= "musicUpload.html">
       <button>Upload</button>
+    </a>
+    <a href= "musicEdit.html">
+      <button>Edit Music</button>
+    </a>
+    <a href= "musicEdit.html">
+      <button>Edit Music</button>
     </a>
     <a href= "profile.html">
       <button>Profile</button>
@@ -26,104 +32,112 @@
     <a href= "login.html">
       <button>Login</button>
     </a>
-    <a href= "administration_page/index.html">
+    <a href= "admin.html">
       <button>Admin</button>
     </a>
+    <!--
     <a href= "settings_page/index.html">
       <button>Settings</button>
     </a>
+  -->
     <a href= "artistDataReport.html">
       <button>Data Report</button>
     </a>
-    <p class="uhFont">
-      My Playlist
-    </p>
-      <p class="playlist">
-        <img src="img/music_disc.png" alt="disc" width ="25" height="25">
-        The music disk
-      </p>
-  </h2>
-  <main>
-
-    <!-- Code for the search bar, needs to be connected to a js -->
-    <input id="searchbar" type="text" name ="search" placeholder="Search">
-
-
-    <h1 class="uhFont"> Top Picks </h1>
-    <!-- The hyperlink to the different albums -->
-    <a href="playlist.html">
-    <!-- Unorder list of music inside song boxes -->
-    <ul id="songlist" class="song-list">
-      <li class="song-item">
-        <img src="img/eagle.svg" alt="eagle" width ="100" height="100">
-        <div class="song-info">
-          <h2>
-
-              <span id = "song-name">Apple song</span>
-
-          </h2>
-          <p>
-            <span id = "song-genre"> Genre: Rap </span>
-            <br>
-              <img src="img/star.svg" alt="Rating:" width ="15" height="15">
-              <span id = "song-ratings"> 3.9 </span>
-            <br>
-              <img src="img/eye.svg" alt="Views:" width ="15" height="15">
-              <span id = "song-views"> 1235 </span>
-          </p>
-        </div>
+    <a href= "listener_report.html">
+      <button>Listener Report</button>
+    </a>
+    <a href= "searchbar.html">
+      <button>Search</button>
+    </a>
+    <a href = "ComparisonReport.html">
+      <button> Comparison Report</button>
     </a>
 
-      </li>
-      <li class="song-item">
-        <img src="img/music_disc.png" alt="eagle" width ="100" height="100">
-        <div class="song-info">
-          <h2>Banger song</h2>
-          <p>Genre: Country</p>
-          <p>Rating: 3.9</p>
-          <p> Views: 2345 </p>
+  <main>
+    <h1 class="uhFont"> Top Picks </h1>
+    <!-- The hyperlink to the different albums -->
+    <!-- Unorder list of music inside song boxes -->
+    <ul id="songlist" class="song-list">
+      <a href="playlist.html"></a>
+      <!-- <li class="song-item2">
+        <div class = "TP-box">
+          <img src = "Top6Picks.PNG" alt = "Top6Picks">
         </div>
-      </li>
-
-      <li class="song-item">
-        <div class="song-box"></div>
         <div class="song-info">
-          <h2>candy song</h2>
-          <p>Genre: Jazz</p>
-          <p>Rating: 4.4</p>
-          <p> Views: 4322 </p>
+          <h2 class = "title">          
+          </h2>
+          <p>
+            <span id = "song-genre"></span>
+            <br> 
+              <span id = "song-ratings">  </span>
+            <br> 
+              <span class = "song-views"> </span>
+          </p>
         </div>
-      </li>
+          
+      </li> -->
+    </a>
     </ul>
 
   <hr> <!--horizontal line-->
 
   <h1 class="uhFont">New Releases</h1>
+  <a class = "section-info" href="playlist.html" class = "song-code">
     <ul id="new-releases" class="song-list">
-      <li class="song-item">
+      <!-- <li class="song-item">
         <div class="NR-box"></div>
         <div class="song-info">
-          <h2>
-            <span>Dancing song</span>
+          <h2 class = "title">
+            Dancing song Dancing Dancing yun
           </h2>
         </div>
-
-      </li>
+      </li> -->
+    </a>
     </ul>
 
   <hr> <!--horizontal line-->
   <h1 class="uhFont"> Recommended Artist </h1>
-  <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
-  <script src="mainPage.js">
-
-  </script>
+  <a class = "section-info" href="playlist.html" >
   <ul id="Recommended" class="song-list">
-    <li class="song-item">
-      <div class="Rec-box"></div>
-      <div class="song-info">
-        <h2>Wolfgang</h2>
-      </div>
-    </li>
-  </ul>
+      <!-- <li class="song-item">
+        <div class="Rec-box"></div>
+        <div class="song-info">
+          <h2 class = "title">Wolfgang</h2>
+        </div>
+      </li> -->
+    </a>
+  </ul> 
   </body>
+  <script src="mainPage.js"></script>
+  <script>
+    document.addEventListener('scriptsFinished', async function () {
+      setTimeout(async () => {
+      console.log('Loaded!');
+      try {
+        const response = await fetch('/getAlbumID')
+        const data = await response.json();
+        console.log('Data in front end: ', data);
+
+        const title = data.data.Title;
+        const genre = data.data.Genre;
+        const artist = data.data.Artist;
+
+        console.log('Title: ', title);
+        console.log('Genre: ', genre);
+        console.log('Artist: ', artist);
+        // Use the recommendedAlbum as needed (e.g., display in an alert)
+        if (title !== null && genre !== null && artist !== null) {
+          alert(`Recommended ${genre} album, ${title}, by ${artist}.`);
+
+          // at this point remove row from recomended album table*
+          //fetch('/removeRecAlbum')
+          
+        }
+      }
+      catch (error) {
+        console.error('Error:', error);
+      };
+    }, 5000);
+  })
+  </script>
   </html>

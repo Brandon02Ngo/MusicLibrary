@@ -1,7 +1,3 @@
-.container
-{
-
-}
 .textLogo
 {
   text-align: center;
@@ -113,4 +109,9 @@ input[type="submit"] {
 
 input[type="submit"]:hover {
     background-color: #0056b3;
+}
+div
+{
+  overflow: auto;
+  text-align:justify;
 }

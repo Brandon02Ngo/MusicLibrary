@@ -4,11 +4,461 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="stylesheet.css" rel="stylesheet"/>
-    <title>user profile</title>
+    <style>
+        :root{
+            /* ||COLORS */
+            --BGCOLOR: #352F44 /*#54585A linear-gradient(#0F0F0F, #28406e) #FFFBF5*/;
+            --BGCOLORSUB: #5C5470 /*#888B8D radial-gradient( #28406e,#0F0F0F)#F7EFE5*/;
+            --FONTCOLOR: /*#C8102E*/ #FAF0E6;
+            --COLORFALLBACK: #FFF;
+            --HOVERCOLOR: /*#960C22*/ #B9B4C7;
+            --TEXTSHADOW: -1px 0 #FFFFFF, 0 1px #FFFFFF, 1px 0 #FFFFFF, 0 -1px #FFFFFF;
+            /* ||BORDER */
+            --GRIDBORDERS: #000 1px solid;
+        }
+
+        html {
+            height: 100%; /*credit: Madara's Ghost on https://stackoverflow.com/questions/7049875/why-doesnt-height-100-work-to-expand-divs-to-the-screen-height*/
+        }
+        main {
+            width: 100%;
+            font-size: 100%;
+            height: 100%;
+        }
+        main h1 {
+            color: /* rgb(0, 0, 0) */ var(--FONTCOLOR);
+            font-size: xx-large;
+        }
+        body {
+            background-color: /* rgb(255, 255, 255) */ var(--BGCOLOR);
+            font-size: 100%;
+            color: var(--FONTCOLOR);
+            height: 75%;
+            width: 100%;
+            font-size: x-large;
+        }
+
+        button {
+            cursor: pointer;
+            font-size: 100%;
+        }
+
+        main p {
+            font-size: x-large;
+        }
+
+        .settings_table{
+            height: 15%;
+            display: inline-block;
+            width: 50%;
+            font-size: x-large;
+        }
+
+        #account_info_main_table {
+            border: /* 1px solid rgb(36, 35, 35) */ var(--GRIDBORDERS);
+            font-size: large;
+            width: 100%;
+            background-color: /* rgb(245, 245, 245) */ var(--BGCOLORSUB);
+            min-height: 100%;
+            display: inline-block;
+            font-size: x-large;
+        }
+
+        /* username pop-up*/ 
+        .modal_container {
+            background-color: /* rgb(93, 93, 93) */ var(--BGCOLOR);
+            position: absolute; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            top: 0;
+            left: 0;
+            bottom: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            right: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            height: 50%;
+            width: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            align-content: center;
+            border: var(--GRIDBORDERS);
+
+            opacity: 0;
+            transition: opacity 0.3 ease;
+            pointer-events: none;
+            /* Joseph Silber and john Smith on:
+            https://stackoverflow.com/questions/14402038/how-to-position-a-container-in-the-middle-of-the-screen */
+            /*margin-left: auto;*/
+            /*margin-right: auto;*/
+            margin: auto; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            font-size: x-large;
+        }
+
+        .modal_container.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background-color: /* rgb(204, 204, 204) */ var(--BGCOLORSUB);
+            border-radius: 5px;
+            padding: 10px 40px;
+            width: 75%;
+            max-width: 100%;
+            height: 75%;
+            align-items: center;
+            align-content: center;
+            font-size: x-large;
+        }
+
+        .modal h1 {
+            margin: 0;
+            font-size: x-large;
+        }
+
+        .modal h2 {
+            font-size: xx-large;
+        }
+
+        .modal p, label, input {
+            font-size: x-large;
+        }
+
+        /*email address pop-up*/
+        .modal_container_email {
+            background-color: /* rgb(93, 93, 93) */ var(--BGCOLOR);
+            position: absolute; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            top: 0;
+            left: 0;
+            bottom: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            right: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            height: 50%;
+            width: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: var(--GRIDBORDERS);
+
+            opacity: 0;
+            transition: opacity 0.3 ease;
+            pointer-events: none;
+            /* Joseph Silber and john Smith on:
+            https://stackoverflow.com/questions/14402038/how-to-position-a-container-in-the-middle-of-the-screen */
+            /*margin-left: auto;*/
+            /*margin-right: auto;*/
+            margin: auto; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+        }
+
+        .modal_container_email.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal_email {
+            background-color: /* rgb(204, 204, 204) */ var(--BGCOLORSUB);
+            border-radius: 5px;
+            padding: 10px 40px;
+            width: 75%;
+            max-width: 100%;
+            height: 75%;
+        }
+
+        .modal_email h1 {
+            margin: 0;
+        }
+
+        /*password pop-up*/
+        .modal_container_password {
+            background-color: /* rgb(93, 93, 93) */ var(--BGCOLOR);
+            position: absolute; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            top: 0;
+            left: 0;
+            bottom: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            right: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            height: 50%;
+            width: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            align-content: center;
+            border: var(--GRIDBORDERS);
+
+            opacity: 0;
+            transition: opacity 0.3 ease;
+            pointer-events: none;
+            /* Joseph Silber and john Smith on:
+            https://stackoverflow.com/questions/14402038/how-to-position-a-container-in-the-middle-of-the-screen */
+            /*margin-left: auto;*/
+            /*margin-right: auto;*/
+            margin: auto; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            font-size: x-large;
+        }
+
+        .modal_container_password.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal_password {
+            background-color: /* rgb(204, 204, 204) */ var(--BGCOLORSUB);
+            border-radius: 5px;
+            padding: 10px 40px;
+            width: 75%;
+            max-width: 100%;
+            height: 75%;
+            font-size: x-large;
+        }
+
+        .modal_password h1 {
+            margin: 0;
+            font-size: x-large;
+        }
+
+
+
+        /*contact us pop-up*/
+        .modal_container_contact_us {
+            background-color: /* rgb(93, 93, 93) */ var(--BGCOLOR);
+            position: absolute; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            top: 0;
+            left: 0;
+            bottom: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            right: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            height: 50%;
+            width: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: var(--GRIDBORDERS);
+
+            opacity: 0;
+            transition: opacity 0.3 ease;
+            pointer-events: none;
+            /* Joseph Silber and john Smith on:
+            https://stackoverflow.com/questions/14402038/how-to-position-a-container-in-the-middle-of-the-screen */
+            /*margin-left: auto;*/
+            /*margin-right: auto;*/
+            margin: auto; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            font-size: x-large;
+        }
+
+        .modal_container_contact_us.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal_contact_us {
+            background-color: /* rgb(204, 204, 204) */ var(--BGCOLORSUB);
+            border-radius: 5px;
+            padding: 10px 40px;
+            width: 75%;
+            max-width: 100%;
+            font-size: x-large;
+        }
+
+        .modal_contact_us h1 {
+            margin: 0;
+        }
+
+        /* username response pop-up*/ 
+        .modal_container_response {
+            background-color: /* rgb(93, 93, 93) */ var(--BGCOLOR);
+            position: absolute; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            top: 0;
+            left: 0;
+            bottom: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            right: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            height: 50%;
+            width: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: var(--GRIDBORDERS);
+
+            opacity: 0;
+            transition: opacity 0.3 ease;
+            pointer-events: none;
+            /* Joseph Silber and john Smith on:
+            https://stackoverflow.com/questions/14402038/how-to-position-a-container-in-the-middle-of-the-screen */
+            /*margin-left: auto;*/
+            /*margin-right: auto;*/
+            margin: auto; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+        }
+
+        .modal_container_response.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal_response {
+            background-color: /* rgb(204, 204, 204) */ var(--BGCOLORSUB);
+            border-radius: 5px;
+            padding: 10px 40px;
+            width: 75%;
+            max-width: 100%;
+        }
+
+        .modal_response h1 {
+            margin: 0;
+        }
+
+        /*email address pop-up response*/
+        .modal_container_email_response {
+            background-color: /* rgb(93, 93, 93) */ var(--BGCOLOR);
+            position: absolute; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            top: 0;
+            left: 0;
+            bottom: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            right: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            height: 50%;
+            width: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: var(--GRIDBORDERS);
+
+            opacity: 0;
+            transition: opacity 0.3 ease;
+            pointer-events: none;
+            /* Joseph Silber and john Smith on:
+            https://stackoverflow.com/questions/14402038/how-to-position-a-container-in-the-middle-of-the-screen */
+            /*margin-left: auto;*/
+            /*margin-right: auto;*/
+            margin: auto; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+        }
+
+        .modal_container_email_response.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal_email_response {
+            background-color: /* rgb(204, 204, 204) */ var(--BGCOLORSUB);
+            border-radius: 5px;
+            padding: 10px 40px;
+            width: 75%;
+            max-width: 100%;
+        }
+
+        .modal_email_response h1 {
+            margin: 0;
+        }
+
+        /*password pop-up response*/
+        .modal_container_password_response {
+            background-color: /* rgb(93, 93, 93) */ var(--BGCOLOR);
+            position: absolute; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            top: 0;
+            left: 0;
+            bottom: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            right: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            height: 50%;
+            width: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: var(--GRIDBORDERS);
+
+            opacity: 0;
+            transition: opacity 0.3 ease;
+            pointer-events: none;
+            /* Joseph Silber and john Smith on:
+            https://stackoverflow.com/questions/14402038/how-to-position-a-container-in-the-middle-of-the-screen */
+            /*margin-left: auto;*/
+            /*margin-right: auto;*/
+            margin: auto; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+        }
+
+        .modal_container_password_response.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal_password_response {
+            background-color: /* rgb(204, 204, 204) */ var(--BGCOLORSUB);
+            border-radius: 5px;
+            padding: 10px 40px;
+            width: 75%;
+            max-width: 100%;
+        }
+
+        .modal_password_response h1 {
+            margin: 0;
+        }
+
+        /*contact us pop-up response*/
+        .modal_container_contact_us_response {
+            background-color: /* rgb(93, 93, 93) */ var(--BGCOLOR);
+            position: absolute; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            top: 0;
+            left: 0;
+            bottom: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            right: 0; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+            height: 50%;
+            width: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: var(--GRIDBORDERS);
+
+            opacity: 0;
+            transition: opacity 0.3 ease;
+            pointer-events: none;
+            /* Joseph Silber and john Smith on:
+            https://stackoverflow.com/questions/14402038/how-to-position-a-container-in-the-middle-of-the-screen */
+            /*margin-left: auto;*/
+            /*margin-right: auto;*/
+            margin: auto; /*https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally*/
+        }
+
+        .modal_container_contact_us_response.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal_contact_us_response {
+            background-color: /* rgb(204, 204, 204) */ var(--BGCOLORSUB);
+            border-radius: 5px;
+            padding: 10px 40px;
+            width: 75%;
+            max-width: 100%;
+        }
+
+        .modal_contact_us_response h1 {
+            margin: 0;
+        }
+
+
+        /* buttons */
+        #open_edit_username_modal_btn.inactive {
+            pointer-events: none;
+        }
+
+        #open_edit_email_modal_btn.inactive {
+            pointer-events: none;
+        }
+
+        #open_edit_password_modal_btn.inactive {
+            pointer-events: none;
+        }
+
+        #open_contact_us_modal_btn.inactive {
+            pointer-events: none;
+        }
+
+
+
+    </style>
+    <title>Account</title>
 </head>
 
 <body>
+    <div>
+        <a href = "index.html">
+            <button>
+                Home
+            </button>
+        </a>
+    </div>
     <main>
         <h1>
             Account Info
@@ -16,36 +466,38 @@
         <div class="settings_table"> <!--https://www.w3schools.com/tags/tag_div.ASP-->
             <table id = "account_info_main_table">
                 <tr>
-                    <td> Username </td>
-                    <td> axel_a <!--NEED QUERY--> </td>
-                    <td>
+                    <td> Your username: </td>
+                    <td id="name_of_current_user">  <!-- <-- Get username for session and write it here --> </td>
+                    <td> 
                         <button id="open_edit_username_modal_btn">
-                            <img src="img/pencil_icon.png" alt="edit_icon" width="25" height="25"/>
-                            change
+                            <img src="../img/pencil_icon.png" alt="edit_icon" width="25" height="25"/>
+                            Change my username
                         </button>
                     </td>
                 </tr>
                 <tr>
-                    <td> Cougar ID </td>
-                    <td> 1234567 <!--NEED QUERY--> </td>
+                    <td> Your Cougar ID: </td>
+                    <td id="cougar_id_of_current_user"> <!--NEED QUERY--> </td>
                 </tr>
+                <!--
                 <tr>
                     <td> Email Address </td>
-                    <td> abcde@gmail.com <!--NEED QUERY--> </td>
+                    <td id="email_of_current_user"> abcde@gmail.com NEED QUERY </td>
                     <td>
                         <button id="open_edit_email_modal_btn">
-                            <img src="img/pencil_icon.png" alt="edit_icon" width="25" height="25"/>
-                            change
+                            <img src="../img/pencil_icon.png" alt="edit_icon" width="25" height="25"/>
+                            change email
                         </button>
                     </td>
                 </tr>
+                -->
             </table>
         </div>
         <p></p>
         <div> <!--camelcamper on https://forum.freecodecamp.org/t/add-a-submit-button-to-a-form-in-a-new-line/233887-->
             <button id="open_edit_password_modal_btn"> Change Password </button>
         </div>
-        <p></p>
+        <p></p> 
         <div>
             <p> Need help?
                 <button id="open_contact_us_modal_btn"> Contact Us </button>
@@ -56,11 +508,13 @@
         <div class="modal_container" id="modal_container_id">
             <div class="modal" id="edit_username_modal">
                 <h2> Change My Username </h2>
-                <p> Your current username is INSERT_NAME_HERE </p>
-                <label> Enter your new username: </label>
-                <input type="text" id="username_input">
-                <button> OK </button>
-                <button id="close_edit_username_modal_btn"> Return </button>
+                <p id ="change_my_username"> </p> <!--Get username from session-->
+                <form id ="update_username_form" action="" method="POST">
+                    <label for="username_input"> Enter your new username: </label>
+                    <input type="text" id="username_input" name="username_input" placeholder="Desired new username" required>
+                    <button id ="OK_user_name_pop_up"> OK </button>
+                </form>
+                <button type="button" id="close_edit_username_modal_btn"> Return </button> <!-- type="button" credit: https://stackoverflow.com/questions/28876955/onclick-on-normal-button-is-submitting-form-->
             </div>
         </div>
 
@@ -68,10 +522,10 @@
         <div class="modal_container_email" id="modal_container_id_email">
             <div class="modal_email" id="edit_email_modal">
                 <h2> Change My e-mail Address </h2>
-                <p> Your current e-mail is INSERT_EMAIL_HERE </p>
+                <p id = "current_email"> </p>
                 <label> Enter your new e-mail: </label>
                 <input type="text" id="email_input">
-                <button> OK </button>
+                <button id="OK_change_email_pop_up" > OK </button>
                 <button id="close_edit_email_modal_btn"> Return </button>
             </div>
         </div>
@@ -82,9 +536,11 @@
                 <h2> Change My Password </h2>
                 <!-- Although the user could be asked to provide current password for security resons,
                 I have decide not to implement that feature due to time constraints-->
-                <label> Enter your new password: </label>
-                <input type="text" id="password_input">
-                <button> OK </button>
+                <form id ="update_password_form" action="" method="POST">
+                    <label for ="password_input" > Enter your new password: </label>
+                    <input type="password" id="password_input" name="password_input" placeholder="Enter new password here" required>
+                    <button id = "OK_change_password_pop_up"> OK </button>
+                </form>
                 <button id="close_edit_password_modal_btn"> Return </button>
             </div>
         </div>
@@ -95,23 +551,456 @@
                 <h2> Contact Us </h2>
                 <!-- Although the user could be asked to provide current password for security resons,
                 I have decide not to implement that feature due to time constraints-->
-                <label> Enter your message: </label>
-                <input type="text" id="contact_us_message_input">
-                <button> OK </button>
+                <label> You can contact us via email at support.coogmusic@proton.me </label>
+                <!--<input type="text" id="contact_us_message_input">-->
+                <!--<button id = "OK_contact_us_pop_up"> OK </button>-->
                 <button id="close_contact_us_modal_btn"> Return </button>
             </div>
         </div>
 
-        <div class="home">
-            <a href = "index.html">
-                <button>
-                    Home
-                </button>
-            </a>
+        <!-- change username modal container response popup -->
+        <div class="modal_container_response" id="modal_container_id_response">
+            <div class="modal_response" id="edit_username_modal_response">
+                <h2> Change My Username </h2>
+                <p> Username changed successfully! Please refresh this page to see the changes.</p>
+                <button id="close_edit_username_modal_btn_response"> Close </button>
+            </div>
         </div>
 
-        <script src="/client/settings_page/script.js" ></script>
+        <!-- change email modal container response popup -->
+        <div class="modal_container_email_response" id="modal_container_id_email_response">
+            <div class="modal_email_response" id="edit_email_modal_response">
+                <h2> Change My e-mail Address </h2>
+                <p> Your email was changed successfully! </p>
+                <button id="close_edit_email_modal_btn_response"> Return </button>
+            </div>
+        </div>
+
+        <!-- change password modal container response popup -->
+        <div class="modal_container_password_response" id="modal_container_id_password_response">
+            <div class="modal_password_response" id="edit_password_modal_response">
+                <h2> Change My Password </h2>
+                <!-- Although the user could be asked to provide current password for security resons,
+                I have decide not to implement that feature due to time constraints-->
+                <p> Your password has been updated successfully! </p>
+                <button id="close_edit_password_modal_btn_response"> Close </button>
+            </div>
+        </div>
+
+        <!-- contact_us modal container (contact_us pop-up) -->
+        <div class="modal_container_contact_us_response" id="modal_container_id_contact_us_response">
+            <div class="modal_contact_us_response" id="edit_contact_us_modal_response">
+                <h2> Contact Us </h2>
+                <!-- Although the user could be asked to provide current password for security resons,
+                I have decide not to implement that feature due to time constraints-->
+                <label> Your message has been sent! </label>
+                <button id="close_contact_us_modal_btn_response"> Close </button>
+            </div>
+        </div>
+
+        <script src="./script.js" ></script>
     </main>
 </body>
+<script>
+        // cougar_id_from_client_side is a global variable (obtained from the session)
+    // and important to identify the user that is making the requests
+    var cougar_id_from_client_side = 30; 
+
+    // change username pop-up
+    const open_edit_username_modal_btn = document.getElementById("open_edit_username_modal_btn");
+    const modal_container_id = document.getElementById("modal_container_id");
+    const close_edit_username_modal_btn = document.getElementById("close_edit_username_modal_btn");
+
+    open_edit_username_modal_btn.addEventListener("click", () => {
+        modal_container_id.classList.add("show");
+    // document.getElementById("open_edit_email_modal_btn").classList.add("inactive");
+        document.getElementById("open_edit_password_modal_btn").classList.add("inactive");
+        document.getElementById("open_contact_us_modal_btn").classList.add("inactive");
+    });
+
+    close_edit_username_modal_btn.addEventListener("click", () => {
+        modal_container_id.classList.remove("show");
+        //document.getElementById("open_edit_email_modal_btn").classList.remove("inactive");
+        document.getElementById("open_edit_password_modal_btn").classList.remove("inactive");
+        document.getElementById("open_contact_us_modal_btn").classList.remove("inactive");
+    });
+
+    // change username pop-up response
+    const open_edit_username_modal_btn_response = document.getElementById("OK_user_name_pop_up");
+    const modal_container_id_response = document.getElementById("modal_container_id_response");
+    const close_edit_username_modal_btn_response = document.getElementById("close_edit_username_modal_btn_response");
+
+    //open_edit_username_modal_btn_response.addEventListener("click", () => {
+    //    modal_container_id_response.classList.add("show");
+    //});
+
+    close_edit_username_modal_btn_response.addEventListener("click", () => {
+        modal_container_id_response.classList.remove("show");
+        modal_container_id.classList.remove("show");
+        //document.getElementById("open_edit_email_modal_btn").classList.remove("inactive");
+        document.getElementById("open_edit_password_modal_btn").classList.remove("inactive");
+        document.getElementById("open_contact_us_modal_btn").classList.remove("inactive");
+    });
+
+    // change email pop-up
+    //const open_edit_email_modal_btn = document.getElementById("open_edit_email_modal_btn");
+    const modal_container_id_email = document.getElementById("modal_container_id_email");
+    const close_edit_email_modal_btn = document.getElementById("close_edit_email_modal_btn");
+
+    /*
+    open_edit_email_modal_btn.addEventListener("click", () => {
+        modal_container_id_email.classList.add("show");
+        document.getElementById("open_edit_username_modal_btn").classList.add("inactive");
+        document.getElementById("open_edit_password_modal_btn").classList.add("inactive");
+        document.getElementById("open_contact_us_modal_btn").classList.add("inactive");
+    });
+    */
+
+    close_edit_email_modal_btn.addEventListener("click", () => {
+        modal_container_id_email.classList.remove("show");
+        document.getElementById("open_edit_username_modal_btn").classList.remove("inactive");
+        document.getElementById("open_edit_password_modal_btn").classList.remove("inactive");
+        document.getElementById("open_contact_us_modal_btn").classList.remove("inactive");
+    });
+
+    // change email pop-up response
+    //const open_edit_email_modal_btn_response = document.getElementById("OK_change_email_pop_up");
+    const modal_container_id_email_response = document.getElementById("modal_container_id_email_response");
+    const close_edit_email_modal_btn_response = document.getElementById("close_edit_email_modal_btn_response");
+
+    //open_edit_email_modal_btn_response.addEventListener("click", () => {
+    //    modal_container_id_email_response.classList.add("show");
+    //});
+
+    close_edit_email_modal_btn_response.addEventListener("click", () => {
+        modal_container_id_email_response.classList.remove("show");
+        modal_container_id_email.classList.remove("show");
+        document.getElementById("open_edit_username_modal_btn").classList.remove("inactive");
+        document.getElementById("open_edit_password_modal_btn").classList.remove("inactive");
+        document.getElementById("open_contact_us_modal_btn").classList.remove("inactive");
+    });
+
+
+    // change password pop-up
+    const open_edit_password_modal_btn = document.getElementById("open_edit_password_modal_btn");
+    const modal_container_id_password = document.getElementById("modal_container_id_password");
+    const close_edit_password_modal_btn = document.getElementById("close_edit_password_modal_btn");
+
+    open_edit_password_modal_btn.addEventListener("click", () => {
+        modal_container_id_password.classList.add("show");
+        document.getElementById("open_edit_username_modal_btn").classList.add("inactive");
+        //document.getElementById("open_edit_email_modal_btn").classList.add("inactive");
+        document.getElementById("open_contact_us_modal_btn").classList.add("inactive");
+    });
+
+    close_edit_password_modal_btn.addEventListener("click", () => {
+        modal_container_id_password.classList.remove("show");
+        document.getElementById("open_edit_username_modal_btn").classList.remove("inactive");
+        //document.getElementById("open_edit_email_modal_btn").classList.remove("inactive");
+        document.getElementById("open_contact_us_modal_btn").classList.remove("inactive");
+    });
+
+    // change password pop-up response
+    const open_edit_password_modal_btn_response = document.getElementById("OK_change_password_pop_up");
+    const modal_container_id_password_response = document.getElementById("modal_container_id_password_response");
+    const close_edit_password_modal_btn_response = document.getElementById("close_edit_password_modal_btn_response");
+
+    //open_edit_password_modal_btn_response.addEventListener("click", () => {
+    //    modal_container_id_password_response.classList.add("show");
+    //});
+
+    close_edit_password_modal_btn_response.addEventListener("click", () => {
+        modal_container_id_password_response.classList.remove("show");
+        modal_container_id_password.classList.remove("show");
+        document.getElementById("open_edit_username_modal_btn").classList.remove("inactive");
+        //document.getElementById("open_edit_email_modal_btn").classList.remove("inactive");
+        document.getElementById("open_contact_us_modal_btn").classList.remove("inactive");
+    });
+
+    // contact us pop-up
+    const open_contact_us_modal_btn = document.getElementById("open_contact_us_modal_btn");
+    const modal_container_id_contact_us = document.getElementById("modal_container_id_contact_us");
+    const close_contact_us_modal_btn = document.getElementById("close_contact_us_modal_btn");
+
+    open_contact_us_modal_btn.addEventListener("click", () => {
+        modal_container_id_contact_us.classList.add("show");
+        document.getElementById("open_edit_username_modal_btn").classList.add("inactive");
+        //document.getElementById("open_edit_email_modal_btn").classList.add("inactive");
+        document.getElementById("open_edit_password_modal_btn").classList.add("inactive");
+    });
+
+    close_contact_us_modal_btn.addEventListener("click", () => {
+        modal_container_id_contact_us.classList.remove("show");
+        document.getElementById("open_edit_username_modal_btn").classList.remove("inactive");
+        //document.getElementById("open_edit_email_modal_btn").classList.remove("inactive");
+        document.getElementById("open_edit_password_modal_btn").classList.remove("inactive");
+    });
+
+    // contat us pop-up response
+    //const open_contact_us_modal_btn_response = document.getElementById("OK_contact_us_pop_up");
+    const modal_container_id_contact_us_response = document.getElementById("modal_container_id_contact_us_response");
+    const close_contact_us_modal_btn_response = document.getElementById("close_contact_us_modal_btn_response");
+
+    //open_contact_us_modal_btn_response.addEventListener("click", () => {
+    //    modal_container_id_contact_us_response.classList.add("show");
+    //});
+
+    close_contact_us_modal_btn_response.addEventListener("click", () => {
+        modal_container_id_contact_us_response.classList.remove("show");
+        modal_container_id_contact_us.classList.remove("show");
+        document.getElementById("open_edit_username_modal_btn").classList.remove("inactive");
+        //document.getElementById("open_edit_email_modal_btn").classList.remove("inactive");
+        document.getElementById("open_edit_password_modal_btn").classList.remove("inactive");
+    });
+
+
+    // get the desired username from the client-side
+    // credit: Coding Shiksha youtube channel video at: https://www.youtube.com/watch?v=S944-epyYuI
+    var update_username_form = document.getElementById("update_username_form");
+    update_username_form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        var desired_username = document.getElementById("username_input").value;
+        console.log(desired_username);
+        //cougar_id_from_client_side = 30;
+
+        // patch the username
+        // show the username in the HTML based on data in database
+        // this function requires that the JSON server be running
+        async function patch_username(){
+            let success = true;
+            //var id_tmp = 30; // from session
+            var url = "http://localhost:8080/updateMyUsername";// + id_tmp.toString();
+            // credit: https://stackoverflow.com/questions/59554421/how-perform-patch-request-from-html-form-using-nodejs
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                // body with necessary data
+                body: JSON.stringify({
+                    desired_new_username: desired_username
+                })
+            }).catch (()=> {
+                console.log("error from client");
+                success = false;
+                return;
+            });
+            
+            //console.log(response[0]);
+            const data = await response.json();
+            console.log("message:")
+            console.log(data);
+            if (!data){
+                // request did not succeed
+                console.log("Request failed.")
+                alert("Your request could not be completed. Username might be already in use. Try a new username or contact support.")
+            }
+            else if (data[0] == 1){
+                alert("Your username was updated successfully. Please refresh the page to see the change.")
+            }
+        };
+
+        patch_username();
+
+        // need to send desired_username and cougar_id_from_client_side to the server-side
+    });
+    // finished getting the desired username from the client-side
+
+
+    // get the desired password from the client-side
+    // credit: Coding Shiksha youtube channel video at: https://www.youtube.com/watch?v=S944-epyYuI
+    var update_password_form = document.getElementById("update_password_form");
+    update_password_form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        var desired_password = document.getElementById("password_input").value;
+        if (desired_password.length < 1) {
+            alert('Your password cannot be empty. Please try again.')
+            return;
+        }
+        console.log(desired_password);
+        //cougar_id_from_client_side = 30;
+
+        // patch the username
+        // show the username in the HTML based on data in database
+        // this function requires that the JSON server be running
+        async function patch_password(){
+            //var id_tmp = 30; // from session
+            var url = "http://localhost:8080/updateMyPassword";// + id_tmp.toString();
+            // credit: https://stackoverflow.com/questions/59554421/how-perform-patch-request-from-html-form-using-nodejs
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                // body with necessary data
+                body: JSON.stringify({
+                    desired_new_password: desired_password
+                })
+            });
+            
+            //console.log(response[0]);
+            const data = await response.json();
+            console.log(data);
+            if (!data){
+                // request did not succeed
+                console.log("Request failed.")
+                alert("Your request could not be completed. Try a new password or contact support.")
+            }
+            else if (data[0] == 1){
+                alert("Your password was updated successfully. You can log-in with your new password.")
+            }
+        };
+
+        patch_password();
+
+        // need to send desired_password and cougar_id_from_client_side to the server-side
+    });
+    // finished getting the desired password from the client-side
+
+
+
+    // show the username in the HTML based on data in database
+    // this function requires that the JSON server be running
+    async function write_username(){
+        //var cougar_id = 30; // from session
+        var url = "http://localhost:8080/profileGetCurrentUser";// + cougar_id.toString();
+        const response = await fetch(url, {
+            method: "GET"
+        });
+        
+        //console.log(response[0]);
+        const data = await response.json();
+        console.log(data);
+        //const html_element = document.getElementById("usernames_and_roles_table");
+        
+            var target = document.getElementById("name_of_current_user");
+            var second_target = document.getElementById("change_my_username");
+            var output = "";
+
+            if (!(data.length >= 1)){
+                output += `Error fetching username`;
+            }
+            else {
+                for (var row of data){
+                    console.log('row is:');
+                    console.log(row);
+                    output += `
+                            ${row.Username}
+                    `;
+                    //console.log(row.Username);
+                    //console.log(row.Role_Name);
+                };
+            }
+            target.innerHTML = output;
+            second_target.innerHTML = `Your current username is: ` + output;
+        
+        /*
+        info = "";
+        for (row of data){
+            info += `
+                <tr>
+                    <td> '${row.Username}' </td>
+                    <td> '${row.Role_Name}' </td>
+                </tr> 
+            `
+        }
+        html_element.innerHTML(info);
+        */
+    };
+
+    write_username();
+
+    // update the cougar_id in the HTML based on data in database
+    // this function requires that the JSON server be running
+    async function write_cougar_id(){
+        //var cougar_id = 30;
+        var url = "http://localhost:8080/profileGetCurrentUserCougarID";// + cougar_id.toString();
+        // the cougar id will be obtained by the server from the session
+        const response = await fetch(url, {
+            method: "GET"
+        });
+        
+        //console.log(response[0]);
+        const data = await response.json();
+        console.log(data);
+        //const html_element = document.getElementById("usernames_and_roles_table");
+        
+            var target = document.getElementById("cougar_id_of_current_user");
+            var output = "";
+            
+            //for (var row of data){
+            //    console.log('row is:');
+            //    console.log(row);
+                output += `
+                        ${data.current_cougar_id}
+                `;
+                //console.log(row.Username);
+                //console.log(row.Role_Name);
+            //};
+            target.innerHTML = output;
+        
+        /*
+        info = "";
+        for (row of data){
+            info += `
+                <tr>
+                    <td> '${row.Username}' </td>
+                    <td> '${row.Role_Name}' </td>
+                </tr> 
+            `
+        }
+        html_element.innerHTML(info);
+        */
+    };
+
+    write_cougar_id();
+
+    // update the email address in the HTML based on data in database
+    // this function requires that the JSON server be running
+    /*
+    async function write_email_address(){
+        var cougar_id = 30;
+        var url = "http://localhost:5050/usernames/" + cougar_id.toString();
+        const response = await fetch(url, {
+            method: "GET"
+        });
+        
+        //console.log(response[0]);
+        const data = await response.json();
+        console.log(data);
+        //const html_element = document.getElementById("usernames_and_roles_table");
+        
+            var target = document.getElementById("email_of_current_user");
+            var second_target = document.getElementById("current_email");
+            var output = "";
+            
+            for (var row of data){
+                console.log('row is:');
+                console.log(row);
+                output += `
+                        ${row.Username}
+                `;
+                //console.log(row.Username);
+                //console.log(row.Role_Name);
+            };
+            target.innerHTML = output;
+            second_target.innerHTML = `Your current email is ` + output;
+        
+        /*
+        info = "";
+        for (row of data){
+            info += `
+                <tr>
+                    <td> '${row.Username}' </td>
+                    <td> '${row.Role_Name}' </td>
+                </tr> 
+            `
+        }
+        html_element.innerHTML(info);
+        */
+    //};
+
+    //write_email_address();
+</script>
 
 </html>

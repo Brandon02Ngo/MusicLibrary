@@ -2,10 +2,15 @@
 <html lang="en">
 <meta charset="utf-8">
 <link rel="stylesheet" href="playlist_login.css">
-<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <title>COOG MUSIC</title>
 <body>
   <div>
+    <a href = "register.html">
+        <button>
+            Register
+        </button>
+    </a>
+
 </div>
   <div>
     <div class = "header_bar">
@@ -16,22 +21,29 @@
     <div>
     <nav class="navbar">
         <ul>
-            <li><a href="index.html">Home</a></li>
+            <!--<li><a href="index.html">Home</a></li>
             <li><a href="profile.html">Profile</a></li>
             <li><a href="musicUpload.html">Upload</a></li>
             <li><a href="playlist.html">Playlist</a></li>
-            <li><a href="artistDataReport.html">Report Sheet</a></li>
+            <li><a href="artistDataReport.html">Report Sheet</a></li> -->
+
         </ul>
         </div>
     <div class="login-container">
        <h2>Login</h2>
-       <form id="login-form"  action="login.php">
-           <label for="username">CougarID</label>
+       <form id="login-form" method="POST" action="/login/landing">
+           <label for="username">Username</label>
            <input type="text" id="username" name="username" required>
+
            <label for="password">Password:</label>
            <input type="password" id="password" name="password" required>
+
            <input type="submit" value="Login">
-       </div>
        </form>
+   </div>
+  </div>
+  <div class = "flex">
+      <p></p>
+  <div>
 </body>
 </html>

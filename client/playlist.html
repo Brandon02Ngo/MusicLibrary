@@ -4,6 +4,8 @@
     <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
     <title>my playlist</title>
     <link rel="stylesheet" href="playlist_login.css">
+    <script src="http://cwilso.github.io/AudioContext-MonkeyPatch/AudioContextMonkeyPatch.js"></script>
+    <src src = "playlist.js"></src>
   </head>
   <body>
     <div class = "container">
@@ -21,8 +23,11 @@
        </div>
    <div class = "Tracks"><p class = "tracklistTitle">TRACK LIST</p></div>
   </div>
-    <audio id="audio-player" controls>
-    </audio>
-   <script src="script.js"></script>
+    <center>
+      <audio id="audio-player"></audio>
+      <button onclick="playAudio()" type="button">Play</button>
+      <button onclick="pauseAudio()" type="button">Pause Audio</button>
+      <button onclick="restartAudio()" type="button">Restart</button>
+    </center>
   </body>
 </html>
